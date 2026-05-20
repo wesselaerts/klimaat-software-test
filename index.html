@@ -270,35 +270,44 @@ const SECTION_NAV = {
   ], label:'General' }
 };
 
-// === SEARCH INDEX (I-nummers, M-nummers, alarmen, onderwerpen) ===
+// === SEARCH INDEX (I-nummers, M-nummers, alarmen, onderwerpen) — consistent met curriculum ===
 const SEARCH_INDEX = [
-  // I-nummers
+  // I-nummers — exact zoals genoemd in het Trainingscurriculum
+  {q:'I100',label:'Buitenstation sensoren',path:'General > Weather',sec:'general',side:'weather'},
   {q:'I101',label:'Compartment settings',path:'Climate > General',sec:'climate',side:'general'},
   {q:'I107',label:'Period shift program',path:'General > Period shift',sec:'general',side:'periodshift'},
   {q:'I110',label:'Heating strategy',path:'Climate > Heating > Strategy',sec:'climate',side:'heating'},
   {q:'I111',label:'Heating corrections',path:'Climate > Heating',sec:'climate',side:'heating'},
   {q:'I112',label:'Heating control',path:'Climate > Heating',sec:'climate',side:'heating'},
   {q:'I115',label:'Pipe strategy',path:'Climate > Heating > Pipe',sec:'climate',side:'heating'},
+  {q:'I116',label:'Pipe corrections',path:'Climate > Heating',sec:'climate',side:'heating'},
   {q:'I118',label:'On/off heat strategy',path:'Climate > Heating',sec:'climate',side:'heating'},
+  {q:'I119',label:'Verwarming temperatuur-balans',path:'Climate > Temperature balance',sec:'climate',side:'tempbal'},
   {q:'I120',label:'Ventilation strategy',path:'Climate > Ventilation > Strategy',sec:'climate',side:'ventilation'},
   {q:'I125',label:'Vent control',path:'Climate > Ventilation',sec:'climate',side:'ventilation'},
-  {q:'I128',label:'Calibrate vent',path:'Climate > Ventilation > Calibration',sec:'climate',side:'ventilation'},
-  {q:'I130',label:'F&P cooling',path:'Climate > F&P cooling',sec:'climate',side:'fp'},
+  {q:'I128',label:'Calibrate vent (raamkalibratie)',path:'Climate > Ventilation > Calibration',sec:'climate',side:'ventilation'},
+  {q:'I130',label:'Servo / kantregeling',path:'Climate > Ventilation',sec:'climate',side:'ventilation'},
+  {q:'I135',label:'Wind-correction ventilation',path:'Climate > Ventilation',sec:'climate',side:'ventilation'},
   {q:'I140',label:'Crop protection strategy',path:'Climate > Crop treatment',sec:'climate',side:'crop'},
   {q:'I150',label:'Air treatment',path:'Climate > air treatment',sec:'climate',side:'air'},
   {q:'I153',label:'ATU luchtcirculatie',path:'Climate > Air circulation',sec:'climate',side:'aircirc'},
   {q:'I154',label:'Pad cooling',path:'Climate > Cooling',sec:'climate',side:'cooling'},
+  {q:'I155',label:'Humidification (bevochtiging)',path:'Climate > Humidification',sec:'climate',side:'humid'},
+  {q:'I157',label:'Humidity high settings',path:'Climate > Humidification',sec:'climate',side:'humid'},
+  {q:'I158',label:'Humidity low settings',path:'Climate > Humidification',sec:'climate',side:'humid'},
   {q:'I160',label:'Curtain combinations',path:'Climate > Curtain',sec:'climate',side:'curtain'},
+  {q:'I669',label:'Watersysteem invloeden',path:'Water > Water system',sec:'water',side:'watersys'},
   {q:'I675',label:'Substrate / moisture / drain',path:'Water > Moisture level and drain',sec:'water',side:'moisture'},
   {q:'I702',label:'Custom program functions',path:'General > Custom',sec:'general',side:'custom'},
   {q:'I705',label:'Custom universele sensoren',path:'General > Custom',sec:'general',side:'custom'},
   {q:'I718',label:'Water systems',path:'Water > Water system',sec:'water',side:'watersys'},
   {q:'I720',label:'Custom universele invloed',path:'General > Custom',sec:'general',side:'custom'},
-  // M-nummers
+  // M-nummers — uit curriculum
   {q:'M101',label:'Overview climate day/night',path:'Climate > Dashboard',sec:'climate',side:'dashboard'},
   {q:'M104',label:'Energy use today',path:'Energy > Dashboard',sec:'energy',side:'dashboard'},
   {q:'M107',label:'Gas consumption per compartiment',path:'Energy > Gas distribution',sec:'energy',side:'gas'},
-  // Onderwerpen
+  {q:'M109',label:'Etmaaltemperatuur metingen',path:'Climate > 24 hour temperature',sec:'climate',side:'h24'},
+  // Onderwerpen (Dutch + English)
   {q:'ventilatie',label:'Ventilatie regeling',path:'Climate > Ventilation',sec:'climate',side:'ventilation'},
   {q:'verwarming',label:'Heating regeling',path:'Climate > Heating',sec:'climate',side:'heating'},
   {q:'scherm',label:'Curtain / scherm',path:'Climate > Curtain',sec:'climate',side:'curtain'},
@@ -315,23 +324,61 @@ const SEARCH_INDEX = [
   {q:'buffer',label:'Warmtebuffer',path:'Energy > Heat management',sec:'energy',side:'heatmgt'},
   {q:'weer',label:'Weather station',path:'General > Weather',sec:'general',side:'weather'},
   {q:'etmaal',label:'24 hour temperature',path:'Climate > 24 hour temperature',sec:'climate',side:'h24'},
-  {q:'alarm',label:'Alarms and messages',path:'General > Alarms and messages',sec:'general',side:'alarms'}
+  {q:'alarm',label:'Alarms and messages',path:'General > Alarms and messages',sec:'general',side:'alarms'},
+  {q:'vialux',label:'UV-ontsmetting Vialux',path:'Water > Disinfection',sec:'water',side:'disinfection'},
+  {q:'groscale',label:'Groscale weegschaal',path:'Water > Moisture level and drain',sec:'water',side:'moisture'},
+  {q:'fgc',label:'Flue Gas Cleaner',path:'Energy > Sources',sec:'energy',side:'sources'},
+  {q:'gateway',label:'Edge Gateway',path:'General > Alarms and messages',sec:'general',side:'alarms'},
+  {q:'backup',label:'USB / Cloud backup',path:'General > Custom',sec:'general',side:'custom'}
 ];
 
-// === ALARM DEFINITIES ===
+// === ALARM DEFINITIES — consistent met Trainingscurriculum.docx ===
 const ALARM_DEFS = {
-  100:{text:'Buitentemperatuur sensor',sev:'alarm'}, 101:{text:'Wind speed sensor',sev:'alarm'},
-  103:{text:'Regen gedetecteerd',sev:'status'}, 104:{text:'Radiation sensor',sev:'alarm'},
-  150:{text:'KasT sensor',sev:'alarm'}, 153:{text:'Wet bulb wick is dry',sev:'warn'},
-  154:{text:'KasT te hoog',sev:'alarm'}, 155:{text:'KasT te laag',sev:'alarm'},
-  156:{text:'RV te hoog',sev:'warn'}, 157:{text:'RV te laag',sev:'warn'},
-  158:{text:'CO₂ te hoog',sev:'alarm'}, 159:{text:'CO₂ te laag',sev:'warn'},
-  179:{text:'Meetboxen wijken af',sev:'warn'}, 250:{text:'Raam control / position sensor',sev:'alarm'},
-  400:{text:'Scherm-motor storing',sev:'alarm'}, 600:{text:'Boiler T te hoog',sev:'alarm'},
-  601:{text:'Boiler T te laag',sev:'alarm'}, 700:{text:'EC drain afwijking',sev:'warn'},
-  701:{text:'pH drain afwijking',sev:'warn'}, 839:{text:'Vialux T10 te laag',sev:'warn'},
-  858:{text:'Fertilizer valve aborted',sev:'alarm'}, 888:{text:'Tank niveau laag',sev:'warn'},
-  920:{text:'Groscale afwijking',sev:'warn'}, 10100:{text:'Edge Gateway communication lost',sev:'alarm'}
+  // 100-149: Buitenstation & meet-sensoren
+  100:{text:'Buitentemperatuur sensor',sev:'alarm'},
+  101:{text:'Wind speed sensor',sev:'alarm'},
+  103:{text:'Regen gedetecteerd (status)',sev:'status'},
+  104:{text:'Radiation sensor',sev:'alarm'},
+  130:{text:'Raam-servo storing',sev:'alarm'},
+  131:{text:'Raam-servo storing (kant)',sev:'alarm'},
+  // 150-179: Compartiment sensoren
+  150:{text:'KasT sensor',sev:'alarm'},
+  153:{text:'Wet bulb wick is dry',sev:'warn'},
+  154:{text:'KasT te hoog',sev:'alarm'},
+  155:{text:'KasT te laag',sev:'alarm'},
+  156:{text:'RV te hoog (humidity high)',sev:'warn'},
+  157:{text:'RV te laag',sev:'warn'},
+  158:{text:'CO₂ te hoog',sev:'alarm'},
+  159:{text:'CO₂ te laag',sev:'warn'},
+  179:{text:'Meetboxen wijken af',sev:'warn'},
+  // 250-260: Raam control
+  250:{text:'Raam control / position sensor',sev:'alarm'},
+  251:{text:'Raam position sensor (kant)',sev:'alarm'},
+  // 350-369: CO₂ / rookgas range
+  360:{text:'FGC rookgas-bron / release',sev:'alarm'},
+  // 400-409: Scherm range
+  400:{text:'Scherm-motor storing',sev:'alarm'},
+  409:{text:'Scherm einde range',sev:'alarm'},
+  // 600-700: Bronnen
+  600:{text:'Boiler T te hoog',sev:'alarm'},
+  601:{text:'Boiler T te laag',sev:'alarm'},
+  // 700-950: Water / fertigatie
+  700:{text:'EC drain afwijking',sev:'warn'},
+  701:{text:'pH drain afwijking',sev:'warn'},
+  839:{text:'Vialux UV T10 te laag',sev:'warn'},
+  858:{text:'Fertilizer valve aborted',sev:'alarm'},
+  888:{text:'Tank niveau laag',sev:'warn'},
+  920:{text:'Groscale afwijking',sev:'warn'},
+  // 1000+: Status & weersmeldingen
+  1007:{text:'Regendetector actief',sev:'status'},
+  1011:{text:'Frost on (vorst gedetecteerd)',sev:'status'},
+  // 9000+: Backup
+  9080:{text:'USB backup error',sev:'warn'},
+  9084:{text:'USB backup stick vol',sev:'warn'},
+  // 10000+: Cloud / Gateway
+  10020:{text:'Cloud backup error (Priva Office Services)',sev:'warn'},
+  10021:{text:'Alarm-database vol — opruimen',sev:'warn'},
+  10100:{text:'Edge Gateway communication lost',sev:'alarm'}
 };
 // Alarmcodes toevoegen aan search index
 Object.entries(ALARM_DEFS).forEach(([code,def])=>{
