@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Interactieve trainings-omgeving voor service-monteurs op het Connext klimaatcomputer- en Operator-platform. Climate, Water, Energy en General met live simulatie, alarmen en zoekfunctie voor I-nummers.">
+<meta name="theme-color" content="#1B4D2A">
+<title>Greenhouse Operator — Trainingsomgeving</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%231B4D2A'/%3E%3Cpath d='M50 22c-12 0-18 12-18 22 0 8 6 14 6 22h24c0-8 6-14 6-22 0-10-6-22-18-22z' fill='%237CB342'/%3E%3Cpath d='M50 34v32M40 44l10 6M60 44l-10 6M44 56l6-3M56 56l-6-3' stroke='%23558B2F' stroke-width='1.5' fill='none'/%3E%3C/svg%3E">
+<link rel="manifest" href="manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--topbar:#1B4D2A;--topbar-2:#143820;--topbar-text:#E8F5E9;--topbar-mute:rgba(232,245,233,.65);--topbar-hover:rgba(255,255,255,.08);--topbar-active:#4FC3A1;--sidebar-bg:#FFF;--sidebar-border:#E5E7E5;--sidebar-text:#3A3F3A;--sidebar-active-bg:#E8F0E9;--sidebar-active:#1B4D2A;--content-bg:#F3F5F3;--card-bg:#FFF;--border:#E0E3E0;--border-strong:#C8CCC8;--text-primary:#1F2420;--text-secondary:#6A706A;--text-tertiary:#9CA09C;--accent:#2E7D32;--accent-hover:#1B5E20;--accent-bg:#E8F5E9;--accent-light:#C8E6C9;--link:#1976D2;--link-bg:#E3F2FD;--warn:#E67E22;--warn-bg:#FFF4E0;--alarm:#C62828;--alarm-bg:#FFEBEE;--t-green:#D4E9C0;--t-blue:#C5E2F2;--t-pink:#F5C8D4;--t-purple:#DCD0EA;--t-orange:#FBD9A8;--t-cream:#FAEFC1;--t-red:#F5B7B1;--t-grey:#DDE0DC;--shadow-sm:0 1px 2px rgba(0,0,0,.05);--shadow-md:0 2px 8px rgba(0,0,0,.07);--shadow-lg:0 8px 24px rgba(0,0,0,.12)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'IBM Plex Sans',sans-serif;font-size:13px;color:var(--text-primary);background:var(--content-bg);overflow:hidden}
+.app{display:grid;grid-template-rows:48px 1fr;height:100vh}
+.topbar{background:var(--topbar);color:var(--topbar-text);display:flex;align-items:center;padding:0 16px;z-index:100;height:48px}
+.brand{display:flex;align-items:center;gap:10px;margin-right:12px;font-weight:600;font-size:14px}
+.brand-mark{background:var(--topbar-text);color:var(--topbar);padding:3px 7px;border-radius:3px;font-weight:800;font-size:11px;letter-spacing:1.5px}
+.brand-name{opacity:.92;font-weight:500}
+.brand-divider{color:var(--topbar-mute);margin:0 6px}
+.topnav{display:flex;height:48px;margin-left:16px}
+.tnitem{display:flex;align-items:center;gap:6px;padding:0 14px;color:var(--topbar-text);opacity:.78;cursor:pointer;font-weight:500;font-size:13px;user-select:none;border-bottom:2px solid transparent}
+.tnitem:hover{opacity:1;background:var(--topbar-hover)}
+.tnitem.active{opacity:1;border-bottom-color:var(--topbar-active)}
+.tnitem .icon{width:14px;height:14px}
+.top-right{margin-left:auto;display:flex;align-items:center;gap:4px}
+.iconbtn{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:4px;cursor:pointer;color:var(--topbar-text);opacity:.85;position:relative}
+.iconbtn:hover{background:var(--topbar-hover);opacity:1}
+.iconbtn svg{width:16px;height:16px}
+.iconbtn .dot{position:absolute;top:7px;right:7px;width:7px;height:7px;border-radius:50%;background:var(--alarm);display:none}
+.iconbtn .dot.active{display:block}
+.loc{display:flex;align-items:center;gap:6px;padding:0 10px;color:var(--topbar-text);font-size:13px;opacity:.9;cursor:pointer;height:32px;border-radius:4px}
+.loc:hover{background:var(--topbar-hover)}
+.loc svg{width:14px;height:14px}
+.body{display:grid;grid-template-columns:200px 1fr;overflow:hidden}
+.sidebar{background:var(--sidebar-bg);border-right:1px solid var(--sidebar-border);padding:12px 0;overflow-y:auto}
+.side-item{padding:7px 18px;color:var(--sidebar-text);font-size:13px;cursor:pointer;user-select:none}
+.side-item:hover{background:var(--sidebar-active-bg)}
+.side-item.active{color:var(--sidebar-active);font-weight:600;background:var(--sidebar-active-bg)}
+.content-wrap{display:flex;flex-direction:column;overflow:hidden;background:var(--content-bg)}
+.crumb{padding:14px 24px 0;font-size:12px;color:var(--text-secondary)}
+.crumb .sep{margin:0 6px}
+.page-h{padding:4px 24px 14px;display:flex;align-items:center;gap:12px}
+.page-title{font-size:22px;font-weight:600}
+.tab-strip{padding:0 24px;border-bottom:1px solid var(--border);display:flex;background:var(--content-bg)}
+.tab{padding:10px 16px;cursor:pointer;font-size:13px;color:var(--text-secondary);border-bottom:2px solid transparent;font-weight:500;user-select:none;margin-bottom:-1px}
+.tab:hover{color:var(--text-primary)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+.content{flex:1;overflow-y:auto;padding:20px 24px 60px}
+.view{animation:fadeIn .18s}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.card{background:var(--card-bg);border:1px solid var(--border);border-radius:4px;padding:16px 18px;margin-bottom:14px}
+.card-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.card-h h3{font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px}
+.pill{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px}
+.pill-ok{background:var(--accent-bg);color:var(--accent)}
+.pill-warn{background:var(--warn-bg);color:var(--warn)}
+.pill-alarm{background:var(--alarm-bg);color:var(--alarm)}
+.pill-info{background:var(--link-bg);color:var(--link)}
+.priva-table{width:100%;border-collapse:collapse;font-size:12px}
+.priva-table th,.priva-table td{padding:6px 10px;text-align:left;border:1px solid var(--border)}
+.priva-table th{background:#F8FAF8;font-weight:600;color:var(--text-secondary);font-size:11px}
+.priva-table td.lab{background:#FAFBFA;font-weight:500}
+.priva-table td.val{font-family:'JetBrains Mono',monospace;text-align:center;white-space:nowrap}
+.priva-table td.editable{cursor:text;text-decoration:underline;text-decoration-color:var(--text-tertiary);text-underline-offset:3px}
+.priva-table td.editable:hover{background:var(--accent-bg)}
+.cell{display:inline-block;padding:3px 7px;border-radius:3px;font-family:'JetBrains Mono',monospace;font-weight:600;font-size:11px;min-width:42px;text-align:center}
+.cell-green{background:var(--t-green);color:#1B4D2A}
+.cell-blue{background:var(--t-blue);color:#0D47A1}
+.cell-pink{background:var(--t-pink);color:#880E4F}
+.cell-purple{background:var(--t-purple);color:#4527A0}
+.cell-orange{background:var(--t-orange);color:#6E2C00}
+.cell-cream{background:var(--t-cream);color:#6E5C00}
+.cell-red{background:var(--t-red);color:#6E0000}
+.cell-grey{background:var(--t-grey);color:#3A3F3A}
+.li-row{display:flex;justify-content:space-between;align-items:center;padding:11px 16px;background:#FFF;border:1px solid var(--border);border-radius:4px;margin-bottom:6px;font-size:13px;cursor:pointer}
+.li-row:hover{border-color:var(--accent);background:var(--accent-bg)}
+.li-row .arrow{color:var(--text-tertiary)}
+.li-group-h{padding:10px 0 6px;font-size:12px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.6px;display:flex;align-items:center;gap:6px}
+.overlay{position:fixed;inset:0;background:rgba(20,40,30,.55);display:none;align-items:flex-start;justify-content:center;z-index:1000;padding-top:80px}
+.overlay.show{display:flex;animation:fadeIn .15s}
+.search-dialog{background:#FFF;border-radius:6px;width:600px;max-width:90vw;box-shadow:var(--shadow-lg);overflow:hidden}
+.search-head{background:var(--topbar-2);padding:16px 20px}
+.search-head h3{color:var(--topbar-text);font-size:16px;font-weight:600;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+.search-head h3 .close{cursor:pointer;opacity:.7;font-size:22px;font-weight:300;line-height:1}
+.search-box{background:var(--topbar);border:1px solid rgba(255,255,255,.18);border-radius:4px;padding:10px 14px;display:flex;align-items:center;gap:10px}
+.search-box svg{width:16px;height:16px;color:var(--topbar-text);opacity:.7}
+.search-box input{background:transparent;border:none;outline:none;color:var(--topbar-text);font-family:inherit;font-size:14px;flex:1}
+.search-box input::placeholder{color:rgba(232,245,233,.5)}
+.search-hint{padding:10px 20px;font-size:11px;color:var(--text-secondary);background:#F8FAF8;border-bottom:1px solid var(--border)}
+.search-hint kbd{background:#FFF;border:1px solid var(--border);padding:1px 5px;border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:10px}
+.search-results{max-height:380px;overflow-y:auto}
+.search-result{padding:12px 20px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:13px}
+.search-result:hover{background:var(--accent-bg)}
+.search-result .path{color:var(--text-secondary)}
+.search-empty{padding:32px 20px;text-align:center;color:var(--text-secondary);font-size:13px}
+.visual-wrap{display:grid;grid-template-columns:220px 1fr;gap:16px}
+.outside-panel{background:#FFF;border:1px solid var(--border);border-radius:4px;padding:14px;height:fit-content}
+.outside-panel h3{font-size:13px;font-weight:600;margin-bottom:12px}
+.op-tile{background:var(--t-green);padding:8px 10px;border-radius:4px;margin-bottom:8px;font-size:12px}
+.op-tile.blue{background:var(--t-blue)}.op-tile.orange{background:var(--t-orange)}.op-tile.purple{background:var(--t-purple)}.op-tile.cream{background:var(--t-cream)}.op-tile.pink{background:var(--t-pink)}
+.op-tile .lab{font-size:10px;color:rgba(0,0,0,.6);margin-bottom:1px}
+.op-tile .val{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px}
+.op-tile-2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.op-tile-2 .op-tile{margin-bottom:0}
+.gh-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.gh{background:#FFF;border:1px solid var(--border);border-radius:4px;padding:12px;min-height:280px;position:relative}
+.gh-svg{position:relative;height:240px}
+.gh-svg svg.gh-bg{width:100%;height:100%;display:block}
+.gh-num{position:absolute;top:12px;left:16px;font-size:28px;font-weight:300;color:var(--text-secondary);z-index:2}
+.gh-tile{position:absolute;padding:4px 7px;border-radius:3px;background:var(--t-blue);font-size:10.5px;line-height:1.15;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.1);user-select:none;z-index:3;min-width:48px}
+.gh-tile:hover{transform:scale(1.08);z-index:10}
+.gh-tile .lab{font-size:9.5px;color:rgba(0,0,0,.62)}
+.gh-tile .val{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:11.5px}
+.gh-tile.green{background:var(--t-green)}.gh-tile.blue{background:var(--t-blue)}.gh-tile.pink{background:var(--t-pink)}.gh-tile.purple{background:var(--t-purple)}.gh-tile.orange{background:var(--t-orange)}.gh-tile.cream{background:var(--t-cream)}.gh-tile.red{background:var(--t-red)}.gh-tile.grey{background:var(--t-grey)}
+.gh-tile.alarm{outline:2px solid var(--alarm);animation:pulse 1.2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 1px 2px rgba(0,0,0,.1),0 0 0 0 rgba(198,40,40,.5)}50%{box-shadow:0 1px 2px rgba(0,0,0,.1),0 0 0 6px rgba(198,40,40,0)}}
+.widget-pop{background:#FFF;width:600px;max-width:90vw;border-radius:6px;box-shadow:var(--shadow-lg);overflow:hidden}
+.wp-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start}
+.wp-head h3{font-size:18px;font-weight:600}
+.wp-head .sub{font-size:12px;color:var(--text-secondary);margin-top:2px}
+.wp-body{padding:16px 20px;display:grid;grid-template-columns:1.6fr 1fr;gap:24px}
+.wp-chart{height:180px}
+.wp-chart svg{width:100%;height:100%}
+.wp-side .lab{font-size:11px;color:var(--text-secondary);margin-bottom:4px}
+.wp-side .now{background:var(--accent-bg);border:1px solid var(--accent-light);padding:8px 12px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-weight:600;margin-bottom:16px}
+.wp-side h4{font-size:12px;color:var(--text-secondary);text-transform:uppercase;margin:14px 0 8px}
+.wp-shortcut{padding:8px 10px;background:#FAFBFA;border:1px solid var(--border);border-radius:4px;margin-bottom:6px;font-size:12px;cursor:pointer;display:flex;justify-content:space-between}
+.wp-shortcut:hover{background:var(--accent-bg);border-color:var(--accent)}
+.alm{display:grid;grid-template-columns:70px 90px 1fr 160px 80px;gap:10px;align-items:center;padding:10px 14px;background:#FFF;border:1px solid var(--border);border-left:3px solid var(--alarm);border-radius:3px;margin-bottom:4px;font-size:12px}
+.alm.warn{border-left-color:var(--warn)}
+.alm.status{border-left-color:var(--link)}
+.alm.acked{opacity:.55}
+.alm .code{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--alarm);font-size:13px}
+.alm.warn .code{color:var(--warn)}
+.alm.status .code{color:var(--link)}
+.alm .time{font-family:'JetBrains Mono',monospace;color:var(--text-secondary)}
+.btn{padding:6px 12px;border:none;border-radius:3px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:500}
+.btn-primary{background:var(--accent);color:#FFF}
+.btn-primary:hover{background:var(--accent-hover)}
+.btn-secondary{background:#FFF;color:var(--accent);border:1px solid var(--accent)}
+.btn-secondary:hover{background:var(--accent-bg)}
+#toast{position:fixed;bottom:20px;right:20px;background:var(--text-primary);color:#FFF;padding:10px 18px;border-radius:4px;font-size:12px;font-weight:500;opacity:0;transform:translateY(10px);transition:all .2s;pointer-events:none;z-index:2000;max-width:360px}
+#toast.show{opacity:1;transform:translateY(0)}
+#toast.alarm{background:var(--alarm)}
+#toast.warn{background:var(--warn);color:#432}
+#toast.ok{background:var(--accent)}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#C8CCC8;border-radius:4px}
+.dash-tabs{display:flex;gap:0;margin-bottom:16px;border-bottom:1px solid var(--border)}
+.dash-tab{padding:10px 14px;cursor:pointer;font-size:13px;color:var(--text-secondary);border-bottom:2px solid transparent;margin-bottom:-1px;user-select:none}
+.dash-tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+.dash-tab:hover{color:var(--text-primary)}
+.kv{display:grid;grid-template-columns:1fr auto;padding:6px 0;border-bottom:1px solid #F0F2F0;font-size:12px}
+.kv .k{color:var(--text-secondary)}
+.kv .v{font-family:'JetBrains Mono',monospace;font-weight:600}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">OPR</span>
+      <span class="brand-name">One <span class="brand-divider">|</span> Operator</span>
+    </div>
+    <nav class="topnav" id="topnav">
+      <div class="tnitem" data-sec="home"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12L12 3l9 9M5 10v10h14V10"/></svg>Home</div>
+      <div class="tnitem active" data-sec="climate"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 14.76V3.5a2.5 2.5 0 00-5 0v11.26a4.5 4.5 0 105 0z"/></svg>Climate</div>
+      <div class="tnitem" data-sec="water"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0L12 2.69z"/></svg>Water</div>
+      <div class="tnitem" data-sec="energy"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>Energy</div>
+      <div class="tnitem" data-sec="general"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>General</div>
+    </nav>
+    <div class="top-right">
+      <div class="iconbtn" onclick="openSearch()" title="Zoeken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></div>
+      <div class="iconbtn" title="Help"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 014.9.8c0 1.5-2.5 2-2.5 3.5M12 17h.01"/></svg></div>
+      <div class="iconbtn" onclick="goAlarms()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 1112 0c0 7 3 9 3 9H3s3-2 3-9M14 21a2 2 0 11-4 0"/></svg><span class="dot" id="alarmDot"></span></div>
+      <div class="loc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Green Groves</div>
+      <div class="iconbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0116 0"/></svg></div>
+    </div>
+  </header>
+  <div class="body">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="content-wrap">
+      <div class="crumb" id="crumb"></div>
+      <div class="page-h"><div class="page-title" id="pageTitle">Climate</div></div>
+      <div class="tab-strip" id="tabStrip"></div>
+      <div class="content" id="contentArea"></div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="searchOverlay" onclick="if(event.target===this) closeSearch()">
+  <div class="search-dialog">
+    <div class="search-head">
+      <h3><span>Search</span><span class="close" onclick="closeSearch()">&times;</span></h3>
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input type="text" id="searchInput" placeholder="Zoek op I-nummer (bv. I120), alarmcode (bv. 154) of naam…" autocomplete="off">
+      </div>
+    </div>
+    <div class="search-hint"><kbd>I120</kbd> I-nummers · <kbd>154</kbd> alarmcodes · <kbd>ventilatie</kbd> namen · <kbd>Esc</kbd> sluiten</div>
+    <div class="search-results" id="searchResults"></div>
+  </div>
+</div>
+
+<div class="overlay" id="widgetOverlay" onclick="if(event.target===this) closeWidget()">
+  <div class="widget-pop" id="widgetBody"></div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// === STATE ===
+const state = {
+  outdoor: { temp:20.3, rh:67, ah:11.7, hd:5.9, dewP:10.9, rad:117, radSum:1289, amrSum:1340, par:257, parSumToday:28.37, parSumYesterday:17.77, irrad:105, windSp:3.6, windDir:'south', rain:false, storm:false, frost:false, sunrise:'5:54', sunset:'19:25' },
+  compartments: [
+    { id:1, name:'Compartment 1', crop:'Tomato - Snack', cropName:'Sweetelle 2025', grhT:24.3, heatT1:21, heatT2:null, ventT:24, ventT2:null, rh:56, hd:9.8, ah:12.3, co2:602, mwatT1:20, mwatT2:null, ventNo:9, ventNo2:null, ventSo:0, ventSo2:null, curtain1:0, curtain2:0, curtain3:100, grLight:60, par:209, parSum:16.14, sp_heat:18, sp_vent:22, history:[] },
+    { id:2, name:'Compartment 2', crop:'Tomato - Snack', cropName:'Sweetelle 2025', grhT:23.5, heatT1:21, heatT2:null, ventT:24, ventT2:null, rh:75, hd:5.5, ah:15.7, co2:459, mwatT1:20, mwatT2:null, ventNo:0, ventNo2:null, ventSo:0, ventSo2:null, curtain1:0, curtain2:0, curtain3:100, grLight:27, par:136, parSum:14.46, sp_heat:18, sp_vent:22, history:[] },
+    { id:3, name:'Compartment 3', crop:'Tomato - Trostomaat', cropName:'Prodelle 2025', grhT:23.7, heatT1:21, heatT2:null, ventT:24, ventT2:null, rh:68, hd:6.8, ah:14.5, co2:425, mwatT1:20, mwatT2:20, ventNo:0, ventNo2:null, ventSo:0, ventSo2:null, curtain1:0, curtain2:0, curtain3:0, grLight:20, par:121, parSum:13.63, sp_heat:18, sp_vent:22, history:[] },
+    { id:4, name:'Compartment 4', crop:'Tomato - Trostomaat', cropName:'Prodelle 2025', grhT:24.3, heatT1:21, heatT2:21, ventT:24, ventT2:24, rh:56, hd:9.8, ah:12.3, co2:404, mwatT1:20, mwatT2:20, ventNo:9, ventNo2:9, ventSo:0, ventSo2:0, curtain1:0, curtain2:0, curtain3:0, grLight:11, par:101, parSum:13.09, sp_heat:18, sp_vent:22, history:[] }
+  ],
+  energy: { bufferPct:87 },
+  water: {
+    systems:[ {n:1,ecSupp:1,recipe:1,status:'REST',flowCalc:0,limit:'NONE',flowMeas:0,dosageStatus:'REST',phMeas:5.1,ecMeas:2.1,filterStatus:'REST',measWater:20.3},
+              {n:2,ecSupp:0,recipe:4,status:'REST',flowCalc:0,limit:'NONE',flowMeas:0,dosageStatus:'REST',phMeas:0,ecMeas:0,filterStatus:'REST',measWater:0},
+              {n:30,ecSupp:3,recipe:30,status:'ERROR',flowCalc:0.5,limit:'UV SYSTEM',flowMeas:0,dosageStatus:'START',phMeas:0,ecMeas:0,filterStatus:'OPERATION',measWater:0} ],
+    recipes:[1,2,3,4,5,6,30,31]
+  },
+  modLight: Array.from({length:14},(_,i)=>({
+    n: i<6 ? 51+i : 61+(i-6),
+    strategy: i<2?4:i<4?5:i<6?6:i<10?4:i<12?5:6,
+    status: i<2?'OFF':i<6?'ON':'OFF',
+    ch: i===2?[58,40,0,0,0,0,0]:i===3?[61,55,0,0,0,0,0]:i===4?[46,60,0,0,0,0,0]:i===5?[0,36,26,21,0,50,0]:[0,0,0,0,0,0,0],
+    desLight: i===2||i===3?64:i===4||i===5?52:0,
+    desSteps: i===2||i===3?5:i===4||i===5?4:0,
+    recipe: i<2?1:i<6?2:0,
+    limitation: i<6?'NONE':'RECIPE'
+  })),
+  alarms:[], alarmHistory:[], nextAlarmId:1,
+  section:'climate', sideItem:'dashboard', innerTab:'visual'
+};
+
+// === SECTION NAVIGATIE DEFINITIE ===
+const SECTION_NAV = {
+  home: { side:[{id:'dashboard',label:'Dashboard'}], label:'Home' },
+  climate: { side:[
+    {id:'dashboard',label:'Dashboard'},{id:'ventilation',label:'Ventilation'},{id:'heating',label:'Heating'},
+    {id:'curtain',label:'Curtain'},{id:'co2',label:'CO₂ dosage'},{id:'air',label:'air treatment'},
+    {id:'lightcontrol',label:'Light control'},{id:'modlight',label:'Modulating light system'},{id:'lighting',label:'Lighting'},
+    {id:'tempbal',label:'Temperature balance'},{id:'aircirc',label:'Air circulation'},{id:'humid',label:'Humidification'},
+    {id:'cooling',label:'Cooling'},{id:'crop',label:'Crop treatment'},{id:'fp',label:'F&P cooling'},
+    {id:'h24',label:'24 hour temperature'},{id:'wash',label:'Wash robot'},{id:'general',label:'General'}
+  ], label:'Climate' },
+  water: { side:[
+    {id:'dashboard',label:'Dashboard'},{id:'valves',label:'Valves'},{id:'valvegroup',label:'Valve group'},
+    {id:'startstrat',label:'Start strategy'},{id:'moisture',label:'Moisture level and drain'},{id:'recipe',label:'Recipe'},
+    {id:'tank',label:'Tank management'},{id:'disinfection',label:'Disinfection'},{id:'watersys',label:'Water system'},
+    {id:'registration',label:'Registration'}
+  ], label:'Water' },
+  energy: { side:[
+    {id:'dashboard',label:'Dashboard'},{id:'gas',label:'Gas distribution'},{id:'heatmgt',label:'Heat management'},
+    {id:'sources',label:'Sources'},{id:'electric',label:'Electricity management'},{id:'co2prod',label:'CO₂ production'},
+    {id:'registration',label:'Registration'}
+  ], label:'Energy' },
+  general: { side:[
+    {id:'dashboard',label:'Dashboard'},{id:'weather',label:'Weather'},{id:'alarms',label:'Alarms and messages'},
+    {id:'periodshift',label:'Period shift'},{id:'custom',label:'Custom'}
+  ], label:'General' }
+};
+
+// === SEARCH INDEX (I-nummers, M-nummers, alarmen, onderwerpen) ===
+const SEARCH_INDEX = [
+  // I-nummers
+  {q:'I101',label:'Compartment settings',path:'Climate > General',sec:'climate',side:'general'},
+  {q:'I107',label:'Period shift program',path:'General > Period shift',sec:'general',side:'periodshift'},
+  {q:'I110',label:'Heating strategy',path:'Climate > Heating > Strategy',sec:'climate',side:'heating'},
+  {q:'I111',label:'Heating corrections',path:'Climate > Heating',sec:'climate',side:'heating'},
+  {q:'I112',label:'Heating control',path:'Climate > Heating',sec:'climate',side:'heating'},
+  {q:'I115',label:'Pipe strategy',path:'Climate > Heating > Pipe',sec:'climate',side:'heating'},
+  {q:'I118',label:'On/off heat strategy',path:'Climate > Heating',sec:'climate',side:'heating'},
+  {q:'I120',label:'Ventilation strategy',path:'Climate > Ventilation > Strategy',sec:'climate',side:'ventilation'},
+  {q:'I125',label:'Vent control',path:'Climate > Ventilation',sec:'climate',side:'ventilation'},
+  {q:'I128',label:'Calibrate vent',path:'Climate > Ventilation > Calibration',sec:'climate',side:'ventilation'},
+  {q:'I130',label:'F&P cooling',path:'Climate > F&P cooling',sec:'climate',side:'fp'},
+  {q:'I140',label:'Crop protection strategy',path:'Climate > Crop treatment',sec:'climate',side:'crop'},
+  {q:'I150',label:'Air treatment',path:'Climate > air treatment',sec:'climate',side:'air'},
+  {q:'I153',label:'ATU luchtcirculatie',path:'Climate > Air circulation',sec:'climate',side:'aircirc'},
+  {q:'I154',label:'Pad cooling',path:'Climate > Cooling',sec:'climate',side:'cooling'},
+  {q:'I160',label:'Curtain combinations',path:'Climate > Curtain',sec:'climate',side:'curtain'},
+  {q:'I675',label:'Substrate / moisture / drain',path:'Water > Moisture level and drain',sec:'water',side:'moisture'},
+  {q:'I702',label:'Custom program functions',path:'General > Custom',sec:'general',side:'custom'},
+  {q:'I705',label:'Custom universele sensoren',path:'General > Custom',sec:'general',side:'custom'},
+  {q:'I718',label:'Water systems',path:'Water > Water system',sec:'water',side:'watersys'},
+  {q:'I720',label:'Custom universele invloed',path:'General > Custom',sec:'general',side:'custom'},
+  // M-nummers
+  {q:'M101',label:'Overview climate day/night',path:'Climate > Dashboard',sec:'climate',side:'dashboard'},
+  {q:'M104',label:'Energy use today',path:'Energy > Dashboard',sec:'energy',side:'dashboard'},
+  {q:'M107',label:'Gas consumption per compartiment',path:'Energy > Gas distribution',sec:'energy',side:'gas'},
+  // Onderwerpen
+  {q:'ventilatie',label:'Ventilatie regeling',path:'Climate > Ventilation',sec:'climate',side:'ventilation'},
+  {q:'verwarming',label:'Heating regeling',path:'Climate > Heating',sec:'climate',side:'heating'},
+  {q:'scherm',label:'Curtain / scherm',path:'Climate > Curtain',sec:'climate',side:'curtain'},
+  {q:'doek',label:'Doek / Curtain',path:'Climate > Curtain',sec:'climate',side:'curtain'},
+  {q:'co2',label:'CO₂ dosering',path:'Climate > CO₂ dosage',sec:'climate',side:'co2'},
+  {q:'belichting',label:'Belichting',path:'Climate > Lighting',sec:'climate',side:'lighting'},
+  {q:'modulerend',label:'Modulating light system',path:'Climate > Modulating light system',sec:'climate',side:'modlight'},
+  {q:'recept',label:'Recipes',path:'Water > Recipe',sec:'water',side:'recipe'},
+  {q:'recipe',label:'Recipes',path:'Water > Recipe',sec:'water',side:'recipe'},
+  {q:'klep',label:'Valves',path:'Water > Valves',sec:'water',side:'valves'},
+  {q:'ontsmetting',label:'Disinfection',path:'Water > Disinfection',sec:'water',side:'disinfection'},
+  {q:'ketel',label:'Boiler / Sources',path:'Energy > Sources',sec:'energy',side:'sources'},
+  {q:'wkk',label:'CHP / Sources',path:'Energy > Sources',sec:'energy',side:'sources'},
+  {q:'buffer',label:'Warmtebuffer',path:'Energy > Heat management',sec:'energy',side:'heatmgt'},
+  {q:'weer',label:'Weather station',path:'General > Weather',sec:'general',side:'weather'},
+  {q:'etmaal',label:'24 hour temperature',path:'Climate > 24 hour temperature',sec:'climate',side:'h24'},
+  {q:'alarm',label:'Alarms and messages',path:'General > Alarms and messages',sec:'general',side:'alarms'}
+];
+
+// === ALARM DEFINITIES ===
+const ALARM_DEFS = {
+  100:{text:'Buitentemperatuur sensor',sev:'alarm'}, 101:{text:'Wind speed sensor',sev:'alarm'},
+  103:{text:'Regen gedetecteerd',sev:'status'}, 104:{text:'Radiation sensor',sev:'alarm'},
+  150:{text:'KasT sensor',sev:'alarm'}, 153:{text:'Wet bulb wick is dry',sev:'warn'},
+  154:{text:'KasT te hoog',sev:'alarm'}, 155:{text:'KasT te laag',sev:'alarm'},
+  156:{text:'RV te hoog',sev:'warn'}, 157:{text:'RV te laag',sev:'warn'},
+  158:{text:'CO₂ te hoog',sev:'alarm'}, 159:{text:'CO₂ te laag',sev:'warn'},
+  179:{text:'Meetboxen wijken af',sev:'warn'}, 250:{text:'Raam control / position sensor',sev:'alarm'},
+  400:{text:'Scherm-motor storing',sev:'alarm'}, 600:{text:'Boiler T te hoog',sev:'alarm'},
+  601:{text:'Boiler T te laag',sev:'alarm'}, 700:{text:'EC drain afwijking',sev:'warn'},
+  701:{text:'pH drain afwijking',sev:'warn'}, 839:{text:'Vialux T10 te laag',sev:'warn'},
+  858:{text:'Fertilizer valve aborted',sev:'alarm'}, 888:{text:'Tank niveau laag',sev:'warn'},
+  920:{text:'Groscale afwijking',sev:'warn'}, 10100:{text:'Edge Gateway communication lost',sev:'alarm'}
+};
+// Alarmcodes toevoegen aan search index
+Object.entries(ALARM_DEFS).forEach(([code,def])=>{
+  SEARCH_INDEX.push({q:code, label:`Alarm ${code}: ${def.text}`, path:'General > Alarms and messages', sec:'general', side:'alarms', isAlarm:true, sev:def.sev});
+});
+
+// === HELPERS ===
+const $ = id => document.getElementById(id);
+const fmt = (n,d=1) => Number(n).toFixed(d);
+const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
+const timeStr = (d=new Date()) => d.toLocaleTimeString('nl-NL',{hour12:false});
+function toast(m, t='ok'){ const e=$('toast'); e.textContent=m; e.className='show '+t; setTimeout(()=>e.className='',2600); }
+
+// === NAVIGATIE ===
+function setSection(sec) {
+  state.section = sec;
+  document.querySelectorAll('.tnitem').forEach(n => n.classList.toggle('active', n.dataset.sec === sec));
+  const nav = SECTION_NAV[sec];
+  $('sidebar').innerHTML = nav.side.map(s => `<div class="side-item" data-side="${s.id}">${s.label}</div>`).join('');
+  $('sidebar').querySelectorAll('.side-item').forEach(el => el.addEventListener('click', () => setSide(el.dataset.side)));
+  setSide(nav.side[0].id);
+}
+function setSide(side) {
+  state.sideItem = side;
+  document.querySelectorAll('.side-item').forEach(s => s.classList.toggle('active', s.dataset.side === side));
+  render();
+}
+function goAlarms() { setSection('general'); setTimeout(()=>setSide('alarms'), 50); }
+
+// === ZOEK FUNCTIE ===
+function openSearch() {
+  $('searchOverlay').classList.add('show');
+  setTimeout(()=>$('searchInput').focus(),80);
+  $('searchInput').value='';
+  renderSearchResults('');
+}
+function closeSearch() { $('searchOverlay').classList.remove('show'); }
+function renderSearchResults(query) {
+  const q = (query||'').trim().toLowerCase();
+  const wrap = $('searchResults');
+  if (!q) {
+    wrap.innerHTML = '<div class="search-empty"><div style="font-weight:600;color:var(--text-primary);margin-bottom:6px;">Snel naar een instelling</div>Typ een I-nummer (bv. <kbd style="background:#F0F2F0;padding:1px 5px;border-radius:3px;font-family:monospace">I120</kbd>), alarmcode (bv. <kbd style="background:#F0F2F0;padding:1px 5px;border-radius:3px;font-family:monospace">154</kbd>) of onderwerp.</div>';
+    return;
+  }
+  const hits = SEARCH_INDEX.filter(i => i.q.toLowerCase().includes(q) || i.label.toLowerCase().includes(q)).slice(0,15);
+  if (hits.length===0) { wrap.innerHTML = `<div class="search-empty">Geen resultaten voor "${query}".</div>`; return; }
+  wrap.innerHTML = hits.map((h,i) => `
+    <div class="search-result" data-idx="${i}">
+      <div>
+        <div class="path">${h.isAlarm ?
+          `<span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--${h.sev});">${h.q}</span> · ${h.label.replace(/^Alarm \d+: /,'')}` :
+          `<span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--accent);">${h.q}</span> · <span style="color:var(--text-primary);font-weight:600;">${h.label}</span>`}</div>
+        <div style="font-size:11px;color:var(--text-tertiary);margin-top:2px;">${h.path}</div>
+      </div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-secondary);"><path d="M9 18l6-6-6-6"/></svg>
+    </div>`).join('');
+  wrap.querySelectorAll('.search-result').forEach((el,i) => el.addEventListener('click', () => gotoSearchHit(hits[i])));
+}
+function gotoSearchHit(h) { closeSearch(); setSection(h.sec); setTimeout(()=>setSide(h.side),50); toast(`Naar: ${h.label}`,'ok'); }
+
+// === ALARMEN ===
+function spawnAlarm(code, source) {
+  const def = ALARM_DEFS[code]; if (!def) return;
+  if (state.alarms.some(a => a.code===code && a.source===source)) return;
+  state.alarms.unshift({id:state.nextAlarmId++, code, source, text:def.text, sev:def.sev, time:new Date(), acked:false});
+  $('alarmDot').classList.add('active');
+  toast(`⚠ ${code} — ${def.text} (${source})`, def.sev==='alarm'?'alarm':'warn');
+}
+function ackAlarm(id) {
+  const a = state.alarms.find(x => x.id===id); if (!a) return;
+  state.alarmHistory.unshift({...a, closedAt:new Date()});
+  state.alarms = state.alarms.filter(x => x.id!==id);
+  if (state.alarms.length===0) $('alarmDot').classList.remove('active');
+  toast('Alarm gewist.','ok'); render();
+}
+function ackAll() {
+  state.alarms.forEach(a => state.alarmHistory.unshift({...a, closedAt:new Date()}));
+  state.alarms = []; $('alarmDot').classList.remove('active');
+  toast('Alle alarmen geacknowledged.','ok'); render();
+}
+
+// === SIMULATIE TICK ===
+function tick() {
+  const h = new Date().getHours() + new Date().getMinutes()/60;
+  state.outdoor.temp = 18 + 5*Math.sin((h-7)*Math.PI/12) + (Math.random()-0.5)*0.4;
+  state.outdoor.rad = clamp((h>5 && h<21) ? 600*Math.sin((h-6)*Math.PI/14) + (Math.random()-0.5)*40 : 0, 0, 900);
+  state.outdoor.par = Math.round(state.outdoor.rad * 2.2);
+  state.outdoor.parSumToday = clamp(state.outdoor.parSumToday + state.outdoor.par * 0.00002, 0, 60);
+  state.outdoor.windSp = clamp(3.6 + (Math.random()-0.5)*1.6, 0, 12);
+  state.compartments.forEach(c => {
+    const heatD = (c.mwatT1 - 18) * 0.012;
+    const ventD = -((c.ventNo + c.ventSo)/200) * Math.max(0, c.grhT - state.outdoor.temp) * 0.1;
+    const radD = state.outdoor.rad * 0.0004;
+    c.grhT = clamp(c.grhT + heatD + ventD + radD + (Math.random()-0.5)*0.08, 14, 35);
+    c.rh = clamp(c.rh + (Math.random()-0.5)*0.6 + (c.grhT > c.sp_vent ? -0.3 : 0.3), 40, 95);
+    c.ah = clamp(c.ah + (Math.random()-0.5)*0.2, 6, 22);
+    c.hd = clamp(c.hd + (Math.random()-0.5)*0.2, 1, 18);
+    c.co2 = clamp(c.co2 + (Math.random()-0.5)*8 - ((c.ventNo+c.ventSo)*0.4) + (h>=7&&h<19?30:0), 350, 1200);
+    c.par = Math.round(state.outdoor.par * 0.85);
+    c.parSum = clamp(c.parSum + c.par * 0.00002, 0, 60);
+    c.ventT = clamp(c.sp_vent + (Math.random()-0.5)*0.4, 18, 30);
+    if (c.grhT > c.sp_vent+1) { c.ventNo = clamp(c.ventNo+2, 0, 100); c.ventSo = clamp(c.ventSo+1, 0, 100); }
+    else if (c.grhT < c.sp_vent-1) { c.ventNo = clamp(c.ventNo-2, 0, 100); c.ventSo = clamp(c.ventSo-1, 0, 100); }
+    if (c.grhT < c.sp_heat) c.mwatT1 = clamp(c.mwatT1+0.4, 18, 70);
+    else c.mwatT1 = clamp(c.mwatT1-0.2, 18, 70);
+    c.history.push({t:Date.now(), v:c.co2});
+    if (c.history.length > 60) c.history.shift();
+    if (c.grhT > c.sp_vent+4) spawnAlarm(154, c.name);
+    if (c.rh > 92) spawnAlarm(156, c.name);
+    if (c.co2 < 400) spawnAlarm(159, c.name);
+  });
+  render();
+}
+
+// === WIDGET POPUP ===
+function openWidget(type, compId) {
+  const c = state.compartments.find(x => x.id===compId);
+  let title='', val='', unit='', shortcuts=[];
+  if (type==='co2') { title='CO₂'; val=Math.round(c.co2); unit='ppm'; shortcuts=[{l:'CO₂ dosage',sec:'climate',side:'co2'},{l:'Alarm limits compartment',sec:'general',side:'alarms'}]; }
+  else if (type==='grht') { title='GrhT (KasT)'; val=fmt(c.grhT,1); unit='°C'; shortcuts=[{l:'Heating',sec:'climate',side:'heating'},{l:'Ventilation',sec:'climate',side:'ventilation'}]; }
+  else if (type==='rh') { title='RV'; val=Math.round(c.rh); unit='%'; shortcuts=[{l:'Humidification',sec:'climate',side:'humid'},{l:'Alarm limits',sec:'general',side:'alarms'}]; }
+  else if (type==='vent') { title='VentNo (Raam Noord)'; val=Math.round(c.ventNo); unit='%'; shortcuts=[{l:'Ventilation',sec:'climate',side:'ventilation'},{l:'Vent calibration (I128)',sec:'climate',side:'ventilation'}]; }
+  else if (type==='curtain') { title='Curtain'; val=Math.round(c.curtain3); unit='%'; shortcuts=[{l:'Curtain control',sec:'climate',side:'curtain'}]; }
+  else if (type==='mwat') { title='MWatT'; val=Math.round(c.mwatT1); unit='°C'; shortcuts=[{l:'Heating',sec:'climate',side:'heating'}]; }
+  else return;
+
+  $('widgetBody').innerHTML = `
+    <div class="wp-head">
+      <div><h3>${title}</h3><div class="sub">${c.name} — GrGroves</div></div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity:.6;cursor:pointer;"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        <span style="font-size:22px;cursor:pointer;color:var(--text-secondary);" onclick="closeWidget()">&times;</span>
+      </div>
+    </div>
+    <div class="wp-body">
+      <div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:12px;color:var(--text-secondary);"><span>${unit} <span style="font-weight:600;color:var(--text-primary);">1 dag ▾</span></span></div>
+        <div class="wp-chart"><svg viewBox="0 0 400 180" preserveAspectRatio="none">${renderMiniChart(c.history)}</svg></div>
+      </div>
+      <div class="wp-side">
+        <div class="lab">Current value</div>
+        <div class="now">${val} ${unit}</div>
+        <div style="background:var(--link-bg);border:1px solid #BBDEFB;padding:8px 12px;border-radius:4px;font-size:12px;display:flex;justify-content:space-between;align-items:center;">
+          <span style="display:flex;align-items:center;gap:8px;"><span style="width:14px;height:14px;background:var(--link);border-radius:2px;"></span>${title}</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-weight:700;">${val} <span style="font-size:10px;color:var(--text-secondary);">${unit}</span></span>
+        </div>
+        <h4>Shortcuts</h4>
+        ${shortcuts.map(s => `<div class="wp-shortcut" onclick="closeWidget();setSection('${s.sec}');setTimeout(()=>setSide('${s.side}'),50);">${s.l} <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>`).join('')}
+      </div>
+    </div>`;
+  $('widgetOverlay').classList.add('show');
+}
+function closeWidget() { $('widgetOverlay').classList.remove('show'); }
+function renderMiniChart(history) {
+  if (!history || history.length<2) return '<text x="200" y="90" text-anchor="middle" fill="#999" font-size="12">Verzamelt data...</text>';
+  const W=400,H=180,pad=20;
+  const vals = history.map(p => p.v);
+  const mn=Math.min(...vals)-20, mx=Math.max(...vals)+20;
+  const xs = history.map((_,i)=> pad + i*(W-2*pad)/(history.length-1||1));
+  const ys = history.map(p => H-pad - (p.v-mn)/(mx-mn)*(H-2*pad));
+  let grid=''; for(let i=0;i<=4;i++){const y=pad+i*(H-2*pad)/4; grid+=`<line x1="${pad}" x2="${W-pad}" y1="${y}" y2="${y}" stroke="#E8EBE8"/>`;}
+  return `${grid}<path d="${ys.map((y,i)=>(i?'L':'M')+xs[i]+' '+y).join(' ')}" fill="none" stroke="#1976D2" stroke-width="2"/>`;
+}
+
+// === RENDER MASTER ===
+function render() {
+  const sec = state.section, side = state.sideItem;
+  const nav = SECTION_NAV[sec];
+  const sideLabel = nav.side.find(s => s.id===side)?.label || '';
+  $('crumb').innerHTML = `<a>${nav.label}</a><span class="sep">/</span><a>${sideLabel}</a>`;
+  $('pageTitle').textContent = sideLabel==='Dashboard' ? nav.label : sideLabel;
+
+  // Tab strip
+  const tb = $('tabStrip');
+  let tabs = [];
+  if (sec==='climate' && side==='dashboard') {
+    tabs = [{id:'overview',label:'Climate overview'},{id:'modlight',label:'Modulating light control'},{id:'visual',label:'Climate visual'},{id:'strategies',label:'Strategies'}];
+    if (!tabs.find(t => t.id===state.innerTab)) state.innerTab='visual';
+  } else if (sec==='water' && side==='dashboard') {
+    tabs = [{id:'overview',label:'Water overview'}]; state.innerTab='overview';
+  } else if (sec==='energy' && side==='dashboard') {
+    tabs = [{id:'overview',label:'Energy overview'}]; state.innerTab='overview';
+  } else if (sec==='general' && (side==='dashboard'||side==='weather')) {
+    tabs = [{id:'overview',label:'Weather overview'}]; state.innerTab='overview';
+  }
+  if (tabs.length) {
+    tb.style.display='flex';
+    tb.innerHTML = tabs.map(t => `<div class="tab ${t.id===state.innerTab?'active':''}" data-tab="${t.id}">${t.label}</div>`).join('');
+    tb.querySelectorAll('.tab').forEach(el => el.addEventListener('click', () => { state.innerTab=el.dataset.tab; render(); }));
+  } else { tb.style.display='none'; }
+
+  // Content
+  const area = $('contentArea');
+  if (sec==='home') area.innerHTML = renderHome();
+  else if (sec==='climate') {
+    if (side==='dashboard') {
+      if (state.innerTab==='visual') area.innerHTML = renderClimateVisual();
+      else if (state.innerTab==='overview') area.innerHTML = renderClimateOverview();
+      else if (state.innerTab==='modlight') area.innerHTML = renderModLight();
+      else area.innerHTML = renderStrategies();
+    }
+    else if (side==='modlight') area.innerHTML = renderModLight();
+    else if (['ventilation','heating','curtain','co2','h24','lighting'].includes(side)) area.innerHTML = renderCropsList(sideLabel);
+    else area.innerHTML = renderGenericSettings(sideLabel);
+  }
+  else if (sec==='water') {
+    if (side==='dashboard') area.innerHTML = renderWaterOverview();
+    else if (side==='recipe') area.innerHTML = renderRecipes();
+    else area.innerHTML = renderGenericSettings(sideLabel);
+  }
+  else if (sec==='energy') {
+    if (side==='dashboard') area.innerHTML = renderEnergyOverview();
+    else area.innerHTML = renderGenericSettings(sideLabel);
+  }
+  else if (sec==='general') {
+    if (side==='dashboard'||side==='weather') area.innerHTML = renderWeather();
+    else if (side==='alarms') area.innerHTML = renderAlarmsView();
+    else if (side==='periodshift') area.innerHTML = renderPeriodShift();
+    else area.innerHTML = renderGenericSettings(sideLabel);
+  }
+
+  // Event handlers voor list-rows
+  area.querySelectorAll('.li-row[data-comp]').forEach(el => {
+    el.addEventListener('click', () => {
+      area.innerHTML = renderCompartmentDetail(parseInt(el.dataset.comp), $('pageTitle').textContent);
+    });
+  });
+  area.querySelectorAll('.li-row[data-crop]').forEach(el => {
+    el.addEventListener('click', () => {
+      area.innerHTML = renderCropDetail(el.dataset.crop, $('pageTitle').textContent);
+    });
+  });
+  area.querySelectorAll('.li-row[data-recipe]').forEach(el => {
+    el.addEventListener('click', () => {
+      area.innerHTML = renderRecipeDetail(parseInt(el.dataset.recipe));
+    });
+  });
+}
+
+// === HOME ===
+function renderHome() {
+  return `
+  <div class="dash-tabs">
+    <div class="dash-tab active">All compartments</div>
+    <div class="dash-tab">Prodelle 2025</div>
+    <div class="dash-tab">Sweetelle 2025</div>
+    <div style="margin-left:auto;padding:6px 0;"><button class="btn btn-secondary">✎ Edit dashboard</button></div>
+  </div>
+  <div class="card">
+    <div class="card-h"><h3>🌤 Weather station compact</h3></div>
+    <table class="priva-table">
+      <thead><tr><th></th><th>OutT</th><th>RH</th><th>HD</th><th>AH</th><th>WindSp</th><th>WindDir</th><th>Rad</th><th>RadSum</th><th>AMRsum</th><th>PAR</th><th>PARsum</th><th>Irrad</th><th>Rain</th><th>Storm</th><th>Frost</th></tr></thead>
+      <tbody><tr>
+        <td class="lab">Weather 1</td>
+        <td class="val"><span class="cell cell-green">${fmt(state.outdoor.temp,1)} °C</span></td>
+        <td class="val"><span class="cell cell-blue">${state.outdoor.rh} %</span></td>
+        <td class="val"><span class="cell cell-blue">${fmt(state.outdoor.hd,1)} g/m³</span></td>
+        <td class="val"><span class="cell cell-blue">${fmt(state.outdoor.ah,1)} g/m³</span></td>
+        <td class="val"><span class="cell cell-blue">${fmt(state.outdoor.windSp,1)} m/s</span></td>
+        <td class="val"><span class="cell cell-blue">${state.outdoor.windDir}</span></td>
+        <td class="val"><span class="cell cell-orange">${Math.round(state.outdoor.rad)} W/m²</span></td>
+        <td class="val"><span class="cell cell-orange">${state.outdoor.radSum} J/cm²</span></td>
+        <td class="val"><span class="cell cell-orange">${state.outdoor.amrSum} J/cm²</span></td>
+        <td class="val"><span class="cell cell-orange">${state.outdoor.par} µmol</span></td>
+        <td class="val"><span class="cell cell-orange">${fmt(state.outdoor.parSumToday,2)} mol</span></td>
+        <td class="val"><span class="cell cell-orange">${state.outdoor.irrad} W/m²</span></td>
+        <td class="val"><span class="cell cell-grey">NO</span></td>
+        <td class="val"><span class="cell cell-grey">NO</span></td>
+        <td class="val"><span class="cell cell-grey">NO</span></td>
+      </tr></tbody>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-h"><h3>🏠 Compartment essentials compact</h3></div>
+    <table class="priva-table">
+      <thead><tr><th></th><th>GrhT</th><th>HeatT</th><th>VentT</th><th>RH</th><th>HD</th><th>AH</th><th>CO₂</th><th>MWatT</th><th>VentNo</th><th>VentSo</th><th>Curtain</th><th>GrLight</th><th>PAR</th><th>PARsum</th></tr></thead>
+      <tbody>
+        ${state.compartments.map(c => `
+          <tr>
+            <td class="lab">${c.name}</td>
+            <td class="val"><span class="cell cell-${c.grhT>24?'red':'orange'}">${fmt(c.grhT,1)}</span></td>
+            <td class="val"><span class="cell cell-pink">${c.heatT1} °C</span></td>
+            <td class="val"><span class="cell cell-blue">${c.ventT} °C</span></td>
+            <td class="val"><span class="cell cell-${c.rh>70?'orange':'pink'}">${Math.round(c.rh)} %</span></td>
+            <td class="val"><span class="cell cell-blue">${fmt(c.hd,1)}</span></td>
+            <td class="val"><span class="cell cell-blue">${fmt(c.ah,1)}</span></td>
+            <td class="val"><span class="cell cell-grey">${Math.round(c.co2)} ppm</span></td>
+            <td class="val"><span class="cell cell-pink">${c.mwatT1} °C</span></td>
+            <td class="val"><span class="cell cell-blue">${Math.round(c.ventNo)} %</span></td>
+            <td class="val"><span class="cell cell-blue">${Math.round(c.ventSo)} %</span></td>
+            <td class="val"><span class="cell cell-orange">${c.curtain3} %</span></td>
+            <td class="val"><span class="cell cell-orange">${c.grLight} W</span></td>
+            <td class="val"><span class="cell cell-orange">${c.par}</span></td>
+            <td class="val"><span class="cell cell-orange">${fmt(c.parSum,2)}</span></td>
+          </tr>`).join('')}
+      </tbody>
+    </table>
+  </div>`;
+}
+
+// === CLIMATE OVERVIEW (Curtains / Pipes / Vents cards) ===
+function renderClimateOverview() {
+  return `<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;">
+    <div class="card"><div class="card-h"><h3>🪟 Curtains</h3></div>
+      ${state.compartments.map(c => `
+        <div style="margin-bottom:14px;">
+          <div style="font-weight:500;margin-bottom:6px;color:var(--text-secondary);font-size:12px;">${c.name}</div>
+          ${[1,2,3].map(n => `
+            <div style="display:grid;grid-template-columns:65px repeat(4,1fr);gap:4px;margin-bottom:4px;align-items:center;font-size:10.5px;">
+              <span>curtain ${n}</span>
+              <span class="cell cell-purple">Active<br>${n===3 && c.id<3?'YES':'NO'}</span>
+              <span class="cell cell-green">Position<br>50 %</span>
+              <span class="cell cell-orange">Curtain<br>${c['curtain'+n]} %</span>
+              <span class="cell cell-cream">Function<br>${n===3 && c.id<3?'SIDE':'NONE'}</span>
+            </div>`).join('')}
+        </div>`).join('')}
+    </div>
+    <div class="card"><div class="card-h"><h3>🌡 Pipes</h3></div>
+      ${state.compartments.map(c => `
+        <div style="margin-bottom:12px;">
+          <div style="font-weight:500;margin-bottom:6px;color:var(--text-secondary);font-size:12px;">${c.name}</div>
+          <div style="display:grid;grid-template-columns:105px repeat(3,1fr);gap:4px;align-items:center;font-size:10.5px;">
+            <span>water temp 1</span>
+            <span class="cell cell-red">CWatT<br>0 °C</span>
+            <span class="cell cell-orange">MWatT<br>${c.mwatT1} °C</span>
+            <span class="cell cell-green">Pump on<br>NO</span>
+          </div>
+          ${c.mwatT2 ? `<div style="display:grid;grid-template-columns:105px repeat(3,1fr);gap:4px;margin-top:4px;align-items:center;font-size:10.5px;"><span>water temp 2</span><span class="cell cell-red">CWatT<br>0 °C</span><span class="cell cell-orange">MWatT<br>${c.mwatT2} °C</span><span class="cell cell-green">Pump on<br>NO</span></div>` : ''}
+        </div>`).join('')}
+    </div>
+    <div class="card"><div class="card-h"><h3>💨 Vents</h3></div>
+      ${state.compartments.map(c => `
+        <div style="margin-bottom:12px;">
+          <div style="font-weight:500;margin-bottom:6px;color:var(--text-secondary);font-size:12px;">${c.name}</div>
+          <div style="display:grid;grid-template-columns:105px repeat(3,1fr);gap:4px;align-items:center;font-size:10.5px;">
+            <span>ventilation 1</span>
+            <span class="cell cell-blue">Differ<br>${fmt(7+Math.random()*3,1)} °C</span>
+            <span class="cell cell-blue">Lee<br>100 %</span>
+            <span class="cell cell-blue">Wind<br>82 %</span>
+          </div>
+        </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+// === CLIMATE VISUAL (4 kassen in 2x2 grid) ===
+function renderClimateVisual() {
+  return `<div class="visual-wrap">
+    <div class="outside-panel">
+      <h3>Overview ▾</h3>
+      <div class="op-tile"><div class="lab">Outside ✎</div><div class="val">${fmt(state.outdoor.temp,1)} °C</div></div>
+      <div class="op-tile-2">
+        <div class="op-tile blue"><div class="lab">RH</div><div class="val">${state.outdoor.rh} %</div></div>
+        <div class="op-tile blue"><div class="lab">AH</div><div class="val">${fmt(state.outdoor.ah,1)} g/m³</div></div>
+      </div>
+      <div class="op-tile-2" style="margin-top:6px;">
+        <div class="op-tile blue"><div class="lab">HD</div><div class="val">${fmt(state.outdoor.hd,1)} g/m³</div></div>
+        <div class="op-tile blue"><div class="lab">Dew p…</div><div class="val">${fmt(state.outdoor.dewP,1)} °C</div></div>
+      </div>
+      <div class="op-tile orange"><div class="lab">PAR sum today</div><div class="val">${fmt(state.outdoor.parSumToday,2)} mol/m²</div></div>
+      <div class="op-tile orange"><div class="lab">PAR sum yesterday</div><div class="val">${fmt(state.outdoor.parSumYesterday,2)} mol/m²</div></div>
+      <div class="op-tile-2">
+        <div class="op-tile cream"><div class="lab">Sunrise</div><div class="val">${state.outdoor.sunrise}</div></div>
+        <div class="op-tile pink"><div class="lab">Sunset</div><div class="val">${state.outdoor.sunset}</div></div>
+      </div>
+    </div>
+    <div class="gh-grid">${state.compartments.map(c => renderGreenhouse(c)).join('')}</div>
+  </div>
+  <div class="card" style="margin-top:14px;">
+    <div class="card-h"><h3>🔥 Aut. heating</h3></div>
+    <table class="priva-table">
+      <thead><tr><th></th><th>Set heating ✎</th><th>Act capacity</th><th>Desired heating</th><th>Des. cap.</th><th>Corr heating</th><th>Calc heating</th><th>Pump active</th><th>Set min water</th><th>Set max water</th><th>Meas water</th></tr></thead>
+      <tbody>
+        <tr><td class="lab">Aut. heating 11</td>${Array(10).fill('<td class="val"><span class="cell cell-pink">—</span></td>').join('')}</tr>
+        <tr><td class="lab">Aut. heating 12</td>${Array(10).fill('<td class="val"><span class="cell cell-pink">—</span></td>').join('')}</tr>
+      </tbody>
+    </table>
+  </div>`;
+}
+
+function renderGreenhouse(c) {
+  const hotClass = c.grhT > 26 ? 'red alarm' : c.grhT > 24 ? 'orange' : 'orange';
+  return `<div class="gh">
+    <div class="gh-svg">
+      <svg class="gh-bg" viewBox="0 0 380 240" preserveAspectRatio="xMidYMid meet">
+        <polyline points="20,80 60,40 100,80 140,40 180,80 220,40 260,80 300,40 340,80 360,80" fill="none" stroke="#90A4AE" stroke-width="1.5"/>
+        <line x1="20" y1="80" x2="20" y2="220" stroke="#90A4AE" stroke-width="1.5"/>
+        <line x1="360" y1="80" x2="360" y2="220" stroke="#90A4AE" stroke-width="1.5"/>
+        <line x1="20" y1="220" x2="360" y2="220" stroke="#5C8A2E" stroke-width="2"/>
+        <g fill="#78909C"><circle cx="60" cy="30" r="2"/><circle cx="140" cy="30" r="2"/><circle cx="220" cy="30" r="2"/><circle cx="300" cy="30" r="2"/></g>
+        <g transform="translate(170, 140)">
+          <path d="M20 50 Q5 35 12 18 Q20 5 28 18 Q35 35 20 50 M20 50 L20 60" fill="#7CB342" stroke="#558B2F" stroke-width="0.8"/>
+          <path d="M0 60 L40 60" stroke="#5D4037" stroke-width="1.5"/>
+          <ellipse cx="20" cy="62" rx="20" ry="2" fill="#5C8A2E" opacity="0.4"/>
+        </g>
+      </svg>
+      <div class="gh-num">${c.id}</div>
+      <div style="position:absolute;top:42px;left:22px;font-size:11px;color:var(--text-secondary);z-index:2;">${c.cropName.slice(0,4)}…</div>
+      <div class="gh-tile blue" style="top:6px;left:38%;"><div class="lab">Lee</div><div class="val">100 %</div></div>
+      <div class="gh-tile blue" style="top:6px;left:62%;"><div class="lab">Wind</div><div class="val">82 %</div></div>
+      <div class="gh-tile blue" style="top:36%;left:14%;" onclick="openWidget('vent',${c.id})"><div class="lab">VentT</div><div class="val">${Math.round(c.ventT)} °C</div></div>
+      ${c.id===1 || c.id===2 ? `<div class="gh-tile grey" style="top:36%;left:36%;" onclick="openWidget('co2',${c.id})"><div class="lab">CO₂</div><div class="val">${Math.round(c.co2)} ppm</div></div>` :
+        `<div class="gh-tile grey" style="top:36%;left:36%;" onclick="openWidget('co2',${c.id})"><div class="lab">Measu…</div><div class="val">${Math.round(c.co2)} ppm</div></div>`}
+      <div class="gh-tile ${hotClass}" style="top:56%;left:14%;" onclick="openWidget('grht',${c.id})"><div class="lab">GrhT</div><div class="val">${fmt(c.grhT,1)} °C</div></div>
+      <div class="gh-tile pink" style="top:80%;left:14%;" onclick="openWidget('mwat',${c.id})"><div class="lab">HeatT</div><div class="val">${c.heatT1} °C</div></div>
+      <div class="gh-tile ${c.rh>60?'orange':'blue'}" style="top:36%;left:52%;" onclick="openWidget('rh',${c.id})"><div class="lab">RH</div><div class="val">${Math.round(c.rh)} %</div></div>
+      <div class="gh-tile blue" style="top:36%;left:68%;"><div class="lab">AH</div><div class="val">${fmt(c.ah,1)}</div></div>
+      <div class="gh-tile orange" style="top:36%;left:82%;" onclick="openWidget('curtain',${c.id})"><div class="lab">Curtain</div><div class="val">${c.curtain3} %</div></div>
+      <div class="gh-tile green" style="top:56%;left:82%;"><div class="lab">Position</div><div class="val">50 %</div></div>
+      <div class="gh-tile blue" style="top:80%;left:62%;"><div class="lab">of last 💧</div><div class="val" style="font-size:9px;">${(11+Math.floor(Math.random()*6))}:${String(Math.floor(Math.random()*60)).padStart(2,'0')}</div></div>
+    </div>
+  </div>`;
+}
+
+// === MODULATING LIGHT CONTROL ===
+function renderModLight() {
+  return `<div class="card">
+    <div class="card-h"><h3>💡 Modulating light system ▾</h3></div>
+    <table class="priva-table" style="font-size:11px;">
+      <thead><tr><th></th><th>Strategy</th><th>Actual status</th><th>Channel 1%</th><th>Channel 2%</th><th>Channel 3%</th><th>Channel 4%</th><th>Channel 5%</th><th>Channel 6%</th><th>Channel 7%</th><th>Des. light%</th><th>Des. steps</th><th>Recipe</th><th>Forced status</th><th>Forced steps</th><th>Limitation</th></tr></thead>
+      <tbody>
+        ${state.modLight.map(m => `<tr>
+          <td class="lab" style="font-weight:600;">MOD. LIGHT ${m.n}</td>
+          <td class="val"><span class="cell cell-grey">${m.strategy}</span></td>
+          <td class="val"><span class="cell cell-green">${m.status}</span></td>
+          ${m.ch.map(v => `<td class="val">${v>0?`<span class="cell cell-orange">${v}%</span>`:'<span style="color:#bbb;">0%</span>'}</td>`).join('')}
+          <td class="val">${m.desLight>0?`<span class="cell cell-grey">${m.desLight}%</span>`:'<span style="color:#bbb;">0%</span>'}</td>
+          <td class="val">${m.desSteps}</td>
+          <td class="val">${m.recipe}</td>
+          <td class="val"><span class="cell cell-pink">NONE</span></td>
+          <td class="val">0</td>
+          <td class="val"><span class="cell cell-pink">${m.limitation}</span></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  </div>`;
+}
+
+// === STRATEGIES (chart placeholder) ===
+function renderStrategies() {
+  return `<div class="card">
+    <div class="card-h">
+      <h3>📈 Strategies + Add chart</h3>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <select style="border:1px solid var(--border);border-radius:3px;padding:5px 9px;font-family:inherit;font-size:12px;"><option>Compartment 1</option><option>Compartment 2</option><option>Compartment 3</option><option>Compartment 4</option></select>
+      </div>
+    </div>
+    <div style="height:380px;background:#FAFBFA;border:1px solid var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--text-secondary);font-size:13px;">
+      <div style="text-align:center;">
+        <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:8px;opacity:0.4;"><path d="M3 17l6-6 4 4 8-8"/></svg>
+        <div>Strategies grafiek (Heating / Ventilation / Greenhouse-T)</div>
+        <div style="font-size:11px;margin-top:6px;">In productie: real-time grafiek met heating-, ventilatie-strategie en gemeten KasT</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// === CROPS LIST (voor Ventilation, Heating, Curtain, etc.) ===
+function renderCropsList(label) {
+  return `<div class="li-group-h">Crops</div>
+    <div class="li-row" data-crop="Sweetelle 2025"><span>Sweetelle 2025</span><span class="arrow">›</span></div>
+    <div class="li-row" data-crop="Prodelle 2025"><span>Prodelle 2025</span><span class="arrow">›</span></div>
+    <div class="li-group-h">Compartments</div>
+    ${state.compartments.map(c => `<div class="li-row" data-comp="${c.id}"><span>${c.name}</span><span class="arrow">›</span></div>`).join('')}
+    <div class="li-group-h">Autonomous</div>
+    <div class="li-row"><span>Aut. ${label.toLowerCase()} 11</span><span class="arrow">›</span></div>
+    <div class="li-row"><span>Aut. ${label.toLowerCase()} 12</span><span class="arrow">›</span></div>`;
+}
+
+// === COMPARTMENT DETAIL (Strategy met Period tabel) ===
+function renderCompartmentDetail(compId, topic) {
+  const c = state.compartments.find(x => x.id===compId);
+  return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+    <button class="btn btn-secondary" onclick="render()">← Terug</button>
+    <span style="font-size:13px;color:var(--text-secondary);">${topic} / ${c.name}</span>
+  </div>
+  <h2 style="margin-bottom:10px;">${c.name} <small style="font-weight:400;color:var(--text-secondary);font-size:14px;">${c.crop} • ${c.cropName}</small></h2>
+  <div style="border-bottom:1px solid var(--border);margin-bottom:14px;display:flex;gap:0;">
+    <div class="tab active">Strategy</div><div class="tab">Step control</div><div class="tab">Influences</div>
+  </div>
+  <div style="font-weight:600;margin-bottom:8px;">Period</div>
+  <table class="priva-table">
+    <thead><tr><th></th><th>Period 1</th><th>Period 2</th><th>Period 3</th><th>Period 4</th><th>Period 5</th><th>Period 6</th></tr></thead>
+    <tbody>
+      <tr><td class="lab">Period</td>${['ON','ON','ON','ON','ON','OFF'].map(v=>`<td class="val editable">${v}</td>`).join('')}</tr>
+      <tr><td class="lab">Start time</td>${['5:00','7:32','12:00','17:18','22:00','—'].map(v=>`<td class="val editable">${v}</td>`).join('')}</tr>
+      <tr><td class="lab">${topic} temperature</td>${['17 °C','20 °C','24 °C','21 °C','14 °C','—'].map(v=>`<td class="val editable">${v}</td>`).join('')}</tr>
+      <tr><td class="lab">Radiation : adjustment</td>${Array(6).fill('<td class="val editable">↗</td>').join('')}</tr>
+      <tr><td class="lab">Radiation sum : adjustment</td>${Array(6).fill('<td class="val editable">↗</td>').join('')}</tr>
+      <tr><td class="lab">Hum : adjustment</td>${Array(6).fill('<td class="val editable">↗</td>').join('')}</tr>
+      <tr><td class="lab">Extra influence</td>${Array(6).fill('<td class="val editable">↗</td>').join('')}</tr>
+      <tr><td class="lab">Time cool down</td>${Array(6).fill('<td class="val editable">0:30</td>').join('')}</tr>
+      <tr><td class="lab">Time heat up</td>${Array(6).fill('<td class="val editable">0:30</td>').join('')}</tr>
+    </tbody>
+  </table>
+  <div style="font-weight:600;margin:18px 0 8px;">— CALCULATED AND MEASURED —</div>
+  <table class="priva-table">
+    <tbody>
+      <tr><td class="lab">Calc ${topic.toLowerCase()} temperature</td><td class="val">${Math.round(c.ventT)} °C</td></tr>
+      <tr><td class="lab">${topic} corr. active</td><td class="val">NONE</td></tr>
+      <tr><td class="lab">Calculated 24 hours temperature</td><td class="val">${fmt(c.grhT-0.5,1)} °C</td></tr>
+    </tbody>
+  </table>`;
+}
+
+function renderCropDetail(crop, topic) {
+  return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+    <button class="btn btn-secondary" onclick="render()">← Terug</button>
+    <span style="font-size:13px;color:var(--text-secondary);">${topic} / ${crop}</span>
+  </div>
+  <h2 style="margin-bottom:4px;">${crop} <span style="display:inline-block;background:var(--topbar);color:#FFF;font-size:11px;font-weight:600;padding:3px 7px;border-radius:3px;margin-left:8px;vertical-align:middle;">✎ Steering 1/2</span></h2>
+  <div style="font-size:12px;color:var(--text-secondary);margin-bottom:14px;">Tomato - Snack • Compartment 1, 2</div>
+  <div style="border-bottom:1px solid var(--border);margin-bottom:14px;display:flex;gap:0;">
+    <div class="tab">Black-out curtain</div><div class="tab active">Energy curtain</div><div class="tab">Shading curtain</div>
+    <div class="tab">Humidity curtain</div><div class="tab">Side curtain</div><div class="tab">Gap control</div><div class="tab">Curtain control</div>
+  </div>
+  <div style="display:flex;gap:0;margin-bottom:14px;">
+    <div class="tab active">Strategy</div><div class="tab">Step control</div><div class="tab">Influences</div>
+  </div>
+  <table class="priva-table" style="margin-bottom:14px;">
+    <thead><tr><th></th><th>Curtain control 1</th><th>Curtain control 2</th></tr></thead>
+    <tbody><tr><td class="lab">Energy curtain</td><td class="val editable">AUTOMATIC</td><td class="val editable">AUTOMATIC</td></tr></tbody>
+  </table>
+  <div style="font-weight:600;margin-bottom:6px;">Period Curtain control 1</div>
+  <table class="priva-table">
+    <thead><tr><th></th><th>Period 1</th><th>Period 2</th><th>Period 3</th><th>Period 4</th><th>Period 5</th><th>Period 6</th></tr></thead>
+    <tbody>
+      <tr><td class="lab">Period</td>${['ON','ON','OFF','OFF','OFF','ON'].map(v=>`<td class="val editable">${v}</td>`).join('')}</tr>
+      <tr><td class="lab">Start time</td><td class="val editable">8:00</td><td class="val editable">13:00</td><td class="val"></td><td class="val"></td><td class="val"></td><td class="val editable">19:00</td></tr>
+      <tr><td class="lab">Method curtain</td><td class="val editable">AUTO</td><td class="val editable">AUTO</td><td class="val"></td><td class="val"></td><td class="val"></td><td class="val editable">AUTO</td></tr>
+      <tr><td class="lab">Radiation limit</td><td class="val editable">3 W/m²</td><td class="val editable">8 W/m²</td><td class="val"></td><td class="val"></td><td class="val"></td><td class="val editable">0 W/m²</td></tr>
+      <tr><td class="lab">Outside temperature limit absolute</td><td class="val editable">17 °C</td><td class="val editable">18 °C</td><td class="val"></td><td class="val"></td><td class="val"></td><td class="val editable">8 °C</td></tr>
+      <tr><td class="lab">Active before-end time</td><td class="val editable">0:00</td><td class="val editable">0:00</td><td class="val"></td><td class="val"></td><td class="val"></td><td class="val editable">0:00</td></tr>
+    </tbody>
+  </table>`;
+}
+
+// === WATER ===
+function renderWaterOverview() {
+  return `<div class="card">
+    <div class="card-h"><h3>💧 Water system ▾</h3></div>
+    <table class="priva-table">
+      <thead><tr><th></th><th>EC supp</th><th>Recipe</th><th>Status</th><th>Flow calc</th><th>Limit</th><th>Flow meas</th><th>Dosage status</th><th>pH meas</th><th>EC meas</th><th>Filter status</th><th>Meas water</th></tr></thead>
+      <tbody>
+        ${state.water.systems.map(s => `<tr>
+          <td class="lab">Water system ${s.n}</td>
+          <td class="val"><span class="cell cell-green">${s.ecSupp} mS/cm</span></td>
+          <td class="val"><span class="cell cell-grey">${s.recipe}</span></td>
+          <td class="val"><span class="cell cell-${s.status==='ERROR'?'red':'green'}">${s.status}</span></td>
+          <td class="val"><span class="cell cell-blue">${s.flowCalc} m³/h</span></td>
+          <td class="val"><span class="cell cell-pink">${s.limit}</span></td>
+          <td class="val"><span class="cell cell-blue">${s.flowMeas} m³/h</span></td>
+          <td class="val"><span class="cell cell-${s.dosageStatus==='START'?'green':'grey'}">${s.dosageStatus}</span></td>
+          <td class="val"><span class="cell cell-green">${s.phMeas} pH</span></td>
+          <td class="val"><span class="cell cell-green">${s.ecMeas} mS/cm</span></td>
+          <td class="val"><span class="cell cell-${s.filterStatus==='OPERATION'?'green':'grey'}">${s.filterStatus}</span></td>
+          <td class="val"><span class="cell cell-grey">${s.measWater} °C</span></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-h"><h3>💧 Water system chart</h3></div>
+    <div style="height:240px;background:#FAFBFA;border:1px solid var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--text-secondary);">
+      <div style="text-align:center;font-size:13px;">📊 Water system state chart — RECEPT, FRESH WATER TANK, RECYCLE TANK, UV SYSTEM, etc.</div>
+    </div>
+  </div>`;
+}
+
+function renderRecipes() {
+  return `<div class="li-group-h">Recipes</div>
+    ${state.water.recipes.map(n => `<div class="li-row" data-recipe="${n}"><span>Recipe ${n}</span><span class="arrow">›</span></div>`).join('')}
+    <div class="li-group-h">Autonomous recipes</div>
+    <div class="li-row"><span>Aut. dosage 1</span><span class="arrow">›</span></div>`;
+}
+
+function renderRecipeDetail(n) {
+  return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+    <button class="btn btn-secondary" onclick="render()">← Terug</button>
+    <span style="font-size:13px;color:var(--text-secondary);">Water / Recipe / Recipe ${n}</span>
+  </div>
+  <h2 style="margin-bottom:14px;">Recipe ${n} ▾</h2>
+  <div style="border-bottom:1px solid var(--border);margin-bottom:14px;display:flex;gap:0;">
+    <div class="tab active">Settings</div><div class="tab">Charts</div>
+  </div>
+  <div style="border-bottom:1px solid var(--border);margin-bottom:14px;display:flex;gap:0;justify-content:space-between;">
+    <div style="display:flex;gap:0;">
+      <div class="tab active">Recipe</div><div class="tab">Influences</div><div class="tab">Flushing group</div><div class="tab">Allocate recipe to tanks</div>
+    </div>
+    <div style="padding:6px 0;display:flex;gap:8px;">
+      <button class="btn btn-secondary">+ Add to dashboard</button>
+      <button class="btn btn-secondary">📋 Copy to</button>
+      <span style="color:var(--text-tertiary);font-size:11px;padding:7px 4px;">⓪ I403</span>
+    </div>
+  </div>
+  <table class="priva-table" style="margin-bottom:18px;width:auto;">
+    <tbody>
+      <tr><td class="lab">Recipe for water system</td><td class="val editable">1</td></tr>
+      <tr><td class="lab">Recipe for rinse group</td><td class="val editable">1</td></tr>
+      <tr><td class="lab">Selection fertilizer dosage</td><td class="val editable">SELECTION 1</td></tr>
+    </tbody>
+  </table>
+  <div style="font-weight:600;margin-bottom:6px;">— COMPOSITION &amp; ALARM LIMITS —</div>
+  <table class="priva-table" style="margin-bottom:18px;">
+    <thead><tr><th></th><th></th><th>EC supply</th><th>EC</th><th>pH</th></tr></thead>
+    <tbody>
+      <tr><td class="lab">1</td><td>Too high alarm</td><td class="val editable">99.9 mS/cm</td><td class="val editable">99.9 mS/cm</td><td class="val editable">14 pH</td></tr>
+      <tr><td class="lab">2</td><td>Nutrient recipe</td><td class="val editable">1.1 mS/cm</td><td class="val editable">2.2 mS/cm</td><td class="val editable">5 pH</td></tr>
+      <tr><td class="lab">3</td><td>Desired</td><td class="val"></td><td class="val editable">2.1 mS/cm</td><td class="val editable">5.1 pH</td></tr>
+      <tr><td class="lab">4</td><td>Too low alarm</td><td class="val editable">0 mS/cm</td><td class="val editable">0 mS/cm</td><td class="val editable">0 pH</td></tr>
+    </tbody>
+  </table>
+  <div style="font-weight:600;margin-bottom:6px;">— DOSING CHANNEL RATIO —</div>
+  <table class="priva-table" style="margin-bottom:18px;">
+    <thead><tr><th></th><th>Channel</th><th>Calculated quantity</th><th>Quantity</th><th>Unit</th><th>Function</th></tr></thead>
+    <tbody>
+      <tr><td class="lab">Dosing channel 1</td><td>A-tank</td><td class="val">10 Quantity/m³</td><td class="val editable">10 Quantity/m</td><td class="val">l/m³</td><td class="val">DOSING</td></tr>
+      <tr><td class="lab">Dosing channel 2</td><td>B-tank</td><td class="val">10 Quantity/m³</td><td class="val editable">10 Quantity/m</td><td class="val">l/m³</td><td class="val">DOSING</td></tr>
+      <tr><td class="lab">Dosing channel 3</td><td>Acid</td><td class="val">10 Quantity/m³</td><td class="val editable">10 Quantity/m</td><td class="val">l/m³</td><td class="val">DOSING</td></tr>
+    </tbody>
+  </table>
+  <div style="font-weight:600;margin-bottom:6px;">— CALCULATED AND MEASURED —</div>
+  <table class="priva-table" style="width:auto;">
+    <tbody><tr><td class="lab">Calculated EC</td><td class="val">2.1 mS/cm</td></tr></tbody>
+  </table>`;
+}
+
+// === ENERGY ===
+function renderEnergyOverview() {
+  return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+    <div class="card"><div class="card-h"><h3>🔥 Energy sources</h3></div>
+      <table class="priva-table">
+        <thead><tr><th></th><th>Status</th><th>Release</th></tr></thead>
+        <tbody>
+          <tr><td class="lab">Boiler 1</td><td class="val"><span class="cell cell-grey">OFF</span></td><td class="val"><span class="cell cell-green">YES</span></td></tr>
+          <tr><td class="lab">Boiler 2</td><td class="val"><span class="cell cell-grey">OFF</span></td><td class="val"><span class="cell cell-green">YES</span></td></tr>
+          <tr><td class="lab">CHP 1</td><td class="val"><span class="cell cell-grey">OFF</span></td><td class="val"><span class="cell cell-green">YES</span></td></tr>
+          <tr><td class="lab">CHP 2</td><td class="val"><span class="cell cell-grey">OFF</span></td><td class="val"><span class="cell cell-green">YES</span></td></tr>
+          <tr><td class="lab">CHP 3</td><td class="val"><span class="cell cell-grey">OFF</span></td><td class="val"><span class="cell cell-green">YES</span></td></tr>
+          <tr><td class="lab">Heat exchanger 1</td><td class="val"><span class="cell cell-cream">LIMITED</span></td><td class="val"><span class="cell cell-green">YES</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card"><div class="card-h"><h3>🍃 CO₂ management ▾</h3></div>
+      <table class="priva-table">
+        <thead><tr><th></th><th>Desired</th><th>Max CO₂ production</th><th>Actual</th><th>Limitation CO₂</th></tr></thead>
+        <tbody><tr><td class="lab">CO₂ management 1</td><td class="val"><span class="cell cell-purple">0 kg CO₂/hr</span></td><td class="val"><span class="cell cell-purple">453 kg CO₂/hr</span></td><td class="val"><span class="cell cell-purple">0 kg CO₂/hr</span></td><td class="val"><span class="cell cell-grey">NONE</span></td></tr></tbody>
+      </table>
+      <table class="priva-table" style="margin-top:14px;">
+        <thead><tr><th></th><th>Desired</th><th>Actual</th></tr></thead>
+        <tbody>
+          ${['Boiler 1','Boiler 2','CHP 1','External CO₂ 1','External CO₂ 31','External CO₂ 32'].map(s =>
+            `<tr><td class="lab">${s}</td><td class="val"><span class="cell cell-grey">0 kg CO₂/hr</span></td><td class="val"><span class="cell cell-grey">0 kg CO₂/hr</span></td></tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="card"><div class="card-h"><h3>📦 Buffer ▾</h3></div>
+    <table class="priva-table">
+      <thead><tr><th></th><th>Desired</th><th>Lim. fill.</th><th>Lim. emp.</th><th>Supply</th><th>Return</th><th>Vullen</th><th>Meas. ret.</th><th>Emptying</th><th>Actual</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th></tr></thead>
+      <tbody><tr>
+        <td class="lab">Buffer 1</td>
+        <td class="val"><span class="cell cell-orange">${state.energy.bufferPct} %</span></td>
+        <td class="val"><span class="cell cell-pink">NONE</span></td>
+        <td class="val"><span class="cell cell-pink">NONE</span></td>
+        <td class="val"><span class="cell cell-orange">91 °C</span></td>
+        <td class="val"><span class="cell cell-orange">42 °C</span></td>
+        <td class="val"><span class="cell cell-grey">NO</span></td>
+        <td class="val"><span class="cell cell-orange">42 °C</span></td>
+        <td class="val"><span class="cell cell-grey">NO</span></td>
+        <td class="val"><span class="cell cell-orange">26 %</span></td>
+        ${[91,95,90,45,44,44,43,43,42,42].map(t => `<td class="val"><span class="cell cell-orange">${t} °C</span></td>`).join('')}
+      </tr></tbody>
+    </table>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+    <div class="card"><div class="card-h"><h3>🔀 Manifold</h3></div>
+      <table class="priva-table">
+        <thead><tr><th></th><th>Desired capacity</th><th>Desire…</th><th>Capacity emptying</th></tr></thead>
+        <tbody>
+          <tr><td class="lab">Manifold 1</td><td class="val"><span class="cell cell-purple">0 kW</span></td><td class="val"><span class="cell cell-pink">24 °C</span></td><td class="val"><span class="cell cell-purple">0 kW</span></td></tr>
+          <tr><td class="lab">Boiler 1</td><td class="val"><span class="cell cell-purple">0 kW</span></td><td class="val"></td><td class="val"></td></tr>
+          <tr><td class="lab">Boiler 2</td><td class="val"><span class="cell cell-purple">0 kW</span></td><td class="val"></td><td class="val"></td></tr>
+          <tr><td class="lab">CHP 1</td><td class="val"><span class="cell cell-purple">0 kW</span></td><td class="val"></td><td class="val"></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card"><div class="card-h"><h3>📦 Buffer 1 (detail)</h3></div>
+      <table class="priva-table">
+        <thead><tr><th></th><th>Supply</th><th>Return</th><th>Desired</th><th>Actual</th><th>Vullen actief</th><th>Lim. filling</th><th>Emptying active</th><th>Lim. emptying</th></tr></thead>
+        <tbody><tr><td class="lab">Buffer 1</td><td class="val"><span class="cell cell-orange">91 °C</span></td><td class="val"><span class="cell cell-orange">42 °C</span></td><td class="val"><span class="cell cell-blue">${state.energy.bufferPct} %</span></td><td class="val"><span class="cell cell-orange">26 %</span></td><td class="val"><span class="cell cell-grey">NO</span></td><td class="val"><span class="cell cell-pink">NONE</span></td><td class="val"><span class="cell cell-grey">NO</span></td><td class="val"><span class="cell cell-pink">NONE</span></td></tr></tbody>
+      </table>
+      <table class="priva-table" style="margin-top:10px;">
+        <thead><tr><th></th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th></tr></thead>
+        <tbody><tr><td class="lab">Buffer sensors</td>${[91,95,90,45,44,44,43,43,42,42].map(t => `<td class="val"><span class="cell cell-orange">${t} °C</span></td>`).join('')}</tr></tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+// === GENERAL / WEATHER ===
+function renderWeather() {
+  return `<div class="card">
+    <div class="card-h"><h3>🌤 Weather station ▾</h3></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+      <div>
+        <svg viewBox="0 0 320 260" style="width:100%;height:260px;">
+          <g stroke="#90A4AE" stroke-width="2" fill="none">
+            <line x1="160" y1="100" x2="160" y2="230"/>
+            <polygon points="120,230 200,230 220,250 100,250" fill="#F5F5F5" stroke="#90A4AE"/>
+            <circle cx="160" cy="80" r="20" fill="#FAFAFA"/>
+            <path d="M150 70 Q160 55 170 70 Q170 90 160 95 Q150 90 150 70" fill="#9FCEE7"/>
+            <rect x="145" y="100" width="30" height="50" fill="#FAFAFA"/>
+            <ellipse cx="160" cy="100" rx="55" ry="6" fill="none" stroke="#90A4AE"/>
+            <text x="100" y="105" font-size="6" fill="#999">AV</text>
+          </g>
+        </svg>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div class="op-tile"><div class="lab">Outside temp</div><div class="val">${fmt(state.outdoor.temp,1)} °C</div></div>
+        <div class="op-tile blue"><div class="lab">AH</div><div class="val">${fmt(state.outdoor.ah,1)} g/m³</div></div>
+        <div class="op-tile blue"><div class="lab">WindSp</div><div class="val">${fmt(state.outdoor.windSp,1)} m/s</div></div>
+        <div class="op-tile blue"><div class="lab">RH</div><div class="val">${state.outdoor.rh} %</div></div>
+        <div class="op-tile blue"><div class="lab">WindDir</div><div class="val">${state.outdoor.windDir}</div></div>
+        <div class="op-tile blue"><div class="lab">HD</div><div class="val">${fmt(state.outdoor.hd,1)} g/m³</div></div>
+        <div class="op-tile orange"><div class="lab">PAR Control</div><div class="val">${state.outdoor.par} µmol</div></div>
+        <div class="op-tile orange"><div class="lab">PAR sum</div><div class="val">${fmt(state.outdoor.parSumToday,2)} mol/m²</div></div>
+        <div class="op-tile orange"><div class="lab">Irradiation</div><div class="val">${state.outdoor.irrad} W/m²</div></div>
+        <div class="op-tile orange"><div class="lab">AMRsum</div><div class="val">${state.outdoor.amrSum} J/cm²</div></div>
+        <div class="op-tile cream"><div class="lab">Time sunrise</div><div class="val">${state.outdoor.sunrise}</div></div>
+        <div class="op-tile pink"><div class="lab">Time sunset</div><div class="val">${state.outdoor.sunset}</div></div>
+        <div class="op-tile" style="background:#EEE;"><div class="lab">Rain</div><div class="val">NO</div></div>
+        <div class="op-tile" style="background:#EEE;"><div class="lab">Storm</div><div class="val">NO</div></div>
+        <div class="op-tile" style="background:#EEE;"><div class="lab">Frost</div><div class="val">NO</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-h"><h3>📊 Weather chart (laatste 24u)</h3></div>
+    <div style="height:200px;background:#FAFBFA;border:1px solid var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--text-secondary);font-size:13px;">📈 Buiten-T, Straling, Wind chart</div>
+  </div>`;
+}
+
+// === ALARMS ===
+function renderAlarmsView() {
+  return `<div style="display:flex;gap:8px;margin-bottom:14px;">
+    <button class="btn btn-primary" onclick="ackAll()">Acknowledge all</button>
+    <button class="btn btn-secondary" onclick="state.alarmHistory=[]; render()">Wis geschiedenis</button>
+  </div>
+  <div class="card"><div class="card-h"><h3>🚨 Actieve alarmen <span class="pill ${state.alarms.length===0?'pill-ok':'pill-alarm'}">${state.alarms.length}</span></h3></div>
+    ${state.alarms.length===0 ?
+      '<div style="padding:20px;text-align:center;color:var(--text-secondary);font-size:13px;">Geen actieve alarmen 🎉</div>' :
+      state.alarms.map(a => `<div class="alm ${a.sev}"><div class="code">${a.code}</div><div class="time">${timeStr(a.time)}</div><div>${a.text}</div><div style="color:var(--text-secondary);font-size:11px;">${a.source}</div><div><button class="btn btn-secondary" onclick="ackAlarm(${a.id})">Ack</button></div></div>`).join('')
+    }
+  </div>
+  <div class="card"><div class="card-h"><h3>📜 Geschiedenis (vandaag)</h3></div>
+    ${state.alarmHistory.length===0 ?
+      '<div style="padding:20px;text-align:center;color:var(--text-secondary);font-size:13px;">Nog geen geschiedenis</div>' :
+      state.alarmHistory.slice(0,15).map(a => `<div class="alm ${a.sev} acked"><div class="code">${a.code}</div><div class="time">${timeStr(a.time)}</div><div>${a.text}</div><div style="color:var(--text-secondary);font-size:11px;">${a.source}</div><div style="color:var(--text-tertiary);font-size:11px;">ack</div></div>`).join('')
+    }
+  </div>`;
+}
+
+// === PERIOD SHIFT ===
+function renderPeriodShift() {
+  return `<div class="card"><div class="card-h"><h3>📆 Period shift (I107)</h3></div>
+    <table class="priva-table">
+      <thead><tr><th></th><th>Period 1</th><th>Period 2</th><th>Period 3</th><th>Period 4</th><th>Period 5</th></tr></thead>
+      <tbody>
+        <tr><td class="lab">Start time</td><td class="val editable">05:00</td><td class="val editable">07:30</td><td class="val editable">12:00</td><td class="val editable">17:00</td><td class="val editable">22:00</td></tr>
+        <tr><td class="lab">Adjustment radiation</td><td class="val editable">0 min</td><td class="val editable">−30 min</td><td class="val editable">0 min</td><td class="val editable">+15 min</td><td class="val editable">0 min</td></tr>
+        <tr><td class="lab">Linked to sunrise/sunset</td><td class="val editable">Sunrise</td><td class="val editable">NO</td><td class="val editable">NO</td><td class="val editable">NO</td><td class="val editable">Sunset</td></tr>
+      </tbody>
+    </table>
+    <div style="font-size:12px;color:var(--text-secondary);margin-top:10px;">Period shift past de start van klimaatperiodes aan op basis van sunrise/sunset en straling. Belangrijk voor lange dag/korte dag teelten.</div>
+  </div>`;
+}
+
+// === GENERIC SETTINGS (placeholder voor minder belangrijke pagina's) ===
+function renderGenericSettings(label) {
+  return `<div class="card"><div class="card-h"><h3>⚙ ${label}</h3></div>
+    <p style="color:var(--text-secondary);font-size:13px;margin-bottom:12px;">Deze sectie toont de instellingen voor <b>${label}</b>. In het echte Connext-systeem opent dit een gedetailleerde instellingen-pagina met crop/compartment selectie.</p>
+    <div class="li-group-h">Compartments</div>
+    ${state.compartments.map(c => `<div class="li-row" data-comp="${c.id}"><span>${c.name}</span><span class="arrow">›</span></div>`).join('')}
+  </div>`;
+}
+
+// === INIT ===
+document.querySelectorAll('.tnitem').forEach(n => n.addEventListener('click', () => setSection(n.dataset.sec)));
+document.addEventListener('keydown', e => {
+  if (e.key==='/' && !e.target.matches('input,textarea')) { e.preventDefault(); openSearch(); }
+  if (e.key==='Escape') { closeSearch(); closeWidget(); }
+});
+$('searchInput').addEventListener('input', e => renderSearchResults(e.target.value));
+
+setSection('climate');
+setInterval(tick, 2500);
+setTimeout(()=>toast('Welkom — gebruik de zoekfunctie (vergrootglas of "/") voor I-nummers en alarmcodes.','ok'),700);
+
+</script>
+</body>
+</html>

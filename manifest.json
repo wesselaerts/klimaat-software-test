@@ -1,0 +1,25 @@
+{
+  "name": "Greenhouse Operator — Trainingsomgeving",
+  "short_name": "Operator Training",
+  "description": "Interactieve trainings-omgeving voor service-monteurs op het Connext klimaatcomputer- en Operator-platform.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#F3F5F3",
+  "theme_color": "#1B4D2A",
+  "lang": "nl",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='36' fill='%231B4D2A'/%3E%3Cpath d='M96 42c-23 0-35 23-35 42 0 15 11 27 11 42h48c0-15 11-27 11-42 0-19-12-42-35-42z' fill='%237CB342'/%3E%3Cpath d='M96 65v62M77 84l19 12M115 84l-19 12M85 108l11-6M107 108l-11-6' stroke='%23558B2F' stroke-width='3' fill='none'/%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='96' fill='%231B4D2A'/%3E%3Cpath d='M256 112c-61 0-92 61-92 112 0 40 30 72 30 112h128c0-40 30-72 30-112 0-51-31-112-96-112z' fill='%237CB342'/%3E%3Cpath d='M256 173v166M205 224l51 32M307 224l-51 32M226 288l30-16M286 288l-30-16' stroke='%23558B2F' stroke-width='8' fill='none'/%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
