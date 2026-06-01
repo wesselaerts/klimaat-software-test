@@ -156,6 +156,43 @@ html,body{height:100%;font-family:'IBM Plex Sans',sans-serif;font-size:13px;colo
 .kv{display:grid;grid-template-columns:1fr auto;padding:6px 0;border-bottom:1px solid #F0F2F0;font-size:12px}
 .kv .k{color:var(--text-secondary)}
 .kv .v{font-family:'JetBrains Mono',monospace;font-weight:600}
+/* ===== Water Unit testdashboard ===== */
+.op-tile.green{background:var(--t-green)}
+.wu-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.wu-btn{padding:8px 13px;border:none;border-radius:6px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600}
+.wu-btn.start{background:#2e7d32;color:#fff}.wu-btn.start:hover{background:#1b5e20}
+.wu-btn.stop{background:#fff;color:#444;border:1px solid var(--border-strong)}.wu-btn.stop:hover{background:#f3f5f3}
+.wu-btn.estop{background:#c62828;color:#fff;box-shadow:0 2px 0 #8e1c1c}.wu-btn.estop:hover{background:#b71c1c}
+.wu-btn.estop.armed{background:#fff;color:#c62828;border:2px solid #c62828;box-shadow:none}
+.wu-btn.ghost{background:#fff;color:var(--accent);border:1px solid var(--accent)}.wu-btn.ghost:hover{background:var(--accent-bg)}
+.wu-status{font-family:'JetBrains Mono',monospace;font-weight:800;letter-spacing:1.5px;padding:0 18px;border-radius:8px;font-size:15px}
+.wu-status.ok{background:var(--accent-bg);color:var(--accent)}
+.wu-status.warn{background:var(--warn-bg);color:var(--warn)}
+.wu-status.alarm{background:var(--alarm-bg);color:var(--alarm);animation:pulse 1.2s infinite}
+.wu-status.status{background:var(--link-bg);color:var(--link)}
+.wu-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:14px;margin-bottom:14px}
+@media(max-width:1100px){.wu-grid{grid-template-columns:1fr}}
+.wu-3d{height:300px;border-radius:8px;background:radial-gradient(120% 120% at 50% 8%,#22404d 0%,#0e1b22 70%);position:relative;overflow:hidden;cursor:grab;border:1px solid #0a141a}
+.wu-3d:active{cursor:grabbing}
+.wu-3d canvas{display:block}
+.wu-fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#9fb4bd;font-size:13px;text-align:center;padding:20px}
+.wu-tanks{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.wu-tank{display:flex;gap:12px;background:#fafbfa;border:1px solid var(--border);border-radius:8px;padding:10px}
+.wu-gauge{width:42px;height:150px;border-radius:6px;background:#eceff1;border:1px solid var(--border-strong);position:relative;overflow:hidden;flex-shrink:0}
+.wu-gauge .fill{position:absolute;left:0;right:0;bottom:0;transition:height .5s ease}
+.wu-valves{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.wu-valve{aspect-ratio:1.5;border-radius:7px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:11px;cursor:pointer;border:1px solid var(--border);transition:transform .1s}
+.wu-valve:hover{transform:translateY(-2px)}
+.wu-valve.closed{background:#eceff1;color:#607d8b}
+.wu-valve.open{background:linear-gradient(180deg,#d3f5dd,#b6edc6);color:#1b7a37;border-color:#5cc97d}
+.wu-valve.fault{background:#ffd9d9;color:#b71c1c;border-color:#ef4444;animation:pulse 1.2s infinite}
+.wu-valve .dot{width:9px;height:9px;border-radius:50%;margin-bottom:4px}
+.wu-led{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:middle}
+.wu-led.off{background:#cfd8dc}.wu-led.on-r{background:var(--alarm);box-shadow:0 0 6px var(--alarm)}
+.wu-fault{display:grid;grid-template-columns:78px 84px 1fr 92px;gap:8px;align-items:center;padding:9px 12px;background:#fff;border:1px solid var(--border);border-left:3px solid var(--alarm);border-radius:5px;margin-bottom:5px;font-size:12px}
+.wu-fault.acked{opacity:.6}
+.wu-fcode{font-family:'JetBrains Mono',monospace;font-weight:700}
+.wu-ftime{font-family:'JetBrains Mono',monospace;color:var(--text-secondary)}
 </style>
 </head>
 <body>
@@ -171,6 +208,7 @@ html,body{height:100%;font-family:'IBM Plex Sans',sans-serif;font-size:13px;colo
       <div class="tnitem" data-sec="water"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0L12 2.69z"/></svg>Water</div>
       <div class="tnitem" data-sec="energy"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>Energy</div>
       <div class="tnitem" data-sec="general"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>General</div>
+      <div class="tnitem" data-sec="waterunit"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.7l5.7 5.7a8 8 0 11-11.4 0z"/><path d="M9 13h6M12 13v4"/></svg>Water Unit</div>
     </nav>
     <div class="top-right">
       <div class="iconbtn" onclick="openSearch()" title="Zoeken"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></div>
@@ -211,6 +249,7 @@ html,body{height:100%;font-family:'IBM Plex Sans',sans-serif;font-size:13px;colo
 
 <div id="toast"></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 // === STATE ===
 const state = {
@@ -241,6 +280,7 @@ const state = {
   alarms:[], alarmHistory:[], nextAlarmId:1,
   section:'climate', sideItem:'dashboard', innerTab:'visual'
 };
+state.wu = WU_INIT();
 
 // === SECTION NAVIGATIE DEFINITIE ===
 const SECTION_NAV = {
@@ -267,7 +307,10 @@ const SECTION_NAV = {
   general: { side:[
     {id:'dashboard',label:'Dashboard'},{id:'weather',label:'Weather'},{id:'alarms',label:'Alarms and messages'},
     {id:'periodshift',label:'Period shift'},{id:'custom',label:'Custom'}
-  ], label:'General' }
+  ], label:'General' },
+  waterunit: { side:[
+    {id:'dashboard',label:'Testdashboard'},{id:'faults',label:'Storingen'},{id:'io',label:'I/O lijst'}
+  ], label:'Water Unit' }
 };
 
 // === SEARCH INDEX (I-nummers, M-nummers, alarmen, onderwerpen) — consistent met curriculum ===
@@ -599,6 +642,9 @@ function render() {
     else if (side==='periodshift') area.innerHTML = renderPeriodShift();
     else area.innerHTML = renderGenericSettings(sideLabel);
   }
+  else if (sec==='waterunit') {
+    area.innerHTML = renderWaterUnit(side);
+  }
 
   // Event handlers voor list-rows
   area.querySelectorAll('.li-row[data-comp]').forEach(el => {
@@ -616,6 +662,7 @@ function render() {
       area.innerHTML = renderRecipeDetail(parseInt(el.dataset.recipe));
     });
   });
+  if (state.section==='waterunit' && state.sideItem==='dashboard') mountWU3D();
 }
 
 // === HOME ===
@@ -1166,6 +1213,316 @@ function renderGenericSettings(label) {
   </div>`;
 }
 
+// ===================== WATER UNIT — visueel testdashboard =====================
+const WU_FAULTDEF = [
+  {code:'E01', sev:'alarm', text:'Noodstop actief — installatie veilig gestopt'},
+  {code:'E10', sev:'alarm', text:'Niveausensor Tank A: signaal < 4 mA (kabelbreuk)'},
+  {code:'E11', sev:'alarm', text:'Niveausensor Tank B: signaal < 4 mA (kabelbreuk)'},
+  {code:'E20', sev:'warn',  text:'Tank A: max niveau bereikt (levelswitch)'},
+  {code:'E21', sev:'warn',  text:'Tank B: max niveau bereikt (levelswitch)'},
+  {code:'W30', sev:'warn',  text:'Tank A: laag niveau — droogloopbeveiliging'},
+  {code:'W31', sev:'warn',  text:'Tank B: laag niveau — droogloopbeveiliging'},
+  {code:'E60', sev:'alarm', text:'Pomp A: overbelasting / motorstoring'},
+  {code:'E61', sev:'alarm', text:'Pomp B: overbelasting / motorstoring'},
+  {code:'E70', sev:'alarm', text:'Doseertijd overschreden — klep te lang open (lek/sensorfout)'},
+  {code:'W80', sev:'warn',  text:'EC buiten bereik'},
+  {code:'W81', sev:'warn',  text:'pH buiten bereik'}
+];
+const WU_SEV_BORDER = {alarm:'var(--alarm)', warn:'var(--warn)', status:'var(--link)'};
+let WU3 = {inited:false, ok:false, valves:[]};
+
+function WU_INIT(){
+  const valves=[];
+  for(let i=1;i<=16;i++) valves.push({id:i,name:'V'+String(i).padStart(2,'0'),st:'closed'});
+  return {
+    mode:'stop', estop:false, demo:true, seq:-1,
+    valves,
+    tankA:{label:'Meststof A', lvl:82, mA:0, max:false, sensorFault:false},
+    tankB:{label:'Meststof B', lvl:67, mA:0, max:false, sensorFault:false},
+    pumpA:{on:false,fault:false,freq:0},
+    pumpB:{on:false,fault:false,freq:0},
+    ec:2.1, ph:5.8, flow:0,
+    faults:[], log:[]
+  };
+}
+
+function wuMA(t){ t.mA = t.sensorFault ? 0 : +(4 + t.lvl/100*16).toFixed(1); }
+
+function wuFdef(code){
+  const d=WU_FAULTDEF.find(x=>x.code===code); if(d) return d;
+  const i=parseInt(code.slice(1))-40; const v=state.wu.valves[i];
+  return {code, sev:'alarm', text:'Klep '+(v?v.name:'?')+': geen terugkoppeling / klepstoring'};
+}
+function wuSetFault(code, active){
+  const w=state.wu, idx=w.faults.findIndex(f=>f.code===code);
+  if(active && idx<0){ const d=wuFdef(code); const f={code:d.code,sev:d.sev,text:d.text,t:new Date()}; w.faults.unshift(f); w.log.unshift({...f}); if(w.log.length>50)w.log.pop(); }
+  else if(!active && idx>=0) w.faults.splice(idx,1);
+}
+function wuEvalFaults(){
+  const w=state.wu;
+  wuSetFault('E01', w.estop);
+  wuSetFault('E10', w.tankA.sensorFault);
+  wuSetFault('E11', w.tankB.sensorFault);
+  wuSetFault('E20', w.tankA.max);
+  wuSetFault('E21', w.tankB.max);
+  wuSetFault('W30', !w.estop && !w.tankA.sensorFault && w.tankA.lvl<12);
+  wuSetFault('W31', !w.estop && !w.tankB.sensorFault && w.tankB.lvl<12);
+  wuSetFault('E60', w.pumpA.fault);
+  wuSetFault('E61', w.pumpB.fault);
+  wuSetFault('W80', !w.estop && (w.ec>2.8 || w.ec<1.5));
+  wuSetFault('W81', !w.estop && (w.ph>6.4 || w.ph<5.2));
+  w.valves.forEach((v,i)=> wuSetFault('E'+(40+i), v.st==='fault'));
+}
+function wuStatus(){
+  const w=state.wu;
+  if(w.estop) return {t:'NOODSTOP',cls:'alarm'};
+  if(w.faults.some(f=>f.sev==='alarm')) return {t:'STORING',cls:'alarm'};
+  if(w.faults.some(f=>f.sev==='warn')) return {t:'WAARSCHUWING',cls:'warn'};
+  if(w.mode==='stop') return {t:'GESTOPT',cls:'status'};
+  return {t:'IN BEDRIJF',cls:'ok'};
+}
+
+function wuStep(){
+  const w=state.wu;
+  wuMA(w.tankA); wuMA(w.tankB);
+  if(w.estop || w.mode==='stop'){
+    w.valves.forEach(v=>{ if(v.st!=='fault') v.st='closed'; });
+    w.pumpA.on=false; w.pumpB.on=false; w.pumpA.freq=0; w.pumpB.freq=0; w.flow=0;
+  } else if(w.mode==='run' && w.demo){
+    w.seq=(w.seq+1)%w.valves.length;
+    w.valves.forEach((v,idx)=>{ if(v.st==='fault') return; v.st=(idx===w.seq||idx===(w.seq+1)%16)?'open':'closed'; });
+    const anyOpen=w.valves.some(v=>v.st==='open');
+    w.pumpA.on=anyOpen&&!w.pumpA.fault; w.pumpB.on=anyOpen&&!w.pumpB.fault;
+    w.pumpA.freq=w.pumpA.on?45+Math.round(Math.random()*8):0;
+    w.pumpB.freq=w.pumpB.on?44+Math.round(Math.random()*8):0;
+    w.flow=anyOpen?+(6+Math.random()*2).toFixed(1):0;
+    if(anyOpen){ if(!w.tankA.sensorFault) w.tankA.lvl=clamp(w.tankA.lvl-0.7,0,100); if(!w.tankB.sensorFault) w.tankB.lvl=clamp(w.tankB.lvl-0.6,0,100); }
+    if(w.tankA.lvl<14 && !w.tankA.sensorFault) w.tankA.lvl=clamp(w.tankA.lvl+9,0,100);
+    if(w.tankB.lvl<14 && !w.tankB.sensorFault) w.tankB.lvl=clamp(w.tankB.lvl+9,0,100);
+    w.ec=clamp(w.ec+(Math.random()-0.5)*0.05,1.3,3.1);
+    w.ph=clamp(w.ph+(Math.random()-0.5)*0.07,4.9,6.7);
+  }
+  w.tankA.max=w.tankA.lvl>=96; w.tankB.max=w.tankB.lvl>=96;
+  wuEvalFaults();
+  if(state.section==='waterunit') render();
+}
+
+// --- controls ---
+function wuStart(){ state.wu.estop=false; state.wu.mode='run'; toast('Water Unit gestart','ok'); wuEvalFaults(); render(); }
+function wuStop(){ state.wu.mode='stop'; toast('Water Unit gestopt','warn'); render(); }
+function wuEstop(){ const w=state.wu; w.estop=!w.estop; if(w.estop) w.mode='stop'; toast(w.estop?'NOODSTOP ingedrukt':'Noodstop gereset', w.estop?'alarm':'ok'); wuEvalFaults(); render(); }
+function wuToggleDemo(){ state.wu.demo=!state.wu.demo; toast('Auto-demo '+(state.wu.demo?'AAN':'UIT'),'ok'); render(); }
+function wuResetFaults(){ const w=state.wu; w.valves.forEach(v=>{ if(v.st==='fault') v.st='closed'; }); w.pumpA.fault=false; w.pumpB.fault=false; w.tankA.sensorFault=false; w.tankB.sensorFault=false; w.estop=false; wuEvalFaults(); toast('Storingen gereset','ok'); render(); }
+function wuInject(){ const w=state.wu; const opts=['valve','pumpA','pumpB','sensorA','sensorB']; const p=opts[Math.floor(Math.random()*opts.length)];
+  if(p==='valve'){ const i=Math.floor(Math.random()*16); w.valves[i].st='fault'; }
+  else if(p==='pumpA') w.pumpA.fault=true; else if(p==='pumpB') w.pumpB.fault=true;
+  else if(p==='sensorA') w.tankA.sensorFault=true; else w.tankB.sensorFault=true;
+  wuEvalFaults(); toast('Demo-storing geinjecteerd','warn'); render(); }
+function wuToggleValve(i){ const v=state.wu.valves[i]; if(v.st==='fault') v.st='closed'; else v.st=v.st==='open'?'closed':'open'; wuEvalFaults(); render(); }
+
+// --- render ---
+function renderWaterUnit(side){
+  if(side==='faults') return renderWUFaults();
+  if(side==='io') return renderWUIO();
+  return renderWUDash();
+}
+
+function renderWUDash(){
+  const w=state.wu, s=wuStatus();
+  const alarms=w.faults.filter(f=>f.sev==='alarm').length, warns=w.faults.filter(f=>f.sev==='warn').length;
+  const tank=(t,key)=>`
+    <div class="wu-tank">
+      <div class="wu-gauge"><div class="fill" style="height:${t.sensorFault?0:t.lvl}%;background:${key==='A'?'linear-gradient(180deg,#66bb6a,#2e7d32)':'linear-gradient(180deg,#42a5f5,#1565c0)'};"></div>
+        ${[25,50,75].map(m=>`<div style="position:absolute;left:0;right:0;bottom:${m}%;border-top:1px dashed rgba(0,0,0,.12);"></div>`).join('')}</div>
+      <div style="flex:1;">
+        <div style="font-weight:700;margin-bottom:4px;">Tank ${key} <span style="color:var(--text-secondary);font-weight:500;">· ${t.label}</span></div>
+        <div class="kv"><span class="k">Niveau</span><span class="v">${t.sensorFault?'—':Math.round(t.lvl)+' %'}</span></div>
+        <div class="kv"><span class="k">Hoogte</span><span class="v">${t.sensorFault?'—':Math.round(t.lvl/100*1000)+' mm'}</span></div>
+        <div class="kv"><span class="k">Sensor 4-20 mA</span><span class="v" style="${t.sensorFault?'color:var(--alarm)':''}">${t.mA.toFixed(1)} mA</span></div>
+        <div class="kv" style="border:none;"><span class="k">Max-levelswitch</span><span class="v"><span class="wu-led ${t.max?'on-r':'off'}"></span>${t.max?'ACTIEF':'open'}</span></div>
+      </div>
+    </div>`;
+  const pump=(p,key)=>`<div class="op-tile ${p.fault?'':'green'}" style="${p.fault?'background:var(--alarm-bg);':''}"><div class="lab">Pomp ${key} ${p.fault?'⛔':(p.on?'▶':'■')}</div><div class="val" style="${p.fault?'color:var(--alarm)':''}">${p.fault?'STORING':(p.on?p.freq+' Hz':'uit')}</div></div>`;
+  return `
+  <div class="wu-bar">
+    <button class="wu-btn start" onclick="wuStart()">▶ Start</button>
+    <button class="wu-btn stop" onclick="wuStop()">⏸ Stop</button>
+    <button class="wu-btn estop ${w.estop?'armed':''}" onclick="wuEstop()">⛔ ${w.estop?'Reset noodstop':'Noodstop'}</button>
+    <button class="wu-btn ghost" onclick="wuResetFaults()">↻ Reset storingen</button>
+    <button class="wu-btn ghost" onclick="wuInject()">⚡ Injecteer storing</button>
+    <button class="wu-btn ghost" onclick="wuToggleDemo()" style="${w.demo?'background:var(--accent-bg);':''}">${w.demo?'● Auto-demo aan':'○ Auto-demo uit'}</button>
+    <span style="margin-left:auto;font-family:'JetBrains Mono',monospace;color:var(--text-secondary);">${timeStr()}</span>
+  </div>
+  <div style="display:flex;gap:10px;align-items:stretch;margin-bottom:14px;flex-wrap:wrap;">
+    <div class="wu-status ${s.cls}" style="display:flex;align-items:center;">${s.t}</div>
+    <div class="op-tile ${alarms?'':'green'}" style="min-width:150px;${alarms?'background:var(--alarm-bg);':''}"><div class="lab">Actieve storingen</div><div class="val" style="${alarms?'color:var(--alarm)':''}">${w.faults.length} <span style="font-size:10px;color:var(--text-secondary)">(${alarms} alarm · ${warns} waarsch.)</span></div></div>
+    <div class="op-tile blue" style="min-width:92px;"><div class="lab">Debiet</div><div class="val">${w.flow.toFixed(1)} m³/u</div></div>
+    <div class="op-tile ${(w.ec>2.8||w.ec<1.5)?'orange':'green'}" style="min-width:82px;"><div class="lab">EC</div><div class="val">${w.ec.toFixed(2)} mS</div></div>
+    <div class="op-tile ${(w.ph>6.4||w.ph<5.2)?'orange':'blue'}" style="min-width:78px;"><div class="lab">pH</div><div class="val">${w.ph.toFixed(1)}</div></div>
+  </div>
+  <div class="wu-grid">
+    <div class="card">
+      <div class="card-h"><h3>🧊 3D — Water Unit (A/B fertigatie)</h3><span class="pill pill-info">live</span></div>
+      <div class="wu-3d" id="wu3d"></div>
+      <div style="font-size:11px;color:var(--text-secondary);margin-top:6px;">Sleep om te draaien · <span style="color:#2e7d32;font-weight:600;">groen = open</span> · grijs = dicht · <span style="color:var(--alarm);font-weight:600;">rood = storing</span></div>
+      <div class="wu-tanks">${tank(w.tankA,'A')}${tank(w.tankB,'B')}</div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="card-h"><h3>🚰 Doseerkleppen (16)</h3><span class="pill ${w.valves.some(v=>v.st==='fault')?'pill-alarm':'pill-ok'}">${w.valves.filter(v=>v.st==='open').length} open</span></div>
+        <div class="wu-valves">
+          ${w.valves.map((v,i)=>`<div class="wu-valve ${v.st}" onclick="wuToggleValve(${i})" title="${v.name} — klik om te schakelen"><span class="dot" style="background:${v.st==='open'?'#2e9e54':v.st==='fault'?'#d32f2f':'#90a4ae'}"></span>${v.name}</div>`).join('')}
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-h"><h3>⚙ Pompen &amp; condities</h3></div>
+        <div class="op-tile-2">${pump(w.pumpA,'A')}${pump(w.pumpB,'B')}</div>
+        <div class="op-tile-2" style="margin-top:6px;">
+          <div class="op-tile ${w.estop?'':'green'}" style="${w.estop?'background:var(--alarm-bg);':''}"><div class="lab">Noodcontact (DI)</div><div class="val" style="${w.estop?'color:var(--alarm)':''}">${w.estop?'GEOPEND':'gesloten'}</div></div>
+          <div class="op-tile blue"><div class="lab">Modus</div><div class="val">${w.mode==='run'?'AUTO':'HAND/STOP'}</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-h"><h3>🚨 Actieve storingen <span class="pill ${w.faults.length?'pill-alarm':'pill-ok'}">${w.faults.length}</span></h3></div>
+    ${w.faults.length===0 ? '<div style="padding:16px;text-align:center;color:var(--text-secondary);">Geen actieve storingen ✓</div>' :
+      w.faults.map(f=>`<div class="wu-fault" style="border-left-color:${WU_SEV_BORDER[f.sev]}"><span class="wu-fcode" style="color:${WU_SEV_BORDER[f.sev]}">WU-${f.code}</span><span class="wu-ftime">${timeStr(f.t)}</span><span>${f.text}</span><span class="pill ${f.sev==='alarm'?'pill-alarm':'pill-warn'}">${f.sev==='alarm'?'ALARM':'WAARSCH.'}</span></div>`).join('')}
+  </div>`;
+}
+
+function renderWUFaults(){
+  const w=state.wu;
+  const all=[...WU_FAULTDEF, ...Array.from({length:16},(_,i)=>({code:'E'+(40+i),sev:'alarm',text:'Klep V'+String(i+1).padStart(2,'0')+': geen terugkoppeling / klepstoring'}))];
+  return `
+  <div class="card"><div class="card-h"><h3>🚨 Actieve storingen <span class="pill ${w.faults.length?'pill-alarm':'pill-ok'}">${w.faults.length}</span></h3><button class="btn btn-secondary" onclick="wuResetFaults()">Reset storingen</button></div>
+    ${w.faults.length===0?'<div style="padding:14px;text-align:center;color:var(--text-secondary)">Geen actieve storingen ✓</div>':
+      w.faults.map(f=>`<div class="wu-fault" style="border-left-color:${WU_SEV_BORDER[f.sev]}"><span class="wu-fcode" style="color:${WU_SEV_BORDER[f.sev]}">WU-${f.code}</span><span class="wu-ftime">${timeStr(f.t)}</span><span>${f.text}</span><span class="pill ${f.sev==='alarm'?'pill-alarm':'pill-warn'}">${f.sev==='alarm'?'ALARM':'WAARSCH.'}</span></div>`).join('')}
+  </div>
+  <div class="card"><div class="card-h"><h3>📕 Foutcodelijst (referentie)</h3></div>
+    <table class="priva-table"><thead><tr><th>Code</th><th>Type</th><th>Omschrijving</th></tr></thead><tbody>
+    ${all.map(d=>`<tr><td class="val" style="color:${WU_SEV_BORDER[d.sev]};font-weight:700;">WU-${d.code}</td><td><span class="pill ${d.sev==='alarm'?'pill-alarm':'pill-warn'}">${d.sev==='alarm'?'ALARM':'WAARSCH.'}</span></td><td>${d.text}</td></tr>`).join('')}
+    </tbody></table>
+  </div>
+  <div class="card"><div class="card-h"><h3>📜 Storingslog</h3></div>
+    ${w.log.length===0?'<div style="padding:14px;text-align:center;color:var(--text-secondary)">Nog geen meldingen</div>':
+      w.log.slice(0,20).map(f=>`<div class="wu-fault acked" style="border-left-color:${WU_SEV_BORDER[f.sev]}"><span class="wu-fcode" style="color:${WU_SEV_BORDER[f.sev]}">WU-${f.code}</span><span class="wu-ftime">${timeStr(f.t)}</span><span>${f.text}</span><span></span></div>`).join('')}
+  </div>`;
+}
+
+function renderWUIO(){
+  const rows=[];
+  for(let i=1;i<=16;i++) rows.push(['DO','DO'+String(i).padStart(2,'0'),'Doseerklep V'+String(i).padStart(2,'0'),'24 VDC magneetklep','DOR6 / DO-module']);
+  rows.push(['DO','DO17','Pomp A vrijgave','via frequentieregelaar','DO-module']);
+  rows.push(['DO','DO18','Pomp B vrijgave','via frequentieregelaar','DO-module']);
+  rows.push(['AO','AO01','Pomp A toerental','0-10 V naar freq.regelaar','AO-module']);
+  rows.push(['AO','AO02','Pomp B toerental','0-10 V naar freq.regelaar','AO-module']);
+  rows.push(['AI','AI01','Niveausensor Tank A','4-20 mA','UI / AI-module']);
+  rows.push(['AI','AI02','Niveausensor Tank B','4-20 mA','UI / AI-module']);
+  rows.push(['DI','DI01','Max-levelswitch Tank A','potentiaalvrij contact','DI / UI-module']);
+  rows.push(['DI','DI02','Max-levelswitch Tank B','potentiaalvrij contact','DI / UI-module']);
+  rows.push(['DI','DI03','Noodcontact (noodstop)','NC — ook hardwired in veiligheidskring','DI-module']);
+  return `
+  <div class="card"><div class="card-h"><h3>🔌 I/O-lijst Water Unit</h3><span style="font-size:12px;color:var(--text-secondary)">18 DO · 2 AO · 2 AI · 3 DI</span></div>
+    <table class="priva-table"><thead><tr><th>Type</th><th>Kanaal</th><th>Functie</th><th>Signaal</th><th>Module</th></tr></thead><tbody>
+    ${rows.map(r=>`<tr><td class="val"><span class="cell ${r[0]==='DO'?'cell-green':r[0]==='AO'?'cell-orange':r[0]==='AI'?'cell-blue':'cell-purple'}">${r[0]}</span></td><td class="val">${r[1]}</td><td>${r[2]}</td><td style="color:var(--text-secondary)">${r[3]}</td><td style="color:var(--text-secondary)">${r[4]}</td></tr>`).join('')}
+    </tbody></table>
+    <div style="font-size:12px;color:var(--text-secondary);margin-top:10px;">⚠ Het noodcontact wordt óók hardwired via een veiligheidsrelais opgenomen; de besturing leest het alleen mee voor de logica.</div>
+  </div>`;
+}
+
+// --- 3D scene (Three.js) ---
+function initWU3D(){
+  if(WU3.inited) return; WU3.inited=true;
+  if(typeof THREE==='undefined'){ WU3.ok=false; return; }
+  try{
+    const renderer=new THREE.WebGLRenderer({antialias:true, alpha:true});
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+    renderer.setSize(600,300);
+    const scene=new THREE.Scene();
+    const camera=new THREE.PerspectiveCamera(42,2,0.1,100);
+    camera.position.set(7.5,5.2,9); camera.lookAt(0,1.2,0);
+    scene.add(new THREE.AmbientLight(0xffffff,0.7));
+    const d1=new THREE.DirectionalLight(0xffffff,0.85); d1.position.set(6,10,6); scene.add(d1);
+    const d2=new THREE.DirectionalLight(0x88bbff,0.35); d2.position.set(-6,4,-5); scene.add(d2);
+    const grp=new THREE.Group(); scene.add(grp);
+    const frameMat=new THREE.MeshStandardMaterial({color:0xb9c2ca, metalness:0.6, roughness:0.4});
+    const FW=6, FD=3.2, FH=4, t=0.12;
+    function bar(x,y,z,w,h,dd){ const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,dd),frameMat); m.position.set(x,y,z); grp.add(m); }
+    [[-FW/2,-FD/2],[FW/2,-FD/2],[-FW/2,FD/2],[FW/2,FD/2]].forEach(p=>bar(p[0],FH/2,p[1],t,FH,t));
+    [-FD/2,FD/2].forEach(z=>{ bar(0,FH,z,FW,t,t); bar(0,0.02,z,FW,t,t); });
+    [-FW/2,FW/2].forEach(x=>{ bar(x,FH,0,t,t,FD); bar(x,0.02,0,t,t,FD); });
+    [[-FW/2,-FD/2],[FW/2,-FD/2],[-FW/2,FD/2],[FW/2,FD/2]].forEach(p=>bar(p[0],-0.45,p[1],t,0.9,t));
+    function tank(x){
+      const g=new THREE.Group();
+      const shell=new THREE.Mesh(new THREE.BoxGeometry(2.2,2.6,2.4), new THREE.MeshStandardMaterial({color:0xffffff,transparent:true,opacity:0.16,roughness:0.05}));
+      g.add(shell);
+      const fill=new THREE.Mesh(new THREE.BoxGeometry(2.0,1,2.2), new THREE.MeshStandardMaterial({color:0x43a047,transparent:true,opacity:0.85,roughness:0.3}));
+      g.add(fill); g.position.set(x,1.55,0); grp.add(g); return fill;
+    }
+    WU3.fillA=tank(-1.45); WU3.fillB=tank(1.45);
+    const pipeMat=new THREE.MeshStandardMaterial({color:0x9aa6b0,metalness:0.7,roughness:0.35});
+    const pipe=new THREE.Mesh(new THREE.CylinderGeometry(0.12,0.12,FW-0.5,16),pipeMat);
+    pipe.rotation.z=Math.PI/2; pipe.position.set(0,0.55,FD/2-0.25); grp.add(pipe);
+    WU3.valves=[];
+    const n=16, span=FW-0.9;
+    for(let i=0;i<n;i++){
+      const x=-span/2 + i*(span/(n-1));
+      const body=new THREE.Mesh(new THREE.CylinderGeometry(0.085,0.085,0.5,12), new THREE.MeshStandardMaterial({color:0x5a6b7a,roughness:0.5}));
+      body.position.set(x,0.28,FD/2-0.25); grp.add(body);
+      const tip=new THREE.Mesh(new THREE.SphereGeometry(0.075,10,10), new THREE.MeshStandardMaterial({color:0x5a6b7a}));
+      tip.position.set(x,0.0,FD/2-0.25); grp.add(tip);
+      WU3.valves.push({body,tip});
+    }
+    function pump(x){ const m=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.3,0.7,18), new THREE.MeshStandardMaterial({color:0x37474f,metalness:0.5,roughness:0.5})); m.rotation.z=Math.PI/2; m.position.set(x,0.5,-FD/2+0.55); grp.add(m); return m; }
+    WU3.pumpA=pump(-1.45); WU3.pumpB=pump(1.45);
+    WU3.renderer=renderer; WU3.scene=scene; WU3.camera=camera; WU3.grp=grp; WU3.canvas=renderer.domElement;
+    WU3.rot=0.6; WU3.auto=true; WU3.ok=true;
+    let drag=false, px=0;
+    renderer.domElement.style.touchAction='none';
+    renderer.domElement.addEventListener('pointerdown',e=>{drag=true;px=e.clientX;WU3.auto=false;});
+    window.addEventListener('pointerup',()=>{drag=false;});
+    window.addEventListener('pointermove',e=>{ if(drag){ WU3.rot+=(e.clientX-px)*0.01; px=e.clientX; }});
+    animateWU3D();
+  }catch(err){ WU3.ok=false; }
+}
+function wuSetFill(mesh,lvl,col){ const fh=Math.max(0.04, lvl/100*2.4); mesh.scale.y=fh; mesh.position.y=-1.2+fh/2; mesh.material.color.setHex(col); }
+function animateWU3D(){
+  WU3.raf=requestAnimationFrame(animateWU3D);
+  if(!WU3.ok) return;
+  if(state.section!=='waterunit') return;
+  if(WU3.auto) WU3.rot+=0.0035;
+  WU3.grp.rotation.y=WU3.rot;
+  const w=state.wu;
+  wuSetFill(WU3.fillA, w.tankA.sensorFault?6:w.tankA.lvl, w.tankA.sensorFault?0x9e9e9e:0x43a047);
+  wuSetFill(WU3.fillB, w.tankB.sensorFault?6:w.tankB.lvl, w.tankB.sensorFault?0x9e9e9e:0x1e88e5);
+  w.valves.forEach((v,i)=>{ const m=WU3.valves[i]; if(!m) return;
+    const c = v.st==='open'?0x35d07f : v.st==='fault'?0xef4444 : 0x5a6b7a;
+    m.body.material.color.setHex(c); m.tip.material.color.setHex(c);
+  });
+  WU3.pumpA.material.color.setHex(w.pumpA.fault?0xef4444 : w.pumpA.on?0x35d07f:0x37474f);
+  WU3.pumpB.material.color.setHex(w.pumpB.fault?0xef4444 : w.pumpB.on?0x35d07f:0x37474f);
+  WU3.renderer.render(WU3.scene,WU3.camera);
+}
+function mountWU3D(){
+  const host=$('wu3d'); if(!host) return;
+  if(!WU3.inited) initWU3D();
+  if(WU3.ok && WU3.canvas){
+    if(WU3.canvas.parentNode!==host){ host.innerHTML=''; host.appendChild(WU3.canvas); }
+    const ww=host.clientWidth||600, hh=host.clientHeight||300;
+    WU3.renderer.setSize(ww,hh); WU3.camera.aspect=ww/hh; WU3.camera.updateProjectionMatrix();
+  } else if(!WU3.ok){
+    host.innerHTML='<div class="wu-fallback">3D-weergave niet beschikbaar in deze browser — gebruik het visuele klep- en tankoverzicht hieronder.</div>';
+  }
+}
+
+// search index entries
+WU_FAULTDEF.forEach(d=>SEARCH_INDEX.push({q:'WU-'+d.code, label:'Water Unit '+d.code+': '+d.text, path:'Water Unit > Storingen', sec:'waterunit', side:'faults', isAlarm:true, sev:d.sev}));
+SEARCH_INDEX.push({q:'water unit', label:'Water Unit testdashboard', path:'Water Unit > Testdashboard', sec:'waterunit', side:'dashboard'});
+SEARCH_INDEX.push({q:'noodstop', label:'Noodstop / noodcontact', path:'Water Unit > Testdashboard', sec:'waterunit', side:'dashboard'});
+SEARCH_INDEX.push({q:'doseerklep', label:'Doseerkleppen (16)', path:'Water Unit > Testdashboard', sec:'waterunit', side:'dashboard'});
+
+
 // === INIT ===
 document.querySelectorAll('.tnitem').forEach(n => n.addEventListener('click', () => setSection(n.dataset.sec)));
 document.addEventListener('keydown', e => {
@@ -1174,9 +1531,11 @@ document.addEventListener('keydown', e => {
 });
 $('searchInput').addEventListener('input', e => renderSearchResults(e.target.value));
 
-setSection('climate');
+setSection('waterunit');
 setInterval(tick, 2500);
-setTimeout(()=>toast('Welkom — gebruik de zoekfunctie (vergrootglas of "/") voor I-nummers en alarmcodes.','ok'),700);
+setInterval(wuStep, 1200);
+window.addEventListener('resize', ()=>{ if(state.section==='waterunit') mountWU3D(); });
+setTimeout(()=>toast('Water Unit testdashboard — druk Start of injecteer een demo-storing. Andere tabs blijven werken.','ok'),900);
 
 </script>
 </body>
