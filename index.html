@@ -193,6 +193,25 @@ html,body{height:100%;font-family:'IBM Plex Sans',sans-serif;font-size:13px;colo
 .wu-fault.acked{opacity:.6}
 .wu-fcode{font-family:'JetBrains Mono',monospace;font-weight:700}
 .wu-ftime{font-family:'JetBrains Mono',monospace;color:var(--text-secondary)}
+.wu-rec-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:14px}
+@media(max-width:900px){.wu-rec-grid{grid-template-columns:1fr}}
+.wu-rec{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border:1px solid var(--border);border-radius:7px;margin-bottom:7px;cursor:pointer;background:#fff}
+.wu-rec:hover{border-color:var(--accent);background:var(--accent-bg)}
+.wu-rec.editing{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.wu-rec.active{background:var(--accent-bg)}
+.wu-rec .arrow{color:var(--text-tertiary)}
+.wu-step{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #f0f2f0}
+.wu-step-lab{flex:1;font-weight:600;color:var(--text-secondary);font-size:13px}
+.wu-step-val{min-width:96px;text-align:center;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:16px}
+.wu-step-unit{font-size:10px;color:var(--text-secondary);margin-left:3px}
+.wu-stepbtn{width:40px;height:40px;border-radius:8px;border:1px solid var(--border-strong);background:#fff;font-size:20px;font-weight:700;cursor:pointer;color:var(--accent);line-height:1}
+.wu-stepbtn:hover{background:var(--accent-bg);border-color:var(--accent)}
+.wu-rec-name{flex:1.6;padding:9px 10px;border:1px solid var(--border-strong);border-radius:6px;font-family:inherit;font-size:14px}
+.wu-range{width:100%}
+.wu-zones{display:grid;grid-template-columns:repeat(8,1fr);gap:5px;flex:1.6}
+.wu-zone{text-align:center;padding:5px 0;border-radius:5px;border:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;cursor:pointer;background:#eceff1;color:#90a4ae;user-select:none}
+.wu-zone.on{background:#c8f2d4;color:#1b7a37;border-color:#5cc97d}
+.wu-rec-preview{margin-top:12px;padding:10px 12px;background:var(--accent-bg);border:1px solid var(--accent-light);border-radius:6px;font-size:12px}
 </style>
 </head>
 <body>
@@ -309,7 +328,7 @@ const SECTION_NAV = {
     {id:'periodshift',label:'Period shift'},{id:'custom',label:'Custom'}
   ], label:'General' },
   waterunit: { side:[
-    {id:'dashboard',label:'Testdashboard'},{id:'faults',label:'Storingen'},{id:'io',label:'I/O lijst'}
+    {id:'dashboard',label:'Testdashboard'},{id:'recipes',label:'Recepten'},{id:'faults',label:'Storingen'},{id:'io',label:'I/O lijst'}
   ], label:'Water Unit' }
 };
 
@@ -533,7 +552,7 @@ function tick() {
     if (c.rh > 92) spawnAlarm(156, c.name);
     if (c.co2 < 400) spawnAlarm(159, c.name);
   });
-  render();
+  if (state.section!=='waterunit' || state.sideItem==='dashboard') render();
 }
 
 // === WIDGET POPUP ===
@@ -1246,6 +1265,12 @@ function WU_INIT(){
     pumpA:{on:false,fault:false,freq:0},
     pumpB:{on:false,fault:false,freq:0},
     ec:2.1, ph:5.8, flow:0,
+    recipes:[
+      {id:1,name:'Standaard groei', ec:2.1, ph:5.8, ratioA:60, volume:250, flow:6.0, zones:Array(16).fill(true)},
+      {id:2,name:'Stek / jong gewas', ec:1.4, ph:5.9, ratioA:55, volume:150, flow:4.5, zones:Array.from({length:16},(_,i)=>i<8)},
+      {id:3,name:'Bloei / hoog EC', ec:2.7, ph:5.6, ratioA:65, volume:300, flow:7.0, zones:Array(16).fill(true)}
+    ],
+    activeRecipe:1, editId:1, recId:4,
     faults:[], log:[]
   };
 }
@@ -1308,7 +1333,7 @@ function wuStep(){
       const pumping=w.pumpA.on||w.pumpB.on;
       if(pumping && !A.hold && !A.sensorFault && A.lvl<95) A.lvl=clamp(A.lvl+2.0,0,100);
       if(pumping && !B.hold && !B.sensorFault && B.lvl<95) B.lvl=clamp(B.lvl+1.8,0,100);
-      w.flow=pumping?+(6+Math.random()*1.5).toFixed(1):0;
+      const _arf=wuRec(w.activeRecipe); w.flow=pumping?+((_arf?_arf.flow:6)+(Math.random()-0.5)*0.6).toFixed(1):0;
       if(A.lvl>=92 && B.lvl>=92) w.phase='drain';
     } else {
       // AFNAME: kleppen dicht, pompen uit, bakken zakken door verbruik — daarna opnieuw vullen
@@ -1319,14 +1344,15 @@ function wuStep(){
       w.flow=+(2+Math.random()*1).toFixed(1);
       if(A.lvl<=22 && B.lvl<=22) w.phase='fill';
     }
-    w.ec=clamp(w.ec+(Math.random()-0.5)*0.05,1.3,3.1);
-    w.ph=clamp(w.ph+(Math.random()-0.5)*0.07,4.9,6.7);
+    const _ar=wuRec(w.activeRecipe), _ect=_ar?_ar.ec:2.1, _pht=_ar?_ar.ph:5.8;
+    w.ec=clamp(w.ec+(_ect-w.ec)*0.15+(Math.random()-0.5)*0.04,1.0,3.4);
+    w.ph=clamp(w.ph+(_pht-w.ph)*0.15+(Math.random()-0.5)*0.04,4.6,6.9);
   }
   // niveau-condities
   A.over=A.lvl>=98; A.empty=A.lvl<=4; A.max=A.lvl>=95;
   B.over=B.lvl>=98; B.empty=B.lvl<=4; B.max=B.lvl>=95;
   wuEvalFaults();
-  if(state.section==='waterunit') render();
+  if(state.section==='waterunit' && state.sideItem==='dashboard') render();
 }
 
 // --- controls ---
@@ -1354,13 +1380,14 @@ function wuToggleValve(i){ const v=state.wu.valves[i]; if(v.st==='fault') v.st='
 
 // --- render ---
 function renderWaterUnit(side){
+  if(side==='recipes') return renderWURecipes();
   if(side==='faults') return renderWUFaults();
   if(side==='io') return renderWUIO();
   return renderWUDash();
 }
 
 function renderWUDash(){
-  const w=state.wu, s=wuStatus();
+  const w=state.wu, s=wuStatus(), ar=wuRec(w.activeRecipe);
   const alarms=w.faults.filter(f=>f.sev==='alarm').length, warns=w.faults.filter(f=>f.sev==='warn').length;
   const tank=(t,key)=>{
     const alarm=wuTankAlarm(t), grey=t.sensorFault;
@@ -1396,6 +1423,7 @@ function renderWUDash(){
     <div class="op-tile blue" style="min-width:92px;"><div class="lab">Debiet</div><div class="val">${w.flow.toFixed(1)} m³/u</div></div>
     <div class="op-tile ${(w.ec>2.8||w.ec<1.5)?'orange':'green'}" style="min-width:82px;"><div class="lab">EC</div><div class="val">${w.ec.toFixed(2)} mS</div></div>
     <div class="op-tile ${(w.ph>6.4||w.ph<5.2)?'orange':'blue'}" style="min-width:78px;"><div class="lab">pH</div><div class="val">${w.ph.toFixed(1)}</div></div>
+    <div class="op-tile purple" style="min-width:160px;"><div class="lab">Actief recept</div><div class="val" style="font-size:12px;line-height:1.2;">${ar?ar.name:'—'}<br><span style="font-size:10px;color:rgba(0,0,0,.55);font-weight:500;">doel EC ${ar?ar.ec.toFixed(1):'-'} · pH ${ar?ar.ph.toFixed(1):'-'} · A${ar?ar.ratioA:'-'}/B${ar?100-ar.ratioA:'-'}</span></div></div>
   </div>
   <div class="wu-grid">
     <div class="card">
@@ -1465,6 +1493,63 @@ function renderWUIO(){
     ${rows.map(r=>`<tr><td class="val"><span class="cell ${r[0]==='DO'?'cell-green':r[0]==='AO'?'cell-orange':r[0]==='AI'?'cell-blue':'cell-purple'}">${r[0]}</span></td><td class="val">${r[1]}</td><td>${r[2]}</td><td style="color:var(--text-secondary)">${r[3]}</td><td style="color:var(--text-secondary)">${r[4]}</td></tr>`).join('')}
     </tbody></table>
     <div style="font-size:12px;color:var(--text-secondary);margin-top:10px;">⚠ Het noodcontact wordt óók hardwired via een veiligheidsrelais opgenomen; de besturing leest het alleen mee voor de logica.</div>
+  </div>`;
+}
+
+// --- recepten ---
+function wuRec(id){ return state.wu.recipes.find(r=>r.id===id); }
+function wuRecEdit(id){ state.wu.editId=id; render(); }
+function wuRecField(field,d,min,max){ const r=wuRec(state.wu.editId); if(!r) return; r[field]=clamp(+( (r[field]+d).toFixed(2) ),min,max); render(); }
+function wuRecRatio(v){ const r=wuRec(state.wu.editId); if(r){ r.ratioA=clamp(Math.round(+v),0,100); render(); } }
+function wuRecName(v){ const r=wuRec(state.wu.editId); if(r) r.name=v; }
+function wuRecZone(i){ const r=wuRec(state.wu.editId); if(!r) return; r.zones[i]=!r.zones[i]; render(); }
+function wuRecActivate(id){ state.wu.activeRecipe=id; const r=wuRec(id); toast('Recept "'+(r?r.name:'')+'" geactiveerd','ok'); render(); }
+function wuRecNew(){ const w=state.wu, b=wuRec(w.editId)||w.recipes[0];
+  const nr={id:w.recId++, name:'Nieuw recept', ec:b?b.ec:2.0, ph:b?b.ph:5.8, ratioA:b?b.ratioA:60, volume:b?b.volume:200, flow:b?b.flow:6.0, zones:b?b.zones.slice():Array(16).fill(true)};
+  w.recipes.push(nr); w.editId=nr.id; toast('Nieuw recept — pas aan en activeer','ok'); render(); }
+function wuRecDup(id){ const w=state.wu, b=wuRec(id); const nr={...b, id:w.recId++, name:b.name+' (kopie)', zones:b.zones.slice()}; w.recipes.push(nr); w.editId=nr.id; toast('Recept gekopieerd','ok'); render(); }
+function wuRecDelete(id){ const w=state.wu; if(w.recipes.length<=1){ toast('Minimaal één recept vereist','warn'); return; }
+  w.recipes=w.recipes.filter(r=>r.id!==id); if(w.activeRecipe===id) w.activeRecipe=w.recipes[0].id; if(w.editId===id) w.editId=w.recipes[0].id; toast('Recept verwijderd','ok'); render(); }
+
+function renderWURecipes(){
+  const w=state.wu; const r=wuRec(w.editId)||w.recipes[0];
+  const stepRow=(label,field,unit,min,max,step,dec)=>`
+    <div class="wu-step"><div class="wu-step-lab">${label}</div>
+      <button class="wu-stepbtn" onclick="wuRecField('${field}',${-step},${min},${max})">−</button>
+      <div class="wu-step-val">${field==='volume'?Math.round(r[field]):r[field].toFixed(dec)}<span class="wu-step-unit">${unit}</span></div>
+      <button class="wu-stepbtn" onclick="wuRecField('${field}',${step},${min},${max})">+</button>
+    </div>`;
+  return `
+  <div class="wu-rec-grid">
+    <div class="card">
+      <div class="card-h"><h3>📋 Recepten</h3><button class="btn btn-primary" onclick="wuRecNew()">+ Nieuw</button></div>
+      ${w.recipes.map(rc=>`<div class="wu-rec ${rc.id===w.editId?'editing':''} ${rc.id===w.activeRecipe?'active':''}" onclick="wuRecEdit(${rc.id})">
+        <div><div style="font-weight:700;">${rc.name} ${rc.id===w.activeRecipe?'<span class="pill pill-ok">ACTIEF</span>':''}</div>
+        <div style="font-size:11px;color:var(--text-secondary);">EC ${rc.ec.toFixed(1)} · pH ${rc.ph.toFixed(1)} · A ${rc.ratioA}% / B ${100-rc.ratioA}% · ${rc.volume} L</div></div>
+        <span class="arrow">›</span></div>`).join('')}
+      <div style="font-size:11px;color:var(--text-secondary);margin-top:8px;">Tik een recept om te bewerken · in de echte machine worden recepten in de besturing (PLC) bewaard.</div>
+    </div>
+    <div class="card">
+      <div class="card-h"><h3>✎ Recept bewerken</h3>${r.id===w.activeRecipe?'<span class="pill pill-ok">actief</span>':''}</div>
+      <div class="wu-step"><div class="wu-step-lab">Naam</div><input class="wu-rec-name" value="${r.name.replace(/"/g,'&quot;')}" oninput="wuRecName(this.value)"></div>
+      ${stepRow('Doel-EC','ec','mS/cm',0.5,3.5,0.1,1)}
+      ${stepRow('Doel-pH','ph','',4.5,7.0,0.1,1)}
+      <div class="wu-step"><div class="wu-step-lab">Verhouding A:B</div>
+        <button class="wu-stepbtn" onclick="wuRecField('ratioA',-5,0,100)">−</button>
+        <div style="flex:1.4;"><input type="range" min="0" max="100" value="${r.ratioA}" class="wu-range" oninput="wuRecRatio(this.value)">
+          <div style="display:flex;justify-content:space-between;font-size:11px;font-weight:700;"><span style="color:#2e7d32;">A ${r.ratioA}%</span><span style="color:#1565c0;">B ${100-r.ratioA}%</span></div></div>
+        <button class="wu-stepbtn" onclick="wuRecField('ratioA',5,0,100)">+</button></div>
+      ${stepRow('Vulvolume','volume','L',0,2000,10,0)}
+      ${stepRow('Debiet','flow','m³/u',1,12,0.5,1)}
+      <div class="wu-step" style="align-items:flex-start;"><div class="wu-step-lab">Zones (kleppen)</div>
+        <div class="wu-zones">${r.zones.map((on,i)=>`<div class="wu-zone ${on?'on':''}" onclick="wuRecZone(${i})">V${String(i+1).padStart(2,'0')}</div>`).join('')}</div></div>
+      <div class="wu-rec-preview">Voorbeeld: doel-EC <b>${r.ec.toFixed(1)} mS</b> · pH <b>${r.ph.toFixed(1)}</b> · meststof <b>A ${r.ratioA}%</b> / <b>B ${100-r.ratioA}%</b> · ${r.volume} L @ ${r.flow.toFixed(1)} m³/u · ${r.zones.filter(Boolean).length}/16 zones actief</div>
+      <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+        ${r.id===w.activeRecipe?'<span style="align-self:center;color:var(--accent);font-weight:600;font-size:13px;">✓ Dit recept is actief</span>':`<button class="wu-btn start" onclick="wuRecActivate(${r.id})">✓ Activeer recept</button>`}
+        <button class="wu-btn ghost" onclick="wuRecDup(${r.id})">⧉ Kopie maken</button>
+        <button class="wu-btn ghost" onclick="wuRecDelete(${r.id})">🗑 Verwijder</button>
+      </div>
+    </div>
   </div>`;
 }
 
@@ -1553,7 +1638,7 @@ function wuSetFill(mesh,lvl,col){ const fh=Math.max(0.04, lvl/100*2.4); mesh.sca
 function animateWU3D(){
   WU3.raf=requestAnimationFrame(animateWU3D);
   if(!WU3.ok) return;
-  if(state.section!=='waterunit') return;
+  if(state.section!=='waterunit' || state.sideItem!=='dashboard') return;
   WU3.grp.rotation.y=WU3.rot;
   const w=state.wu, time=performance.now()/1000;
   const lvA=w.tankA.sensorFault?6:w.tankA.lvl, lvB=w.tankB.sensorFault?6:w.tankB.lvl;
@@ -1587,6 +1672,8 @@ WU_FAULTDEF.forEach(d=>SEARCH_INDEX.push({q:'WU-'+d.code, label:'Water Unit '+d.
 SEARCH_INDEX.push({q:'water unit', label:'Water Unit testdashboard', path:'Water Unit > Testdashboard', sec:'waterunit', side:'dashboard'});
 SEARCH_INDEX.push({q:'noodstop', label:'Noodstop / noodcontact', path:'Water Unit > Testdashboard', sec:'waterunit', side:'dashboard'});
 SEARCH_INDEX.push({q:'doseerklep', label:'Doseerkleppen (16)', path:'Water Unit > Testdashboard', sec:'waterunit', side:'dashboard'});
+SEARCH_INDEX.push({q:'recept', label:'Recepten invoeren', path:'Water Unit > Recepten', sec:'waterunit', side:'recipes'});
+SEARCH_INDEX.push({q:'recipe', label:'Recepten invoeren', path:'Water Unit > Recepten', sec:'waterunit', side:'recipes'});
 
 
 // === INIT ===
