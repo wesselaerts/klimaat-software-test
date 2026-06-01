@@ -172,7 +172,7 @@ html,body{height:100%;font-family:'IBM Plex Sans',sans-serif;font-size:13px;colo
 .wu-status.status{background:var(--link-bg);color:var(--link)}
 .wu-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:14px;margin-bottom:14px}
 @media(max-width:1100px){.wu-grid{grid-template-columns:1fr}}
-.wu-3d{height:300px;border-radius:8px;background:radial-gradient(120% 120% at 50% 8%,#22404d 0%,#0e1b22 70%);position:relative;overflow:hidden;cursor:grab;border:1px solid #0a141a}
+.wu-3d{height:420px;border-radius:8px;background:radial-gradient(120% 120% at 50% 8%,#22404d 0%,#0e1b22 70%);position:relative;overflow:hidden;cursor:grab;border:1px solid #0a141a}
 .wu-3d:active{cursor:grabbing}
 .wu-3d canvas{display:block}
 .wu-fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#9fb4bd;font-size:13px;text-align:center;padding:20px}
@@ -1299,24 +1299,25 @@ function wuStep(){
     w.pumpA.on=false; w.pumpB.on=false; w.pumpA.freq=0; w.pumpB.freq=0; w.flow=0;
   } else if(w.mode==='run' && w.demo){
     if(w.phase==='fill'){
-      // VULLEN: pompen draaien, doseerkleppen dicht, bakken stijgen
-      w.valves.forEach(v=>{ if(v.st!=='fault') v.st='closed'; });
+      // VULLEN: pomp aan, kleppen openen OM DE BEURT en vullen zo de bakken geleidelijk
       w.pumpA.on=!w.pumpA.fault; w.pumpB.on=!w.pumpB.fault;
       w.pumpA.freq=w.pumpA.on?46+Math.round(Math.random()*6):0;
       w.pumpB.freq=w.pumpB.on?45+Math.round(Math.random()*6):0;
-      if(w.pumpA.on && !A.hold && !A.sensorFault && A.lvl<93) A.lvl=clamp(A.lvl+1.4,0,100);
-      if(w.pumpB.on && !B.hold && !B.sensorFault && B.lvl<93) B.lvl=clamp(B.lvl+1.2,0,100);
-      w.flow=+(5+Math.random()*1.5).toFixed(1);
-      if(A.lvl>=88 && B.lvl>=88) w.phase='dose';
-    } else {
-      // DOSEREN: kleppen openen in volgorde, bakken zakken
       w.seq=(w.seq+1)%w.valves.length;
-      w.valves.forEach((v,idx)=>{ if(v.st==='fault') return; v.st=(idx===w.seq||idx===(w.seq+1)%16)?'open':'closed'; });
+      w.valves.forEach((v,idx)=>{ if(v.st==='fault') return; v.st=(idx===w.seq)?'open':'closed'; });
+      const pumping=w.pumpA.on||w.pumpB.on;
+      if(pumping && !A.hold && !A.sensorFault && A.lvl<95) A.lvl=clamp(A.lvl+2.0,0,100);
+      if(pumping && !B.hold && !B.sensorFault && B.lvl<95) B.lvl=clamp(B.lvl+1.8,0,100);
+      w.flow=pumping?+(6+Math.random()*1.5).toFixed(1):0;
+      if(A.lvl>=92 && B.lvl>=92) w.phase='drain';
+    } else {
+      // AFNAME: kleppen dicht, pompen uit, bakken zakken door verbruik — daarna opnieuw vullen
+      w.valves.forEach(v=>{ if(v.st!=='fault') v.st='closed'; });
       w.pumpA.on=false; w.pumpB.on=false; w.pumpA.freq=0; w.pumpB.freq=0;
-      if(!A.hold && !A.sensorFault && A.lvl>8) A.lvl=clamp(A.lvl-0.9,0,100);
-      if(!B.hold && !B.sensorFault && B.lvl>8) B.lvl=clamp(B.lvl-0.8,0,100);
-      w.flow=+(6+Math.random()*2).toFixed(1);
-      if(A.lvl<=24 && B.lvl<=24) w.phase='fill';
+      if(!A.hold && !A.sensorFault && A.lvl>8) A.lvl=clamp(A.lvl-2.2,0,100);
+      if(!B.hold && !B.sensorFault && B.lvl>8) B.lvl=clamp(B.lvl-2.0,0,100);
+      w.flow=+(2+Math.random()*1).toFixed(1);
+      if(A.lvl<=22 && B.lvl<=22) w.phase='fill';
     }
     w.ec=clamp(w.ec+(Math.random()-0.5)*0.05,1.3,3.1);
     w.ph=clamp(w.ph+(Math.random()-0.5)*0.07,4.9,6.7);
@@ -1398,7 +1399,7 @@ function renderWUDash(){
   </div>
   <div class="wu-grid">
     <div class="card">
-      <div class="card-h"><h3>🧊 3D — Water Unit (A/B fertigatie)</h3><span class="pill ${w.mode==='run'?'pill-ok':'pill-info'}">${w.mode==='run'?(w.phase==='dose'?'doseren':'vullen'):'standby'}</span></div>
+      <div class="card-h"><h3>🧊 3D — Water Unit (A/B fertigatie)</h3><span class="pill ${w.mode==='run'?'pill-ok':'pill-info'}">${w.mode==='run'?(w.phase==='drain'?'afname':'vullen'):'standby'}</span></div>
       <div class="wu-3d" id="wu3d"></div>
       <div style="font-size:11px;color:var(--text-secondary);margin-top:6px;">Vast vooraanzicht — sleep licht om te kantelen · pompen A/B boven de kleppen lichten <span style="color:#2e7d32;font-weight:600;">groen</span> op als ze draaien · kleppen: <span style="color:#2e7d32;font-weight:600;">groen = open</span> · grijs = dicht · <span style="color:var(--alarm);font-weight:600;">rood = storing</span></div>
       <div class="wu-tanks">${tank(w.tankA,'A')}${tank(w.tankB,'B')}</div>
@@ -1415,7 +1416,7 @@ function renderWUDash(){
         <div class="op-tile-2">${pump(w.pumpA,'A')}${pump(w.pumpB,'B')}</div>
         <div class="op-tile-2" style="margin-top:6px;">
           <div class="op-tile ${w.estop?'':'green'}" style="${w.estop?'background:var(--alarm-bg);':''}"><div class="lab">Noodcontact (DI)</div><div class="val" style="${w.estop?'color:var(--alarm)':''}">${w.estop?'GEOPEND':'gesloten'}</div></div>
-          <div class="op-tile blue"><div class="lab">Modus</div><div class="val">${w.mode==='run'?('AUTO · '+(w.phase==='dose'?'DOSEREN':'VULLEN')):'HAND/STOP'}</div></div>
+          <div class="op-tile blue"><div class="lab">Modus</div><div class="val">${w.mode==='run'?('AUTO · '+(w.phase==='drain'?'AFNAME':'VULLEN')):'HAND/STOP'}</div></div>
         </div>
       </div>
     </div>
@@ -1574,7 +1575,7 @@ function mountWU3D(){
   if(!WU3.inited) initWU3D();
   if(WU3.ok && WU3.canvas){
     if(WU3.canvas.parentNode!==host){ host.innerHTML=''; host.appendChild(WU3.canvas); }
-    const ww=host.clientWidth||600, hh=host.clientHeight||300;
+    const ww=host.clientWidth||600, hh=host.clientHeight||420;
     WU3.renderer.setSize(ww,hh); WU3.camera.aspect=ww/hh; WU3.camera.updateProjectionMatrix();
   } else if(!WU3.ok){
     host.innerHTML='<div class="wu-fallback">3D-weergave niet beschikbaar in deze browser — gebruik het visuele klep- en tankoverzicht hieronder.</div>';
