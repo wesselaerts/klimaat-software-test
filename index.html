@@ -663,76 +663,107 @@ body{background:linear-gradient(177deg,#F0F4F0 0%,#E7EDE8 100%);background-attac
 
 /* ============================================================ REDUCED MOTION */
 /* ============================================================ HARDWARE-TWEELING */
-.hw-scroll{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;border-radius:var(--r-lg);background:var(--c-sunken);border:1px solid var(--c-line)}
-.hw-rack{display:flex;align-items:stretch;gap:14px;min-width:max-content;padding:20px 20px 16px;position:relative}
-.hw-rack::before{content:"";position:absolute;left:14px;right:14px;top:50%;height:34px;transform:translateY(-50%);background:linear-gradient(180deg,#D3D8D6,#C2C8C6 48%,#AEB5B2 52%,#CCD2D0);border-radius:4px;box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -1px 0 rgba(0,0,0,.12);z-index:0}
-.hw-rack>*{position:relative;z-index:1}
+.hw-scroll{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;border-radius:var(--r-lg);background:linear-gradient(180deg,#E7ECEA,#DCE2DF);border:1px solid var(--c-line);box-shadow:inset 0 1px 3px rgba(18,38,26,.05)}
+.hw-rack{display:flex;align-items:stretch;gap:12px;min-width:max-content;padding:22px}
 
-/* LED base */
+/* ---- LED base ---- */
 .led{width:9px;height:9px;border-radius:50%;flex:0 0 auto;background:#2b322e;box-shadow:inset 0 0 0 1px rgba(0,0,0,.4);display:inline-block}
+.led.xs{width:7px;height:7px}
 .led.on.ok{background:var(--ok);box-shadow:0 0 6px rgba(28,122,77,.7),inset 0 0 0 1px rgba(255,255,255,.3)}
 .led.on.warn{background:#E2A52F;box-shadow:0 0 6px rgba(226,165,47,.7)}
 .led.on.alarm{background:var(--alarm);box-shadow:0 0 7px rgba(206,58,46,.85),inset 0 0 0 1px rgba(255,255,255,.25)}
 .led.on.info{background:var(--info);box-shadow:0 0 6px rgba(46,110,142,.6)}
 .led.on.amber{background:#E0A92E;box-shadow:0 0 6px rgba(224,169,46,.8)}
 .led.blink{animation:ledblink 1s steps(1,end) infinite}
-.led.blink.f05{animation-duration:2s}
-.led.blink.f4{animation-duration:.25s}
+.led.blink.f05{animation-duration:2s}.led.blink.f4{animation-duration:.25s}
 @keyframes ledblink{0%,49.9%{opacity:1}50%,100%{opacity:.16}}
 
-/* controller */
-.hw-ctrl{flex:0 0 auto;width:120px;display:flex;flex-direction:column;border-radius:9px;background:linear-gradient(180deg,#D2D8D6,#C2C9C7);border:1px solid #98a19d;box-shadow:var(--sh-2);overflow:hidden}
-.hw-ctrl-head{background:#333b37;color:#d6e5dc;font-size:10px;font-weight:700;letter-spacing:.03em;padding:7px 8px;text-align:center;line-height:1.25}
-.hw-ctrl-head small{display:block;font-family:var(--mono);font-weight:500;color:#9fb3a8;font-size:8.5px}
-.hw-ctrl-body{padding:8px 8px 6px;display:flex;flex-direction:column;gap:3px;flex:1}
-.hw-led-row{display:flex;align-items:center;gap:7px;background:transparent;border:0;padding:2px 4px;border-radius:5px;cursor:pointer;width:100%;text-align:left;font:inherit}
+/* ---- CONTROLLER ---- */
+.hw-ctrl{flex:0 0 auto;width:170px;align-self:stretch;display:flex;border-radius:8px;background:linear-gradient(180deg,#D7DCDA,#C6CDCB);border:1px solid #98a19d;box-shadow:var(--sh-2);overflow:hidden}
+.hw-ctrl-side{flex:0 0 18px;background:linear-gradient(180deg,#3a433e,#2b342e);color:#cfe0d6;display:flex;align-items:center;justify-content:center}
+.hw-ctrl-side span{writing-mode:vertical-rl;transform:rotate(180deg);font-size:10px;font-weight:700;letter-spacing:.16em;font-family:var(--mono);white-space:nowrap}
+.hw-ctrl-col{flex:1;display:flex;flex-direction:column;min-width:0}
+.cz{padding:6px 8px;border-bottom:1px solid rgba(0,0,0,.08)}
+.hw-sd{background:#c0c7c4;border-radius:5px;border:1px solid #a6afab;padding:6px;display:flex;flex-direction:column;gap:5px}
+.hw-sd .l{display:flex;align-items:center;justify-content:space-between;font-family:var(--mono);font-size:8px;color:#46514b;font-weight:700;letter-spacing:.03em}
+.hw-sd .l .r{display:inline-flex;align-items:center;gap:3px;font-weight:600}
+.hw-sd .slot{height:15px;border-radius:2px;background:linear-gradient(90deg,#2b322e,#3c453f 70%,#2b322e);box-shadow:inset 0 1px 2px rgba(0,0,0,.45)}
+.hw-ident{font-family:var(--mono);font-size:7.5px;line-height:1.65;color:#5a635e}
+.hw-ident b{color:#39433d;font-weight:700}
+.hw-brand{display:flex;align-items:center;gap:6px}
+.hw-brand .pcmark{width:15px;height:15px;border-radius:3px;background:#39433d;display:flex;align-items:center;justify-content:center;color:#cfe0d6;font-size:9px;font-weight:800;flex:0 0 auto}
+.hw-brand .pc{font-size:8.5px;line-height:1.25;color:#39433d;font-weight:700}
+.hw-brand .pc small{display:block;font-weight:500;color:#76807a;font-size:7px}
+.hw-leds{display:grid;grid-template-columns:1fr 1fr;gap:2px 8px;padding:8px}
+.hw-led-row{display:flex;align-items:center;gap:6px;background:transparent;border:0;padding:1px 3px;border-radius:4px;cursor:pointer;text-align:left;font:inherit}
 .hw-led-row:hover{background:rgba(0,0,0,.06)}
-.hw-led-row.sel{background:rgba(28,110,69,.12);box-shadow:inset 0 0 0 1px var(--acc)}
-.hw-led-row .lbl{font-family:var(--mono);font-size:9.5px;font-weight:600;color:#2c352f;letter-spacing:.02em}
-.hw-eth{display:flex;gap:6px;justify-content:center;padding:6px 8px;border-top:1px solid rgba(0,0,0,.12)}
+.hw-led-row.sel{background:rgba(28,110,69,.14);box-shadow:inset 0 0 0 1px var(--acc)}
+.hw-led-row .lbl{font-family:var(--mono);font-size:8.5px;font-weight:700;color:#2c352f;letter-spacing:.02em}
+.hw-busd{display:flex;align-items:center;gap:8px;padding:6px 8px}
+.hw-busd .ttl{font-family:var(--mono);font-size:9px;font-weight:800;color:#46514b}
+.hw-dgrid{display:grid;grid-template-columns:repeat(3,auto);gap:4px 6px}
+.hw-dled{display:inline-flex;align-items:center;gap:3px;background:transparent;border:0;padding:1px;cursor:pointer;font:inherit}
+.hw-dled .dn{font-family:var(--mono);font-size:7.5px;color:#5a635e;font-weight:700}
+.hw-dled:hover{background:rgba(0,0,0,.06);border-radius:3px}
+.hw-up{margin-left:auto;display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:8px;color:#46514b;font-weight:700}
+.hw-qr{display:flex;align-items:center;gap:8px}
+.hw-qr .q{width:38px;height:38px;flex:0 0 auto;border-radius:2px;background:#fff;border:1px solid #aeb6b2;padding:2px}
+.hw-qr .cap{font-size:7.5px;color:#76807a;line-height:1.35}
+.hw-window{flex:1;min-height:24px;margin:7px;border-radius:5px;border:1px solid #aeb6b2;background:#c5ccc9;background-image:radial-gradient(rgba(57,67,62,.22) 1px,transparent 1.4px);background-size:7px 7px;position:relative}
+.hw-window .x3{position:absolute;left:5px;bottom:4px;font-family:var(--mono);font-size:7.5px;color:#5a635e;font-weight:700}
+.hw-supply{display:flex;flex-direction:column;gap:6px}
+.hw-supply .ulrow{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:9px;font-weight:800;color:#2c352f}
+.hw-terms{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px}
+.hw-tm{display:flex;flex-direction:column;align-items:center;gap:2px;font-family:var(--mono);font-size:7.5px;color:#39433d;font-weight:600}
+.hw-tm i{width:16px;height:13px;border-radius:2px;box-shadow:inset 0 1px 1px rgba(0,0,0,.3);flex:0 0 auto}
+.hw-tm i.rd{background:#c0473b}.hw-tm i.bl{background:#3f6f9c}.hw-tm i.gy{background:#8b948f}
+.hw-eth{display:flex;gap:10px;justify-content:center;padding:8px}
 .hw-port{display:flex;flex-direction:column;align-items:center;gap:3px}
-.hw-port .jack{width:24px;height:17px;border-radius:3px;background:#2b322e;display:flex;align-items:flex-end;justify-content:center;padding-bottom:2px}
-.hw-port .jack .lk{width:6px;height:5px;border-radius:1px;background:#3a463f}
+.hw-port .jack{width:28px;height:19px;border-radius:3px;background:#2b322e;display:flex;align-items:flex-end;justify-content:center;padding-bottom:2px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.4)}
+.hw-port .jack .lk{width:7px;height:5px;border-radius:1px;background:#3a463f}
 .hw-port.up .jack .lk{background:var(--ok);box-shadow:0 0 5px var(--ok)}
-.hw-port .pn{font-family:var(--mono);font-size:8px;color:#46514b}
+.hw-port .pn{font-family:var(--mono);font-size:8px;color:#46514b;font-weight:700}
+.hw-rel{display:flex;align-items:center;justify-content:center;gap:8px;padding:7px;background:rgba(0,0,0,.05)}
+.hw-rel .lever{width:34px;height:8px;border-radius:3px;background:linear-gradient(90deg,#d98a2b,#c2791f);box-shadow:inset 0 1px 1px rgba(255,255,255,.35)}
+.hw-rel .arr{color:#5a635e;display:flex}
 
-/* backplane */
-.hw-bp{flex:0 0 auto;display:flex;flex-direction:column;border-radius:9px;background:#D8DDDB;border:1px solid #98a19d;box-shadow:var(--sh-2);overflow:hidden}
-.hw-bp-rail{display:flex;align-items:center;gap:10px;background:#333b37;color:#d6e5dc;padding:7px 12px;font-size:10.5px;font-weight:700;letter-spacing:.02em}
-.hw-bp-rail .up{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:9.5px;color:#cfe0d6;font-weight:500}
-.hw-bp-rail .art{margin-left:auto;font-family:var(--mono);font-weight:500;color:#9fb3a8;font-size:9.5px}
-.hw-slots{display:flex;gap:8px;padding:10px;flex:1}
+/* ---- BACKPLANE ---- */
+.hw-bp{flex:0 0 auto;display:flex;align-self:stretch}
+.hw-spine{flex:0 0 22px;background:linear-gradient(180deg,#cdd3d1,#bcc3c0);border:1px solid #9aa3a0;border-right:0;border-radius:7px 0 0 7px;display:flex;align-items:center;justify-content:center}
+.hw-spine span{writing-mode:vertical-rl;transform:rotate(180deg);font-family:var(--mono);font-size:8.5px;font-weight:700;letter-spacing:.07em;color:#46514b;white-space:nowrap}
+.hw-grid{display:grid;grid-template-columns:repeat(3,158px);grid-auto-rows:302px;gap:9px;padding:9px;background:#ccd2d0;border:1px solid #9aa3a0;border-radius:0 7px 7px 0}
 
-/* element */
-.hw-elem{flex:0 0 auto;width:152px;display:flex;flex-direction:column;border-radius:7px;background:linear-gradient(180deg,#CCD2D0,#BFC6C4);border:1px solid #a1aaa6;overflow:hidden;transition:box-shadow var(--dur) var(--ease),border-color var(--dur) var(--ease)}
-.hw-elem .conn{height:4px;background:repeating-linear-gradient(90deg,#9aa3a0,#9aa3a0 4px,#b3bab7 4px,#b3bab7 8px)}
-.hw-elem.flt{border-color:var(--alarm);box-shadow:0 0 0 2px var(--alarm-line),0 0 16px rgba(206,58,46,.16)}
-.hw-elem.empty{background:repeating-linear-gradient(45deg,#DADFDD,#DADFDD 9px,#D1D7D5 9px,#D1D7D5 18px);border-style:dashed;border-color:#aeb6b2;align-items:center;justify-content:center}
-.hw-elem.empty .cover{font-size:11px;color:var(--ink-3);text-align:center;padding:18px 12px;font-weight:500;line-height:1.45}
-.hw-eh{display:flex;align-items:center;gap:6px;padding:6px 8px;background:#39423E;color:#dfeae3}
-.hw-eh .slot{font-family:var(--mono);font-size:10px;font-weight:700;background:rgba(255,255,255,.16);border-radius:4px;padding:1px 5px;letter-spacing:.02em}
-.hw-eh .de{display:flex;align-items:center;gap:8px;margin-left:auto}
-.hw-eh .de .pair{display:inline-flex;align-items:center;gap:3px}
-.hw-eh .de .t{font-family:var(--mono);font-size:8.5px;color:#aabeb3;font-weight:600}
-.hw-etype{padding:6px 8px 1px;font-family:var(--mono);font-size:10.5px;font-weight:700;color:#28312c;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hw-edesc{padding:0 8px 6px;font-size:9.5px;color:#59635e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hw-chs{display:grid;grid-template-columns:1fr 1fr;gap:3px;padding:3px 6px 4px}
-.hw-chs.ai{grid-template-columns:1fr}
-.hw-ch{display:flex;align-items:center;gap:5px;padding:3px 5px;border-radius:5px;background:rgba(255,255,255,.55);border:1px solid rgba(0,0,0,.05);cursor:pointer;min-width:0;font:inherit;text-align:left}
+/* ---- SMART ELEMENT ---- */
+.hw-elem{display:flex;border-radius:6px;overflow:hidden;border:1px solid #a1aaa6;background:linear-gradient(180deg,#CDD3D1,#C0C7C4);box-shadow:var(--sh-1);transition:box-shadow var(--dur) var(--ease),border-color var(--dur) var(--ease)}
+.hw-elem.flt{border-color:var(--alarm);box-shadow:0 0 0 2px var(--alarm-line),0 0 16px rgba(206,58,46,.2)}
+.hw-elem.empty{background:repeating-linear-gradient(45deg,#DADFDD,#DADFDD 9px,#D0D6D4 9px,#D0D6D4 18px);border-style:dashed;border-color:#aeb6b2}
+.hw-tab{flex:0 0 20px;background:#8b948f;color:#fff;display:flex;flex-direction:column;align-items:center;padding:7px 0;cursor:pointer}
+.hw-tab .n{font-size:14px;font-weight:800;line-height:1;font-family:var(--mono)}
+.hw-tab.DI{background:#2E6E8E}.hw-tab.DO{background:#C2791F}.hw-tab.AI{background:#4E8A6B}.hw-tab.AO{background:#6A5FB0}
+.hw-elem.flt .hw-tab{background:var(--alarm)}
+.hw-elem.empty .hw-tab{background:#9aa3a0}
+.hw-ebody{flex:1;display:flex;flex-direction:column;min-width:0}
+.hw-etype{padding:5px 7px 4px;font-family:var(--mono);font-size:10px;font-weight:700;color:#28312c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-bottom:1px solid rgba(0,0,0,.08);background:rgba(255,255,255,.4)}
+.hw-chs{flex:1;display:flex;flex-direction:column;padding:3px;gap:1px;overflow:hidden}
+.hw-ch{display:flex;align-items:center;gap:5px;height:14px;padding:0 4px;border-radius:3px;background:rgba(255,255,255,.5);border:1px solid transparent;cursor:pointer;font:inherit;text-align:left;flex:0 0 auto}
 .hw-ch:hover{background:#fff;border-color:rgba(0,0,0,.12)}
-.hw-ch .cn{font-family:var(--mono);font-size:8.5px;font-weight:700;color:#46514b;flex:0 0 auto;width:16px}
-.hw-ch .ab{font-size:9px;color:#39433d;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;flex:1;min-width:0}
-.hw-ch .mA{font-family:var(--mono);font-size:8.5px;color:#2c352f;flex:0 0 auto}
-.hw-ch.free{opacity:.55}
-.hw-ch.free .ab{font-style:italic;color:#76807a}
+.hw-ch .cn{font-family:var(--mono);font-size:8px;font-weight:700;color:#46514b;flex:0 0 auto;width:14px}
+.hw-ch .ab{font-size:8.5px;color:#39433d;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;flex:1;min-width:0}
+.hw-ch .mA{font-family:var(--mono);font-size:8px;color:#2c352f;flex:0 0 auto}
+.hw-ch .pin{width:6px;height:8px;border-radius:1.5px;background:#9aa3a0;box-shadow:inset 0 1px 1px rgba(0,0,0,.25);flex:0 0 auto}
+.hw-ch.free{opacity:.5}.hw-ch.free .ab{font-style:italic;color:#76807a}
 .hw-ch.flt{background:var(--alarm-bg);border-color:var(--alarm-line);box-shadow:0 0 0 1px var(--alarm-line)}
 .hw-ch.flt .cn,.hw-ch.flt .ab,.hw-ch.flt .mA{color:var(--alarm);font-weight:700}
+.hw-ch.flt .pin{background:var(--alarm)}
 .hw-ch.sel{outline:2px solid var(--acc);outline-offset:-1px;background:#fff}
-.hw-term{display:flex;flex-wrap:wrap;gap:3px;justify-content:center;padding:5px 6px 7px;margin-top:auto}
-.hw-term i{width:8px;height:11px;border-radius:2px;background:#8b948f;box-shadow:inset 0 1px 1px rgba(0,0,0,.25)}
-.hw-ef{padding:5px 8px;border-top:1px solid rgba(0,0,0,.1);font-family:var(--mono);font-size:8.5px;color:#59635e;display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.25)}
+.hw-spare{flex:1;display:flex;flex-wrap:wrap;align-content:flex-start;gap:3px;padding:5px 4px;opacity:.5}
+.hw-spare i{width:7px;height:9px;border-radius:1.5px;background:#9aa3a0}
+.hw-ef{display:flex;align-items:center;gap:5px;padding:4px 7px;border-top:1px solid rgba(0,0,0,.1);background:rgba(255,255,255,.32);font-family:var(--mono)}
+.hw-ef .t{font-size:8px;font-weight:800;color:#46514b}
+.hw-ef .ty{margin-left:auto;font-size:8px;color:#59635e;font-weight:600}
+.hw-elem.empty .cover{margin:auto;text-align:center;font-size:10.5px;color:var(--ink-3);padding:14px;line-height:1.55}
 
-/* status bar */
+/* ---- status bar ---- */
 .hw-bar{display:flex;align-items:center;gap:12px;padding:13px 16px;border-radius:var(--r-md);border:1px solid var(--c-line);background:var(--c-surface);box-shadow:var(--sh-1);margin-top:14px;transition:background var(--dur),border-color var(--dur)}
 .hw-bar.flt{background:var(--alarm-bg);border-color:var(--alarm-line)}
 .hw-bar.ok{background:var(--ok-bg);border-color:var(--ok-line)}
@@ -745,19 +776,15 @@ body{background:linear-gradient(177deg,#F0F4F0 0%,#E7EDE8 100%);background-attac
 .hw-bar .tx .code{font-family:var(--mono);font-size:11.5px;font-weight:600}
 .hw-bar .reset{margin-left:auto;flex:0 0 auto;font-size:12.5px;color:var(--acc);background:none;border:0;cursor:pointer;font-weight:600;white-space:nowrap}
 .hw-bar .reset:hover{text-decoration:underline}
-
-/* legend */
 .hw-legend{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:12px;font-size:11.5px;color:var(--ink-2)}
 .hw-legend span{display:inline-flex;align-items:center;gap:6px}
-
-/* toolbar / segmented */
 .hw-tools{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .hw-hint{font-size:12.5px;color:var(--ink-3)}
 
-/* configurator */
-.hw-elem.edit .hw-ch{border-style:dashed}
+/* ---- configurator ---- */
+.hw-elem.edit .hw-ch{border-style:dashed;border-color:rgba(0,0,0,.18)}
 .hw-elem.edit .hw-ch:hover{outline:1.5px dashed var(--acc)}
-.hw-sel-type{width:100%;font:inherit;font-family:var(--mono);font-size:10px;font-weight:600;color:#28312c;background:#fff;border:1px solid var(--c-line-2);border-radius:5px;padding:3px 5px;margin:4px 8px;width:calc(100% - 16px);cursor:pointer}
+.hw-sel-type{font:inherit;font-family:var(--mono);font-size:9.5px;font-weight:700;color:#28312c;background:#fff;border:1px solid var(--c-line-2);border-radius:4px;padding:3px 4px;margin:5px;width:calc(100% - 10px);cursor:pointer}
 .pick-list{display:flex;flex-direction:column;gap:6px;max-height:50vh;overflow:auto}
 .pick-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--c-line);border-radius:var(--r-sm);background:var(--c-surface);cursor:pointer;text-align:left;font:inherit}
 .pick-row:hover{border-color:var(--acc);background:var(--acc-50)}
@@ -766,7 +793,7 @@ body{background:linear-gradient(177deg,#F0F4F0 0%,#E7EDE8 100%);background-attac
 .pick-row .meta{font-size:11.5px;color:var(--ink-3);margin-left:auto;font-family:var(--mono)}
 .pick-row.clear{color:var(--ink-2);font-style:italic}
 
-/* diagnostic faceplate extras */
+/* ---- diagnostic faceplate ---- */
 .dg-h{display:flex;align-items:center;gap:12px;padding:14px 15px;border-radius:var(--r-md);margin-bottom:16px}
 .dg-h.flt{background:var(--alarm-bg);border:1px solid var(--alarm-line)}
 .dg-h.ok{background:var(--ok-bg);border:1px solid var(--ok-line)}
@@ -1033,7 +1060,8 @@ function hwCtrlLeds(){
     {id:'UL',state:'on',color:'ok',meaning:'24 V logicaspanning U_L aanwezig (UL groen).'},
     {id:'BF-C',state:'off',color:'info',meaning:'PROFINET-controllerfunctie niet in gebruik (geen PROFINET geconfigureerd).'},
     {id:'BF-D',state:'off',color:'info',meaning:'PROFINET-devicefunctie niet in gebruik.'},
-    {id:'SF',state:'off',color:'alarm',meaning:'Geen PROFINET-groepsdiagnose aanwezig.'}
+    {id:'SF',state:'off',color:'alarm',meaning:'Geen PROFINET-groepsdiagnose aanwezig.'},
+    {id:'EXT',state:'off',color:'info',meaning:'Uitbreidingsbus zonder functie op de AXC F 2152.'}
   ];
 }
 function hwSlotState(slot){const el=state.hw.slots[slot];if(!el||!el.type)return 'empty';
@@ -2000,8 +2028,8 @@ function updateOnd(){}
 
 /* ============================================================ ROUTER */
 /* ============================================================ HARDWARE-TWEELING: rendering + diagnose */
-let hwMode='live';   // 'live' | 'edit'
-let hwSel=null;      // {kind:'led'|'ch'|'elem', ...}
+let hwMode='live';
+let hwSel=null;
 function idu(s){return uidOf(s).replace(':','_');}
 function sevIcon(sev){return sev==='ok'?'check':sev==='warn'?'warn':sev==='alarm'?'alarm':sev==='run'?'play':'clock';}
 function abbrev(s){const k=s.k;
@@ -2021,16 +2049,35 @@ function aiMA(s){const f=sigFault(s);if(f){if(f.code==='8002')return '‹ 3,6 mA
 function ioStatus(s){const v=ioVals(s);const f=sigFault(s);if(f){return {raw:s.type==='AI'?'—':v.raw,scaled:s.type==='AI'?aiMA(s):v.scaled,sev:'alarm',lbl:f.cond.nm,fault:f};}return {raw:v.raw,scaled:v.scaled,sev:v.sev,lbl:v.lbl,fault:null};}
 
 function ledClass(color,st){let c='led';if(st==='on')c+=' on '+color;else if(st==='blink'||st==='blink05'||st==='blink4')c+=' on '+color+' blink'+(st==='blink05'?' f05':st==='blink4'?' f4':'');return c;}
-function ledHTML(color,st){return '<span class="'+ledClass(color,st)+'"></span>';}
+function ledHTML(color,st,extra){return '<span class="'+ledClass(color,st)+(extra?(' '+extra):'')+'"></span>';}
+function getLed(id){return hwCtrlLeds().find(l=>l.id===id)||{id,state:'off',color:'info',meaning:''};}
+function qrSVG(){let r='<rect width="21" height="21" fill="#fff"/>';
+  const fnd=(x,y)=>`<rect x="${x}" y="${y}" width="7" height="7" fill="#1d241f"/><rect x="${x+1}" y="${y+1}" width="5" height="5" fill="#fff"/><rect x="${x+2}" y="${y+2}" width="3" height="3" fill="#1d241f"/>`;
+  r+=fnd(0,0)+fnd(14,0)+fnd(0,14);
+  let s=7;for(let y=0;y<21;y++)for(let x=0;x<21;x++){if((x<8&&y<8)||(x>12&&y<8)||(x<8&&y>12))continue;s=(s*1103515245+12345)&0x7fffffff;if((s>>9)&1)r+=`<rect x="${x}" y="${y}" width="1" height="1" fill="#1d241f"/>`;}
+  return `<svg width="100%" height="100%" viewBox="0 0 21 21" shape-rendering="crispEdges">${r}</svg>`;}
+const ARRDOWN='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>';
 
 function buildCtrl(){
-  const rows=hwCtrlLeds().map(l=>`<button class="hw-led-row" data-led="${l.id}">${ledHTML(l.color,l.state)}<span class="lbl">${l.id}</span></button>`).join('');
+  const L=['BF-C','BF-D','SF','BOOT','EXT'],R=['RUN','FAIL','DBG','D','E'];
+  let leds='';for(let i=0;i<5;i++){const a=getLed(L[i]),b=getLed(R[i]);
+    leds+=`<button class="hw-led-row" data-led="${L[i]}">${ledHTML(a.color,a.state,'xs')}<span class="lbl">${L[i]}</span></button>`;
+    leds+=`<button class="hw-led-row" data-led="${R[i]}">${ledHTML(b.color,b.state,'xs')}<span class="lbl">${R[i]}</span></button>`;}
+  let dcl='';for(let i=0;i<6;i++){const st=hwSlotState(i);const led=st==='empty'?ledHTML('ok','off','xs'):st==='ok'?ledHTML('ok','on','xs'):st==='missing'?ledHTML('alarm','blink','xs'):ledHTML('alarm','on','xs');
+    dcl+=`<button class="hw-dled" data-slot="${i}">${led}<span class="dn">${i+1}</span></button>`;}
   return `<div class="hw-ctrl">
-    <div class="hw-ctrl-head">AXC F 2152<small>${state.hw.ctrlArt}</small></div>
-    <div class="hw-ctrl-body">${rows}</div>
-    <div class="hw-eth">
-      <div class="hw-port up"><div class="jack"><span class="lk"></span></div><span class="pn">X1</span></div>
-      <div class="hw-port"><div class="jack"><span class="lk"></span></div><span class="pn">X2</span></div>
+    <div class="hw-ctrl-side"><span>AXC F 2152</span></div>
+    <div class="hw-ctrl-col">
+      <div class="cz"><div class="hw-sd"><div class="l"><span>SD-CARD</span><span class="r">R ${ledHTML('alarm','off','xs')}</span></div><div class="slot"></div></div></div>
+      <div class="cz hw-ident"><div><b>Ord.No</b> ${state.hw.ctrlArt}</div><div><b>MAC</b> 00·A0·45·9D·13·BC</div><div>plcnext-community.net</div></div>
+      <div class="cz hw-brand"><span class="pcmark">PC</span><span class="pc">PLCnext Technology<small>Designed by PHOENIX CONTACT</small></span></div>
+      <div class="cz hw-leds">${leds}</div>
+      <div class="cz hw-busd"><span class="ttl">D</span><div class="hw-dgrid">${dcl}</div><span class="hw-up">UP ${ledHTML('ok','on','xs')}</span></div>
+      <div class="cz hw-qr"><div class="q">${qrSVG()}</div><div class="cap">scan here for<br>easy start up</div></div>
+      <div class="hw-window"><span class="x3">X3</span></div>
+      <div class="cz hw-supply"><div class="ulrow">UL ${ledHTML('ok','on','xs')}<span style="margin-left:auto;font-weight:600;color:#5a635e">24 V</span></div><div class="hw-terms"><span class="hw-tm"><i class="rd"></i>a1</span><span class="hw-tm"><i class="bl"></i>b1</span><span class="hw-tm"><i class="gy"></i>U+</span><span class="hw-tm"><i class="rd"></i>a2</span><span class="hw-tm"><i class="bl"></i>b2</span><span class="hw-tm"><i class="gy"></i>U−</span></div></div>
+      <div class="cz hw-eth"><div class="hw-port up"><div class="jack"><span class="lk"></span></div><span class="pn">X1</span></div><div class="hw-port"><div class="jack"><span class="lk"></span></div><span class="pn">X2</span></div></div>
+      <div class="hw-rel"><span class="lever"></span><span class="arr">${ARRDOWN}</span></div>
     </div></div>`;
 }
 function buildTypeSelect(slot){const cur=state.hw.slots[slot]?state.hw.slots[slot].type:null;
@@ -2039,27 +2086,25 @@ function buildTypeSelect(slot){const cur=state.hw.slots[slot]?state.hw.slots[slo
   return `<select class="hw-sel-type" data-slot="${slot}">${opts}</select>`;}
 function buildElem(slot){
   const conf=state.hw.slots[slot];const el=conf&&conf.type?ELEMENTS[conf.type]:null;
-  if(!el){let inner=`<div class="cover">Slot ${slot+1}<br>vrij — gereserveerd<br><span style="font-size:9.5px">(slotafdekking)</span></div>`;
-    if(hwMode==='edit')inner=buildTypeSelect(slot)+inner;
-    return `<div class="hw-elem empty" data-slot="${slot}">${inner}</div>`;}
-  const dState=hwSlotState(slot);
-  const dLed=dState==='missing'?ledHTML('alarm','blink'):dState==='fault'?ledHTML('alarm','on'):ledHTML('ok','on');
-  const eState=hwElemE(slot);const eLed=ledHTML('alarm',eState==='off'?'off':eState);
+  if(!el){const inner=hwMode==='edit'?buildTypeSelect(slot):'';
+    return `<div class="hw-elem empty" data-slot="${slot}"><div class="hw-tab" data-slot="${slot}"><span class="n">${slot+1}</span></div><div class="hw-ebody">${inner}<div class="cover">Slot ${slot+1}<br>vrij<br><span style="font-size:9px">slotafdekking</span></div></div></div>`;}
   const fault=activeFaults().some(x=>x.slot===slot);
+  const eState=hwElemE(slot);const eLed=ledHTML('alarm',eState==='off'?'off':eState);
+  const tab=`<div class="hw-tab ${el.kind}" data-slot="${slot}"><span class="n">${slot+1}</span></div>`;
   let chs='';
   if(el.led){let cells='';for(let c=1;c<=el.ch;c++){const s=sigAt(slot,c);const flt=!!chFaultCode(slot,c);
-      cells+=`<button class="hw-ch${s?'':' free'}${flt?' flt':''}" data-slot="${slot}" data-ch="${c}">${ledHTML('amber',chOn(s)?'on':'off')}<span class="cn">${String(c).padStart(2,'0')}</span><span class="ab">${s?abbrev(s):'—'}</span></button>`;}
+      cells+=`<button class="hw-ch${s?'':' free'}${flt?' flt':''}" data-slot="${slot}" data-ch="${c}">${ledHTML('amber',chOn(s)?'on':'off')}<span class="cn">${String(c).padStart(2,'0')}</span><span class="ab">${s?abbrev(s):'—'}</span><span class="pin"></span></button>`;}
     chs=`<div class="hw-chs">${cells}</div>`;
   }else{let cells='';for(let c=1;c<=el.ch;c++){const s=sigAt(slot,c);const flt=!!chFaultCode(slot,c);
-      cells+=`<button class="hw-ch ai${s?'':' free'}${flt?' flt':''}" data-slot="${slot}" data-ch="${c}"><span class="cn">${String(c).padStart(2,'0')}</span><span class="ab">${s?abbrev(s):'—'}</span><span class="mA">${s?aiMA(s):''}</span></button>`;}
-    chs=`<div class="hw-chs ai">${cells}</div>`;}
-  const termN=el.led?8:6;let term='';for(let i=0;i<termN;i++)term+='<i></i>';
-  const head=`<div class="hw-eh"><span class="slot">S${slot+1}</span><span class="de"><span class="pair"><span class="t">D</span>${dLed}</span><span class="pair"><span class="t">E</span>${eLed}</span></span></div>`;
-  const typeRow=hwMode==='edit'?buildTypeSelect(slot):`<div class="hw-etype">${el.name}</div><div class="hw-edesc">${el.desc}</div>`;
-  return `<div class="hw-elem${fault?' flt':''}${hwMode==='edit'?' edit':''}" data-slot="${slot}"><div class="conn"></div>${head}${typeRow}${chs}<div class="hw-term">${term}</div><div class="hw-ef"><span>${el.art}</span><span>S${slot+1}</span></div></div>`;
+      cells+=`<button class="hw-ch${s?'':' free'}${flt?' flt':''}" data-slot="${slot}" data-ch="${c}"><span class="cn">${String(c).padStart(2,'0')}</span><span class="ab">${s?abbrev(s):'—'}</span><span class="mA">${s?aiMA(s):''}</span><span class="pin"></span></button>`;}
+    let spare='';for(let i=0;i<12;i++)spare+='<i></i>';
+    chs=`<div class="hw-chs">${cells}<div class="hw-spare">${spare}</div></div>`;}
+  const typeRow=hwMode==='edit'?buildTypeSelect(slot):`<div class="hw-etype">${el.name}</div>`;
+  const footer=`<div class="hw-ef"><span class="t">E</span>${eLed}<span class="ty">${el.name.replace('AXL SE ','')}</span></div>`;
+  return `<div class="hw-elem ${el.kind}${fault?' flt':''}${hwMode==='edit'?' edit':''}" data-slot="${slot}">${tab}<div class="hw-ebody">${typeRow}${chs}${footer}</div></div>`;
 }
-function buildBp(){let slots='';for(let i=0;i<6;i++)slots+=buildElem(i);
-  return `<div class="hw-bp"><div class="hw-bp-rail"><span class="up">${ledHTML('ok','on')} UP · 24 V</span> AXL F BP SE6 <span class="art">${state.hw.bpArt}</span></div><div class="hw-slots">${slots}</div></div>`;}
+function buildBp(){let cells='';for(let i=0;i<6;i++)cells+=buildElem(i);
+  return `<div class="hw-bp"><div class="hw-spine"><span>AXL F BP SE6 · ${state.hw.bpArt} · HW 00</span></div><div class="hw-grid">${cells}</div></div>`;}
 function buildRack(){return `<div class="hw-scroll"><div class="hw-rack">${buildCtrl()}${buildBp()}</div></div>`;}
 
 function hwListRowHTML(s){const v=ioStatus(s);const flt=!!v.fault;const addr=hwAddr(s)||'—';const id=idu(s);
@@ -2068,8 +2113,7 @@ function buildHwList(){let rows='';
   for(let i=0;i<6;i++){const conf=state.hw.slots[i];if(!conf||!conf.type)continue;const el=ELEMENTS[conf.type];
     const sigs=[];for(let c=1;c<=el.ch;c++){const s=sigAt(i,c);if(s)sigs.push(s);}
     rows+=`<tr class="grp"><td colspan="6"><span class="smono">S${i+1}</span> · ${el.name} <span class="muted-2" style="font-weight:500">· ${el.desc} · ${el.art}</span></td></tr>`;
-    if(sigs.length)sigs.forEach(s=>rows+=hwListRowHTML(s));
-    else rows+=`<tr><td colspan="6" class="muted-2" style="font-size:12px;font-style:italic">geen signalen toegewezen</td></tr>`;}
+    if(sigs.length)sigs.forEach(s=>rows+=hwListRowHTML(s));else rows+=`<tr><td colspan="6" class="muted-2" style="font-size:12px;font-style:italic">geen signalen toegewezen</td></tr>`;}
   const un=SIGNALS.filter(s=>!state.hw.map[uidOf(s)]);
   if(un.length){rows+=`<tr class="grp"><td colspan="6">Niet toegewezen <span class="muted-2" style="font-weight:500">· ${un.length} signaal${un.length>1?'en':''}</span></td></tr>`;un.forEach(s=>rows+=hwListRowHTML(s));}
   return `<table class="tbl hw-tbl"><thead><tr><th style="width:84px">Adres</th><th style="width:64px">Type</th><th>Signaal</th><th class="r" style="width:90px">Ruw</th><th class="r" style="width:116px">Geschaald</th><th style="width:150px">Status</th></tr></thead><tbody id="hw-list">${rows}</tbody></table>`;}
@@ -2095,14 +2139,16 @@ function wireHwRack(){
   const host=$('#hw-rack-host');
   if(host)host.onclick=e=>{
     const led=e.target.closest('.hw-led-row');if(led){selectLed(led.dataset.led);return;}
+    const dled=e.target.closest('.hw-dled');if(dled){selectElem(+dled.dataset.slot);return;}
+    const tab=e.target.closest('.hw-tab');if(tab){selectElem(+tab.dataset.slot);return;}
     const ch=e.target.closest('.hw-ch');if(ch){const sl=+ch.dataset.slot,c=+ch.dataset.ch;if(hwMode==='edit')openAssign(sl,c);else selectCh(sl,c);return;}
     const elem=e.target.closest('.hw-elem');if(elem&&hwMode==='live'){if(elem.classList.contains('empty'))return;selectElem(+elem.dataset.slot);return;}
   };
   $$('#hw-mode button').forEach(b=>b.onclick=()=>{hwMode=b.dataset.m;render();});
   $$('.hw-sel-type').forEach(sel=>sel.onchange=()=>changeSlotType(+sel.dataset.slot,sel.value));
-  const list=$('#hw-list');if(list)list.onclick=e=>{const tr=e.target.closest('tr[data-uid]');if(!tr)return;const s=sigByUid(tr.dataset.uid);if(!s)return;const p=state.hw.map[uidOf(s)];if(p){selectCh(p.slot,p.ch);}};
+  const list=$('#hw-list');if(list)list.onclick=e=>{const tr=e.target.closest('tr[data-uid]');if(!tr)return;const s=sigByUid(tr.dataset.uid);if(!s)return;const p=state.hw.map[uidOf(s)];if(p)selectCh(p.slot,p.ch);};
 }
-function clearSel(){hwSel=null;$$('.hw-ch.sel,.hw-led-row.sel').forEach(x=>x.classList.remove('sel'));}
+function clearSel(){hwSel=null;$$('.hw-ch.sel,.hw-led-row.sel,.hw-dled.sel').forEach(x=>x.classList.remove('sel'));}
 function markCh(slot,ch){const el=$(`.hw-ch[data-slot="${slot}"][data-ch="${ch}"]`);if(el){el.classList.add('sel');el.scrollIntoView({block:'nearest',inline:'nearest'});}}
 function selectLed(id){clearSel();hwSel={kind:'led',id};const el=$(`.hw-led-row[data-led="${id}"]`);if(el)el.classList.add('sel');setHwBar();}
 function selectCh(slot,ch){clearSel();hwSel={kind:'ch',slot,ch};markCh(slot,ch);setHwBar();openHwFaceplate(slot,ch);}
@@ -2110,16 +2156,18 @@ function selectElem(slot){clearSel();hwSel={kind:'elem',slot};setHwBar();openHwF
 function setHwBar(){
   const bar=$('#hw-bar');if(!bar)return;
   const faults=activeFaults();let cls='hw-bar',icon='info',html='',showReset=false;
-  if(hwSel&&hwSel.kind==='led'){const L=hwCtrlLeds().find(l=>l.id===hwSel.id);const stTxt=L.state==='off'?'uit':L.state==='on'?'aan':'knippert';
-    cls+=' '+(L.state==='off'?'info':(L.color==='ok'?'ok':L.color==='alarm'?'flt':'info'));icon=L.state==='off'?'info':(L.color==='ok'?'check':L.color==='alarm'?'alarm':'info');
-    html=`<b>LED ${L.id} · ${stTxt}</b> <span class="sub">— ${L.meaning}</span>`;showReset=true;
+  if(hwSel&&hwSel.kind==='led'){const Lx=getLed(hwSel.id);const stTxt=Lx.state==='off'?'uit':Lx.state==='on'?'aan':'knippert';
+    cls+=' '+(Lx.state==='off'?'info':(Lx.color==='ok'?'ok':Lx.color==='alarm'?'flt':'info'));icon=Lx.state==='off'?'info':(Lx.color==='ok'?'check':Lx.color==='alarm'?'alarm':'info');
+    html=`<b>LED ${Lx.id} · ${stTxt}</b> <span class="sub">— ${Lx.meaning}</span>`;showReset=true;
   }else if(hwSel&&hwSel.kind==='ch'){const s=sigAt(hwSel.slot,hwSel.ch);const code=chFaultCode(hwSel.slot,hwSel.ch);const conf=state.hw.slots[hwSel.slot];const el=ELEMENTS[conf.type];const a=`S${hwSel.slot+1}·CH${String(hwSel.ch).padStart(2,'0')}`;
     if(code){const cond=condOf(el.type,code);cls+=' flt';icon='alarm';html=`<b>${a} · ${s?s.nm:'—'}</b> — ${cond.nm} <span class="code">(${code}hex)</span>. <span class="sub">${cond.action}</span>`;}
     else{cls+=' ok';icon='check';html=`<b>${a} · ${s?s.nm:'vrij kanaal'}</b> <span class="sub">— geen storing${s?(' · '+el.name):''}</span>`;}
     showReset=true;
-  }else if(hwSel&&hwSel.kind==='elem'){const conf=state.hw.slots[hwSel.slot];const el=ELEMENTS[conf.type];const ef=activeFaults().filter(x=>x.slot===hwSel.slot);
-    if(ef.length){cls+=' flt';icon='alarm';html=`<b>S${hwSel.slot+1} · ${el.name}</b> — ${ef.length} kanaal-storing${ef.length>1?'en':''} actief. <span class="sub">Klik een rood kanaal voor details.</span>`;}
-    else{cls+=' ok';icon='check';html=`<b>S${hwSel.slot+1} · ${el.name}</b> <span class="sub">— ${el.desc} · geen storing (D groen, E uit)</span>`;}
+  }else if(hwSel&&hwSel.kind==='elem'){const conf=state.hw.slots[hwSel.slot];
+    if(!conf||!conf.type){cls+=' info';icon='info';html=`<b>Slot ${hwSel.slot+1}</b> <span class="sub">— leeg (slotafdekking). Kies in Samenstellen een Smart Element.</span>`;}
+    else{const el=ELEMENTS[conf.type];const ef=activeFaults().filter(x=>x.slot===hwSel.slot);
+      if(ef.length){cls+=' flt';icon='alarm';html=`<b>S${hwSel.slot+1} · ${el.name}</b> — ${ef.length} kanaal-storing${ef.length>1?'en':''} actief. <span class="sub">Klik een rood kanaal voor details.</span>`;}
+      else{cls+=' ok';icon='check';html=`<b>S${hwSel.slot+1} · ${el.name}</b> <span class="sub">— ${el.desc} · geen storing (D groen, E uit)</span>`;}}
     showReset=true;
   }else if(faults.length){const f=faults[0];cls+=' flt';icon='alarm';const where=f.ch?`S${f.slot+1}·CH${String(f.ch).padStart(2,'0')} · ${f.sig?f.sig.nm:''}`:`S${f.slot+1} · ${f.elem.name}`;
     html=`<b>${where}</b> — ${f.cond.nm} <span class="code">(${f.code}hex)</span>. <span class="sub">${f.cond.action}</span>${faults.length>1?` <span class="sub">· +${faults.length-1} andere storing${faults.length-1>1?'en':''}</span>`:''}`;
@@ -2168,11 +2216,12 @@ function assignCh(slot,ch,uid){
 }
 function updateHardware(){
   if(state.screen!=='hardware')return;
-  hwCtrlLeds().forEach(l=>{const row=$(`.hw-led-row[data-led="${l.id}"]`);if(!row)return;const dot=row.querySelector('.led');if(dot)dot.className=ledClass(l.color,l.state);});
+  hwCtrlLeds().forEach(l=>{const row=$(`.hw-led-row[data-led="${l.id}"]`);if(!row)return;const dot=row.querySelector('.led');if(dot)dot.className=ledClass(l.color,l.state)+' xs';});
+  for(let i=0;i<6;i++){const b=$(`.hw-dled[data-slot="${i}"]`);if(!b)continue;const dot=b.querySelector('.led');if(!dot)continue;const st=hwSlotState(i);
+    dot.className=(st==='empty'?ledClass('ok','off'):st==='ok'?ledClass('ok','on'):st==='missing'?ledClass('alarm','blink'):ledClass('alarm','on'))+' xs';}
   for(let i=0;i<6;i++){const conf=state.hw.slots[i];const box=$(`.hw-elem[data-slot="${i}"]`);if(!box||!conf||!conf.type)continue;const el=ELEMENTS[conf.type];
     box.classList.toggle('flt',activeFaults().some(x=>x.slot===i));
-    const de=box.querySelectorAll('.hw-eh .led');
-    if(de.length>=2){const dState=hwSlotState(i);de[0].className=dState==='missing'?ledClass('alarm','blink'):dState==='fault'?ledClass('alarm','on'):dState==='empty'?ledClass('ok','off'):ledClass('ok','on');const eState=hwElemE(i);de[1].className=ledClass('alarm',eState==='off'?'off':eState);}
+    const ef=box.querySelector('.hw-ef .led');if(ef){const eState=hwElemE(i);ef.className=ledClass('alarm',eState==='off'?'off':eState);}
     box.querySelectorAll('.hw-ch').forEach(cell=>{const c=+cell.dataset.ch;const s=sigAt(i,c);cell.classList.toggle('flt',!!chFaultCode(i,c));
       if(el.led){const dot=cell.querySelector('.led');if(dot)dot.className=ledClass('amber',chOn(s)?'on':'off');}
       else{const mA=cell.querySelector('.mA');if(mA)mA.textContent=s?aiMA(s):'';}});}
