@@ -113,7 +113,7 @@ button{font-family:inherit}
   border-radius:var(--r-sm); color:var(--ink-2); cursor:pointer; align-items:center;justify-content:center;
 }
 .tb-burger:hover{background:var(--c-sunken)}
-.brand{display:flex;align-items:center;gap:11px;min-width:0}
+.brand{display:flex;align-items:center;gap:11px;min-width:0;flex:0 1 auto;overflow:hidden}
 .brand-logo{display:flex;align-items:center;gap:2px;font-weight:700;font-size:19px;letter-spacing:-.03em;color:var(--ink)}
 .brand-logo .dot{width:9px;height:9px;border-radius:2px;background:var(--brand);display:inline-block;transform:translateY(1px);margin-left:3px}
 .brand-sep{width:1px;height:24px;background:var(--c-line-2);margin:0 2px}
@@ -122,7 +122,7 @@ button{font-family:inherit}
 .brand-machine .u{font-size:11px;color:var(--ink-3)}
 .brand-machine .u .mono{font-size:11px}
 .tb-spacer{flex:1}
-.tb-cluster{display:flex;align-items:center;gap:8px}
+.tb-cluster{display:flex;align-items:center;gap:8px;flex-shrink:0}
 .tb-conn{display:flex;align-items:center;gap:7px;padding:6px 11px;border:1px solid var(--c-line);border-radius:var(--r-pill);background:var(--c-surface);font-size:12.5px;color:var(--ink-2);white-space:nowrap}
 .tb-conn .pulse{width:8px;height:8px;border-radius:50%;background:var(--ok);position:relative}
 .tb-conn .pulse::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:1px solid var(--ok);opacity:.6;animation:ping 2.4s ease-out infinite}
@@ -238,11 +238,11 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .tbl .val{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:600}
 
 /* kpi tiles */
-.kpi{padding:16px 18px}
+.kpi{padding:16px 18px;display:flex;flex-direction:column}
 .kpi .k{font-size:12px;color:var(--ink-3);font-weight:500;display:flex;align-items:center;gap:7px}
 .kpi .v{margin-top:7px;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:30px;font-weight:600;letter-spacing:-.02em;line-height:1}
 .kpi .v small{font-family:var(--font);font-size:14px;color:var(--ink-3);font-weight:500;letter-spacing:0}
-.kpi .s{margin-top:8px;font-size:12px;color:var(--ink-2)}
+.kpi .s{margin-top:auto;padding-top:8px;font-size:12px;color:var(--ink-2)}
 
 /* level bar (linear) */
 .lvl{height:9px;border-radius:99px;background:var(--c-line);overflow:hidden;position:relative}
@@ -389,7 +389,34 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 
 .pipe-base{stroke:#D6DDD6;stroke-width:6;fill:none;stroke-linecap:round;stroke-linejoin:round}
 .pipe-flow{stroke-width:4.4;fill:none;stroke-linecap:round;stroke-linejoin:round;opacity:0;transition:opacity .3s}
-.pipe-flow.on{opacity:1;stroke-dasharray:7 9;animation:march .7s linear infinite}
+.pipe-flow.on{opacity:1;stroke-dasharray:7 9;animation:march var(--flow-dur,1s) linear infinite}
+/* --- living liquid: damped level + kabbelend oppervlak (twee golflagen) --- */
+.liqlvl{transition:transform .85s var(--ease-out)}
+.liq-wave{animation:waveX 6.5s linear infinite}
+.liq-wave2{animation:waveX 4.6s linear infinite;animation-delay:-2.2s}
+@keyframes waveX{from{transform:translateX(0)}to{transform:translateX(calc(var(--wl,40px) * -1))}}
+.glass-sheen{pointer-events:none}
+/* mengbellen (alleen tijdens recirculatie) */
+.bubbles{opacity:0;transition:opacity .5s var(--ease)}
+.bubbles.on{opacity:.55}
+.bubbles circle{animation:bub 3.2s ease-in infinite;transform-box:fill-box}
+@keyframes bub{0%{transform:translateY(0);opacity:0}15%{opacity:.7}100%{transform:translateY(-42px);opacity:0}}
+/* zacht ademende gloed op draaiende pomp (functioneel: 'actief') */
+.spump-glow{fill:none!important;stroke:var(--acc)!important;stroke-width:2!important;opacity:0;transform-box:fill-box;transform-origin:center}
+.spump.run .spump-glow{animation:pumpglow 2.8s var(--ease) infinite}
+@keyframes pumpglow{0%,100%{opacity:.06;transform:scale(.9)}50%{opacity:.30;transform:scale(1.14)}}
+/* mini-tank in tegels */
+.mtank{display:block}
+.tank .mtank{flex:0 0 56px}
+.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+/* KPI sparkline (in-loco trend) */
+.spark{width:100%;height:26px;display:block;margin-top:10px;overflow:visible}
+.spark .ln{fill:none;stroke:var(--acc);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.spark .ar{fill:var(--acc);opacity:.08}
+/* value-change flash */
+.flash{position:relative}
+.flash::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:0 0 0 2px var(--acc);opacity:0;animation:flashk .9s var(--ease-out);pointer-events:none}
+@keyframes flashk{0%{opacity:.85}100%{opacity:0}}
 @keyframes march{to{stroke-dashoffset:-32}}
 .fl-w{stroke:#5AA7BC}.fl-a{stroke:var(--a)}.fl-b{stroke:var(--b)}.fl-mix{stroke:#A7B3A8}
 
@@ -484,6 +511,21 @@ hr.sep{border:none;border-top:1px solid var(--c-line);margin:18px 0}
 .brand-logo{display:flex;align-items:center}
 .brand-logo svg{height:30px;width:auto;display:block}
 @media (max-width:720px){.brand-logo svg{height:26px}}
+
+/* --- responsive topbar fit (tablets/phones) --- */
+@media (max-width:720px){
+  .topbar{gap:10px;padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right))}
+  .tb-cluster{gap:6px}
+}
+@media (max-width:540px){
+  .topbar{gap:8px}
+  .brand-machine,.brand-sep{display:none}   /* identiteit = alleen logo op telefoon */
+  .tb-conn{display:none}                     /* PLC-pil weg op smal scherm */
+  .tb-clock{display:none}                    /* tijd staat al in de iOS-statusbalk */
+  .brand-logo svg{height:24px}
+  .roles{padding:2px}
+  .roles button{padding:7px 8px}
+}
 
 /* ============================================================ CLICKABLE MIMIC */
 .clk{cursor:pointer}
@@ -812,10 +854,28 @@ const state={
   runtime:{FCS1:1242,VP02:986,VP03:1011},
   cycles:{dose:48210,kl:9120,inlet:8640},
   batchesToday:7, lastBatch:'B · Standaard B',
+  flowHist:[],
   alarms:[],
   history:[]
 };
 RECIPES.forEach(r=>r.seqPreview=null);
+
+/* ---------- LEVENDE-BEWEGING HELPERS ---------- */
+function reducedMotion(){return !!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);}
+const _tw={};
+function tweenNum(el,to,dur){
+  if(!el)return; to=Math.round(to);
+  const id=el.id||(el.id='tw'+Math.random().toString(36).slice(2));
+  const cur=parseFloat(String(el.textContent||'').replace(/[^0-9,-]/g,'').replace(',','.'));
+  const from=isNaN(cur)?to:cur;
+  if(from===to){el.textContent=fix(to);return;}
+  if(reducedMotion()||!dur){el.textContent=fix(to);return;}
+  if(_tw[id])cancelAnimationFrame(_tw[id]);
+  const t0=(typeof performance!=='undefined'&&performance.now)?performance.now():Date.now();
+  const step=now=>{let p=Math.min(1,(now-t0)/dur);p=1-Math.pow(1-p,3);el.textContent=fix(Math.round(from+(to-from)*p));if(p<1)_tw[id]=requestAnimationFrame(step);};
+  _tw[id]=requestAnimationFrame(step);
+}
+function flash(el){if(!el||reducedMotion())return;el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash');}
 
 /* ---------- ALARMEN (met first-out) ---------- */
 function seedAlarms(){
@@ -931,14 +991,29 @@ const MX={ /* coordinaten */
 const srcX=i=>70+i*((1130-70)/11); // i:0..11
 
 function valveSVG(id,cx,cy,dev){const w=7,h=8;return `<g class="sval${dev?' clk':''}" id="${id}"${dev?` data-dev="${dev}"`:''}>${dev?`<circle class="dev-halo" cx="${cx}" cy="${cy}" r="20"/>`:''}<path d="M${cx-w} ${cy-h}L${cx} ${cy}L${cx-w} ${cy+h}Z"/><path d="M${cx+w} ${cy-h}L${cx} ${cy}L${cx+w} ${cy+h}Z"/></g>`;}
-function pumpSVG(id,cx,cy,r,dev){r=r||14;return `<g class="spump${dev?' clk':''}" id="${id}"${dev?` data-dev="${dev}"`:''}>${dev?`<circle class="dev-halo" cx="${cx}" cy="${cy}" r="22"/>`:''}<circle cx="${cx}" cy="${cy}" r="${r}"/><path d="M${cx-5} ${cy-6}L${cx-5} ${cy+6}L${cx+7} ${cy}Z"/></g>`;}
+function pumpSVG(id,cx,cy,r,dev){r=r||14;return `<g class="spump${dev?' clk':''}" id="${id}"${dev?` data-dev="${dev}"`:''}>${dev?`<circle class="dev-halo" cx="${cx}" cy="${cy}" r="22"/>`:''}<circle class="spump-glow" cx="${cx}" cy="${cy}" r="${r+4}"/><circle cx="${cx}" cy="${cy}" r="${r}"/><path d="M${cx-5} ${cy-6}L${cx-5} ${cy+6}L${cx+7} ${cy}Z"/></g>`;}
+function wavePath(cx,w,top,h,amp,wl){
+  const x0=+(cx-w/2-wl).toFixed(1), x1=+(cx+w/2+wl).toFixed(1), half=wl/2;
+  let d=`M${x0} ${top}`, up=true;
+  for(let x=x0;x<x1-0.1;x+=half){const nx=+(x+half).toFixed(1);const mx=+(x+half/2).toFixed(1);const my=+(top+(up?-amp*2:amp*2)).toFixed(1);d+=`Q${mx} ${my} ${nx} ${top}`;up=!up;}
+  d+=`L${x1} ${+(top+2*h).toFixed(1)}L${x0} ${+(top+2*h).toFixed(1)}Z`;
+  return d;
+}
 function vesselSVG(key,cx,top,w,h,minPc){
-  const x=cx-w/2;
+  const x=cx-w/2, ab=(key.includes('A')||key==='tA')?'a':'b';
+  const wl=+(w/1.5).toFixed(1), amp=2.6, wd=wavePath(cx,w,top,h,amp,wl);
+  const pc0=Math.max(0,Math.min(100,(state.lvl&&state.lvl[key]!=null)?state.lvl[key]:0)), ty0=((1-pc0/100)*h).toFixed(1);
   let s=`<clipPath id="clip-${key}"><rect x="${x}" y="${top}" width="${w}" height="${h}" rx="10"/></clipPath>`;
   s+=`<rect class="svessel" x="${x}" y="${top}" width="${w}" height="${h}" rx="10"/>`;
-  s+=`<g clip-path="url(#clip-${key})"><rect class="liquid" id="liq-${key}" x="${x}" y="${top+h}" width="${w}" height="0" fill="url(#grad-${key.includes('A')||key==='tA'?'a':'b'})"/><rect id="surf-${key}" x="${x}" y="${top+h}" width="${w}" height="2.4" fill="rgba(255,255,255,.6)"/></g>`;
-  if(minPc!=null){const my=top+h-(minPc/100*h);s+=`<line x1="${x}" y1="${my}" x2="${x+w}" y2="${my}" stroke="${COL.alarm}" stroke-width="1.5" stroke-dasharray="3 3" opacity=".5"/>`;}
-  s+=`<rect x="${x}" y="${top}" width="${w}" height="${h}" rx="10" fill="none" stroke="#C6D0DB" stroke-width="1.5"/>`;
+  s+=`<g clip-path="url(#clip-${key})">`
+    +`<g class="liqlvl" id="liqg-${key}" style="transform:translateY(${ty0}px)">`
+      +`<g class="liq-wave" style="--wl:${wl}px"><path fill="url(#grad-${ab})" d="${wd}"/></g>`
+      +`<g class="liq-wave2" style="--wl:${wl}px"><path fill="url(#grad-${ab})" fill-opacity=".45" d="${wd}"/></g>`
+    +`</g>`
+    +`<rect class="glass-sheen" x="${x}" y="${top}" width="${+(w*0.5).toFixed(1)}" height="${h}" rx="10" fill="url(#sheen)"/>`
+  +`</g>`;
+  if(minPc!=null){const my=+(top+h-(minPc/100*h)).toFixed(1);s+=`<line x1="${x}" y1="${my}" x2="${x+w}" y2="${my}" stroke="${COL.alarm}" stroke-width="1.5" stroke-dasharray="3 3" opacity=".5"/>`;}
+  s+=`<rect x="${x}" y="${top}" width="${w}" height="${h}" rx="10" fill="none" stroke="#C6CFC6" stroke-width="1.5"/>`;
   return s;
 }
 function pipe(id,d,cls){return `<path class="pipe-base" d="${d}"/><path class="pipe-flow" id="${id}" data-d="${cls}" d="${d}"/>`;}
@@ -950,6 +1025,7 @@ function buildMimic(){
   s+=`<defs>
      <linearGradient id="grad-a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${COL.aSoft}"/><stop offset="1" stop-color="${COL.a}"/></linearGradient>
      <linearGradient id="grad-b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${COL.bSoft}"/><stop offset="1" stop-color="${COL.b}"/></linearGradient>
+     <linearGradient id="sheen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity=".22"/><stop offset=".6" stop-color="#ffffff" stop-opacity="0"/></linearGradient>
    </defs>`;
   // zone backgrounds
   s+=`<rect x="184" y="290" width="232" height="320" rx="16" fill="${COL.aBg}" opacity=".45"/>`;
@@ -977,7 +1053,7 @@ function buildMimic(){
   s+=`<path class="pipe-base" d="M600 ${cy}V${m.manY}"/>`;
   s+=`<path class="pipe-flow" id="f-feed" d="M600 ${cy}V${m.manY}"/>`;
   // FC01
-  s+=`<circle cx="600" cy="${m.fcY}" r="15" fill="#fff" stroke="#C6D0DB" stroke-width="1.5"/>`;
+  s+=`<circle cx="600" cy="${m.fcY}" r="15" fill="#fff" stroke="#C6CFC6" stroke-width="1.5"/>`;
   s+=`<g stroke="${COL.acc}" stroke-width="1.8" fill="none" stroke-linecap="round"><path d="M593 ${m.fcY}c2 -4 5 -4 7 0s5 4 7 0"/></g>`;
   s+=`<text x="622" y="${m.fcY-4}" class="sreadout-lbl">FC 01 · flow</text>`;
   s+=`<text x="622" y="${m.fcY+11}" class="sreadout" id="ro-flow">0 L/min</text>`;
@@ -998,6 +1074,7 @@ function buildMimic(){
     s+=valveSVG('val-inlet-'+L,cx,290,'inlet-'+L);
     // vessel
     s+=vesselSVG(tk,cx,m.tankTop,m.tankW,m.tankH,null);
+    s+=`<g class="bubbles" id="bub-${tk}" clip-path="url(#clip-${tk})">`+[0,1,2].map(i=>`<circle cx="${cx-8+i*8}" cy="${m.tankTop+m.tankH-8}" r="${(2.2-i*0.3).toFixed(1)}" fill="#fff" style="animation-delay:${(i*0.9).toFixed(1)}s"/>`).join('')+`</g>`;
     s+=`<text x="${cx}" y="${m.tankTop+m.tankH+16}" text-anchor="middle" class="stank-lbl">Tussenbak ${L}</text>`;
     s+=`<text x="${cx}" y="${m.tankTop-7}" text-anchor="middle" class="stank-pc" id="pc-${tk}">0%</text>`;
     // pump (mengpomp)
@@ -1031,18 +1108,12 @@ function buildMimic(){
 }
 
 function setLiquid(key,pc,max){
-  const m=MX;
-  const isTank=key==='tA'||key==='tB';
-  const h=isTank?m.tankH:m.vbH, top=isTank?m.tankTop:m.vbTop;
-  const liq=$('#liq-'+key), surf=$('#surf-'+key), pcEl=$('#pc-'+key);
-  if(!liq)return;
-  const fillH=Math.max(0,Math.min(h, pc/100*h));
-  const y=top+h-fillH;
-  liq.setAttribute('y',y); liq.setAttribute('height',fillH);
-  if(surf)surf.setAttribute('y',y);
+  const m=MX;const isTank=key==='tA'||key==='tB';
+  const h=isTank?m.tankH:m.vbH;
+  const g=$('#liqg-'+key), pcEl=$('#pc-'+key);
+  if(g){const cl=Math.max(0,Math.min(100,pc));g.style.transform='translateY('+((1-cl/100)*h).toFixed(1)+'px)';}
   if(pcEl)pcEl.textContent=Math.round(pc)+'%';
   const lt=$('#lt-'+key); if(lt&&max)lt.textContent=fix(Math.round(pc/100*max))+' L';
-  // contrast: low fill -> dark text inside voorraad
   if(!isTank&&pcEl){const dark=pc<52;pcEl.setAttribute('fill',dark?COL.ink:'#fff');if(lt)lt.setAttribute('fill',dark?COL.ink2:'#fff');}
 }
 function setValve(id,open){const e=$('#val-'+id);if(e)e.classList.toggle('open',!!open);}
@@ -1050,6 +1121,13 @@ function setPump(id,run){const e=$('#'+id);if(e)e.classList.toggle('run',!!run);
 function setFlow(id,on,col){const e=$('#'+id);if(!e)return;e.setAttribute('class','pipe-flow'+(on?(' on '+(col||'fl-mix')):''));}
 
 function updateMimic(){
+  // flow-snelheid gekoppeld aan werkelijk debiet
+  const root=$('#mimic-host svg');
+  if(root){let fd=1.0;const af=state.activeFlow;
+    if(af){if(af.tr)fd=0.7;else if(af.rec)fd=0.95;else{const f=Math.max(1,state.flow);fd=Math.max(0.6,Math.min(4,33/f));}}
+    root.style.setProperty('--flow-dur',fd.toFixed(2)+'s');}
+  // mengbellen tijdens recirculatie
+  ['tA','tB'].forEach(t=>{const el=$('#bub-'+t);if(el)el.classList.toggle('on',!!state.mixing&&('t'+state.rcp.bak)===t);});
   // levels
   setLiquid('tA',state.lvl.tA); setLiquid('tB',state.lvl.tB);
   setLiquid('A1',state.lvl.A1,1500); setLiquid('A2',state.lvl.A2,1500);
@@ -1093,9 +1171,9 @@ function viewOverzicht(){
   </div>
 
   <div class="grid cols-4" style="margin-bottom:16px">
-    <div class="card kpi"><div class="k">${ic('drop',15,2)} Actuele flow</div><div class="v" id="kpi-flow">0<small> L/min</small></div><div class="s" id="kpi-flow-s">Hoofdpomp standby</div></div>
+    <div class="card kpi"><div class="k">${ic('drop',15,2)} Actuele flow</div><div class="v"><span id="kpi-flow-n" class="num">0</span><small> L/min</small></div><svg class="spark" id="kpi-spark" viewBox="0 0 120 26" preserveAspectRatio="none"><path class="ar" id="kpi-spark-a"/><path class="ln" id="kpi-spark-l"/></svg><div class="s" id="kpi-flow-s">Hoofdpomp standby</div></div>
     <div class="card kpi"><div class="k">${ic('beaker',15,2)} Bezig met</div><div class="v" id="kpi-mode" style="font-size:20px;line-height:1.15;margin-top:9px">Standby</div><div class="s" id="kpi-mode-s">Wacht op opdracht</div></div>
-    <div class="card kpi"><div class="k">${ic('check',15,2)} Batches vandaag</div><div class="v"><span id="kpi-batch">${state.batchesToday}</span></div><div class="s">Laatste: ${state.lastBatch}</div></div>
+    <div class="card kpi" id="kpi-batch-card"><div class="k">${ic('check',15,2)} Batches vandaag</div><div class="v"><span id="kpi-batch" class="num">${state.batchesToday}</span></div><div class="s" id="kpi-batch-s">Laatste: ${state.lastBatch}</div></div>
     <div class="card kpi"><div class="k">${ic('clock',15,2)} Volgende vulling</div><div class="v" id="kpi-next" style="font-size:20px;margin-top:9px">B2 — ingepland</div><div class="s">Onder minimumniveau</div></div>
   </div>
 
@@ -1125,14 +1203,41 @@ function viewOverzicht(){
     </div>
   </div>`;
 }
+function miniTankSVG(bak,pc){
+  const w=44,h=74,x=6,top=6, ab=bak[0]==='A'?'a':'b';
+  const wl=+(w/1.4).toFixed(1), amp=2.2, wd=wavePath(x+w/2,w,top,h,amp,wl);
+  const ty=((1-Math.max(0,Math.min(100,pc))/100)*h).toFixed(1);
+  const c1=ab==='a'?COL.aSoft:COL.bSoft, c2=ab==='a'?COL.a:COL.b;
+  return `<svg class="mtank" width="56" height="86" viewBox="0 0 56 86" aria-hidden="true">`
+    +`<defs><linearGradient id="mg-${bak}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient>`
+    +`<clipPath id="mc-${bak}"><rect x="${x}" y="${top}" width="${w}" height="${h}" rx="9"/></clipPath></defs>`
+    +`<rect x="${x}" y="${top}" width="${w}" height="${h}" rx="9" fill="#F1F6F1" stroke="#C6CFC6" stroke-width="1.4"/>`
+    +`<g clip-path="url(#mc-${bak})"><g class="liqlvl" id="mliqg-${bak}" style="transform:translateY(${ty}px)">`
+      +`<g class="liq-wave" style="--wl:${wl}px"><path fill="url(#mg-${bak})" d="${wd}"/></g>`
+      +`<g class="liq-wave2" style="--wl:${wl}px"><path fill="url(#mg-${bak})" fill-opacity=".45" d="${wd}"/></g>`
+    +`</g></g>`
+    +`<rect x="${x}" y="${top}" width="${w}" height="${h}" rx="9" fill="none" stroke="#C6CFC6" stroke-width="1.4"/>`
+  +`</svg>`;
+}
+function setMiniLiquid(bak,pc){const g=$('#mliqg-'+bak);if(g){const cl=Math.max(0,Math.min(100,pc));g.style.transform='translateY('+((1-cl/100)*74).toFixed(1)+'px)';}}
+function updateSpark(){
+  const l=$('#kpi-spark-l'),a=$('#kpi-spark-a');if(!l)return;
+  const h=state.flowHist;
+  if(!h||h.length<2){l.setAttribute('d','');if(a)a.setAttribute('d','');return;}
+  const W=120,H=26,n=h.length,max=Math.max(12,...h)*1.1;
+  const pts=h.map((v,i)=>[+(i/(n-1)*W).toFixed(1),+(H-2-(Math.max(0,v)/max)*(H-4)).toFixed(1)]);
+  const dl='M'+pts.map(p=>p[0]+' '+p[1]).join(' L');
+  l.setAttribute('d',dl);
+  if(a)a.setAttribute('d',dl+' L'+W+' '+H+' L0 '+H+' Z');
+}
 function tankTile(bak,cap){
   const pc=state.lvl[bak];const L=bak[0].toLowerCase();
   return `<div class="tank ${L}" id="tile-${bak}">
-    <div class="glass" style="height:78px"><i style="height:${pc}%"></i><span class="mark" style="bottom:12%"></span></div>
+    ${miniTankSVG(bak,pc)}
     <div class="meta">
       <div class="nm">${bak} <span class="chip ${L}">${bak[0]}</span></div>
-      <div class="pc"><span id="tpc-${bak}">${Math.round(pc)}</span>%</div>
-      <div class="lt"><span id="tlt-${bak}">${fix(Math.round(pc/100*cap))}</span> / ${fix(cap)} L</div>
+      <div class="pc"><span id="tpc-${bak}" class="num">${Math.round(pc)}</span>%</div>
+      <div class="lt"><span id="tlt-${bak}" class="num">${fix(Math.round(pc/100*cap))}</span> / ${fix(cap)} L</div>
     </div>
   </div>`;
 }
@@ -1154,10 +1259,13 @@ function refreshOverzicht(){
   updateMimic();
   // tanks
   ['A1','A2','B1','B2'].forEach(b=>{const cap=b[0]==='A'?1500:1000;const pc=state.lvl[b];
-    const t=$('#tile-'+b);if(t){t.querySelector('.glass > i').style.height=pc+'%';$('#tpc-'+b).textContent=Math.round(pc);$('#tlt-'+b).textContent=fix(Math.round(pc/100*cap));}});
+    const t=$('#tile-'+b);if(t){setMiniLiquid(b,pc);tweenNum($('#tpc-'+b),Math.round(pc),500);tweenNum($('#tlt-'+b),Math.round(pc/100*cap),600);}});
   // kpis
   const st=curStep();
-  $('#kpi-flow') && ($('#kpi-flow').innerHTML=fix(state.flow)+'<small> L/min</small>');
+  tweenNum($('#kpi-flow-n'),state.flow,350);
+  updateSpark();
+  tweenNum($('#kpi-batch'),state.batchesToday,700);
+  $('#kpi-batch-s') && ($('#kpi-batch-s').textContent='Laatste: '+state.lastBatch);
   $('#kpi-flow-s') && ($('#kpi-flow-s').textContent=state.fcsRun?(state.hz+' Hz · '+(state.fcsHi?'hoog toeren':'normaal')):'Hoofdpomp standby');
   $('#kpi-mode') && ($('#kpi-mode').textContent=modeLabel());
   $('#kpi-mode-s') && ($('#kpi-mode-s').textContent=st?st.meta:'Wacht op opdracht');
@@ -1710,11 +1818,13 @@ function tick(){
       state.history.unshift({sev:'info',code:'I-050',time:Date.now(),ti:'Batch gereed — '+fin.bak+' · '+fin.name+' ('+Lbatch+' L)'});
       if(state.history.length>40)state.history.pop();
       if(state.screen!=='alarmen')toast('Vulcyclus voltooid · '+fin.bak+' · '+fin.name+' · '+Lbatch+' L afgeleverd','check','ok big');
+      {const bc=$('#kpi-batch-card');if(bc)flash(bc);}
       const avgA=(state.lvl.A1+state.lvl.A2)/2,avgB=(state.lvl.B1+state.lvl.B2)/2;const side=avgA<=avgB?'A':'B';
       state.rcp=RECIPES.find(r=>r.bak===side&&r.id.startsWith('std'))||RECIPES[0];state.seq=buildSequence(state.rcp);state.seqIdx=0;
     }
   }
   applyStepEffects();stepLevels();drain();syncRaw();
+  state.flowHist.push(state.flow);if(state.flowHist.length>40)state.flowHist.shift();
   // light runtime creep
   if(state.fcsRun)state.runtime.FCS1+=0.01;if(state.openValves.has('vp02'))state.runtime.VP02+=0.01;if(state.openValves.has('vp03'))state.runtime.VP03+=0.01;
   updateBell();
@@ -1740,6 +1850,7 @@ function init(){
   state.seq=buildSequence(state.rcp);state.seqIdx=2;state.stepT=0; // start midden in een batch zodat het meteen leeft
   renderRoles();renderNav();wire();
   applyStepEffects();syncRaw();updateClock();updateBell();
+  state.flowHist=Array.from({length:30},()=>Math.max(0,Math.round(state.flow+(Math.random()*6-3))));
   render();
   const boot=$('#boot');
   if(boot){
