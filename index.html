@@ -312,6 +312,13 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .step.todo .nm{color:var(--ink-3)} .step.todo .knob{color:var(--ink-3)}
 .step.wait .knob{border-color:var(--warn);color:var(--warn)}
 .wait-tag{font-size:11.5px;font-weight:600;color:var(--warn);background:var(--warn-bg);border:1px solid var(--warn-line);padding:3px 9px;border-radius:99px;display:inline-flex;gap:6px;align-items:center}
+.step.fail .knob{background:var(--alarm);border-color:var(--alarm);color:#fff;box-shadow:0 0 0 5px var(--alarm-bg)}
+.step.fail .nm{color:var(--alarm)}
+.fail-tag{font-size:11.5px;font-weight:600;color:var(--alarm);background:var(--alarm-bg);border:1px solid var(--alarm-line);padding:3px 9px;border-radius:99px;display:inline-flex;gap:6px;align-items:center}
+.seq-banner{display:flex;gap:10px;align-items:flex-start;padding:12px 15px;border-radius:var(--r-lg);background:var(--alarm-bg);border:1px solid var(--alarm-line);color:var(--alarm);font-size:13px;margin-bottom:14px;line-height:1.45}
+.seq-banner b{color:var(--alarm)}
+.dg-suspect{display:flex;gap:10px;align-items:flex-start;padding:11px 13px;border-radius:var(--r-md);background:var(--alarm-bg);border:1px solid var(--alarm-line);color:var(--alarm);font-size:12.5px;margin-bottom:14px;line-height:1.45}
+.dg-suspect b{color:var(--alarm)}
 
 /* io filter */
 .io-bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
@@ -808,6 +815,28 @@ body{background:linear-gradient(177deg,#F0F4F0 0%,#E7EDE8 100%);background-attac
 .dg-block{border:1px solid var(--c-line);border-radius:var(--r-md);padding:12px 14px;margin-bottom:10px}
 .dg-block h5{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-3);margin:0 0 5px}
 .dg-block p{margin:0;font-size:13px;color:var(--ink);line-height:1.5}
+.dg-force{display:flex;gap:10px;align-items:flex-start;padding:11px 13px;border-radius:var(--r-md);background:var(--warn-bg);border:1px solid var(--warn-line);color:var(--warn);font-size:12.5px;margin-bottom:14px;line-height:1.45}
+.dg-force b{color:var(--warn)}
+.dg-wire{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--ink)}
+.dg-wire b{font-family:var(--mono);font-weight:700}
+.dg-wire span{display:inline-flex;align-items:center;gap:5px}
+.hw-ch .hbadge{display:none;font-family:var(--mono);font-size:7.5px;font-weight:800;color:#fff;background:var(--warn);border-radius:3px;padding:0 3px;flex:0 0 auto;line-height:1.45}
+.hw-ch.hand .hbadge{display:inline-flex;align-items:center}
+.hw-ch.hand{box-shadow:inset 2px 0 0 var(--warn)}
+.hw-ch.hand.flt{box-shadow:inset 2px 0 0 var(--warn),0 0 0 1px var(--alarm-line)}
+.sys-card{margin-top:20px;overflow:hidden}
+.sys-head{display:flex;align-items:center;gap:8px;padding:13px 16px;border-bottom:1px solid var(--c-line)}
+.sys-head h3{font-size:14px}
+.sys-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(152px,1fr));gap:1px;background:var(--c-line)}
+.sys-tile{background:var(--c-surface);padding:11px 14px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.sys-tile .k{font-size:10.5px;color:var(--ink-3);font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+.sys-tile .v{font-size:14px;color:var(--ink);font-weight:600}
+.sys-tile .v.mono{font-family:var(--mono)}
+.sys-tile .sub{font-size:11px;color:var(--ink-3)}
+.sys-tile .bar{position:relative;height:6px;border-radius:3px;background:var(--c-sunken);overflow:hidden;margin-top:3px}
+.sys-tile .bar span{position:absolute;left:0;top:0;bottom:0;background:var(--acc);border-radius:3px;transition:width var(--dur)}
+.sys-tile .bar span.warn{background:var(--warn)}.sys-tile .bar span.ok{background:var(--ok)}
+.sys-tile .bar i{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--alarm);opacity:.55}
 
 .hw-tbl tr.grp td{background:var(--c-sunken);font-size:11px;font-weight:700;letter-spacing:.02em;color:var(--ink-2);text-transform:none;padding:8px 14px}
 .hw-tbl tr.grp td .smono{font-family:var(--mono);color:var(--acc-700);font-size:11.5px}
@@ -1082,18 +1111,33 @@ function chOn(s){
   return false;
 }
 
+/* ---- monteur-data: bedrading, slijtage, historie, hand/force, systeem ---- */
+function wireOf(s){const p=state.hw.map[uidOf(s)];const idx=SIGNALS.indexOf(s)+1;const colors={DO:'zwart',DI:'grijs',AI:'wit (afgeschermd)'};
+  return {term:p?('X'+(p.slot+1)+':'+String(p.ch).padStart(2,'0')):'—',wire:'W'+String(idx).padStart(3,'0'),color:colors[s.type]||'—',cable:'naar '+s.comp};}
+function cyclesOf(s){return state.wear[uidOf(s)]||0;}
+function isPumpSig(s){return s.k==='vp02'||s.k==='vp03'||s.k==='fcs-run'||s.k==='fcs-hi';}
+function hoursOf(s){const m={'fcs-run':'FCS1','fcs-hi':'FCS1','vp02':'VP02','vp03':'VP03'}[s.k];return m?Math.round(state.runtime[m]):null;}
+function faultHistOf(s){return state.fhist[uidOf(s)]||{n:0};}
+function handState(s){if(s.type!=='DO')return null;const o=state.hand[s.k];return (o&&o.mode==='hand')?'hand':null;}
+function uptimeStr(){let m=Math.floor((Date.now()-state.sys.bootAt)/60000);const d=Math.floor(m/1440);m-=d*1440;const h=Math.floor(m/60);m-=h*60;return (d?d+'d ':'')+h+'u '+m+'m';}
+function initWear(){SIGNALS.filter(s=>s.type==='DO').forEach(s=>{const idx=SIGNALS.indexOf(s);state.wear[uidOf(s)]=2000+((idx*373)%6000);});}
+
 /* ---------- SEQUENTIE (actieve batch) ---------- */
 function buildSequence(rcp){
   const steps=[
     {nm:'Tussenbak '+rcp.bak+' selecteren',meta:'Route vrijgeven naar tussenbak '+rcp.bak,dur:3},
-    {nm:'Inlaatklep '+rcp.bak+(rcp.bak==='B'?' (KI 14)':'')+' openen',meta:'Vulroute geopend',dur:2},
-    ...rcp.steps.map(([src,amt])=>({nm:src+' doseren — '+amt+' L',meta:'Doseren op flow · volgorde geborgd',dur:4,dose:src,amt})),
-    {nm:'Lektest — pomp aan, flow = 0 verwacht',meta:'Alle doseerkleppen dicht; flowmeter moet 0 melden',dur:4,leaktest:true},
-    {nm:'Mengen (recirculatie VP 0'+(rcp.bak==='A'?'2':'3')+')',meta:'Rondpompen tot homogeen',dur:6,recirc:true},
-    {nm:'Overpompen naar '+rcp.bak+'1 / '+rcp.bak+'2 (KL 20)',meta:'Hoog toeren (50 Hz)',dur:7,transfer:true},
-    {nm:'Doseerstraat spoelen',meta:'Schoon water — voorkomt vermenging',dur:4,flush:true},
-    {nm:'Batch gereed',meta:'Tussenbak '+rcp.bak+' geleegd · klaar voor volgende',dur:3,end:true}
+    {nm:'Inlaatklep '+rcp.bak+(rcp.bak==='B'?' (KI 14)':'')+' openen',meta:'Vulroute geopend',dur:2}
   ];
+  // Na ELKE doseerklep een dichtheidstest: alles dicht, pomp aan, FC 01 = 0 verwacht.
+  rcp.steps.forEach(([src,amt])=>{
+    steps.push({nm:src+' doseren — '+amt+' L',meta:'Doseren op flow · volgorde geborgd',dur:4,dose:src,amt});
+    steps.push({nm:'Lektest — '+src+' dicht?',meta:'Alle kleppen dicht · pomp aan · FC 01 moet 0 melden',dur:3,leaktest:true,after:src});
+  });
+  steps.push({nm:'Mengen (recirculatie VP 0'+(rcp.bak==='A'?'2':'3')+')',meta:'Rondpompen tot homogeen',dur:6,recirc:true});
+  steps.push({nm:'Overpompen naar '+rcp.bak+'1 / '+rcp.bak+'2 (KL 20)',meta:'Hoog toeren (50 Hz)',dur:7,transfer:true});
+  steps.push({nm:'Doseerstraat spoelen',meta:'Schoon water — voorkomt vermenging',dur:4,flush:true});
+  steps.push({nm:'Lektest — waterklep dicht?',meta:'Alle kleppen dicht · pomp aan · FC 01 moet 0 melden',dur:3,leaktest:true,after:'Water'});
+  steps.push({nm:'Batch gereed',meta:'Tussenbak '+rcp.bak+' geleegd · klaar voor volgende',dur:3,end:true});
   return steps;
 }
 
@@ -1103,6 +1147,7 @@ const state={
   screen:'overzicht',
   rcp:RECIPES[0],
   seq:[], seqIdx:0, stepT:0,
+  leak:null, leakArm:false,
   flow:0, hz:0, fcsRun:false, fcsHi:false, fcsFlt:false,
   estop:false, air:true,
   hand:{}, // actuator overrides {k:{mode:'auto'|'hand', on:bool}}
@@ -1114,6 +1159,11 @@ const state={
   },
   lvl:{tA:3,tB:6,A1:81,A2:72,B1:64,B2:18},
   hw:buildHwState(),
+  hwAck:{}, hwAt:{},
+  sys:{mode:'RUN',fw:'2024.0.5 LTS',proj:'CogasAutoFill_v3',crc:'A7F3',dl:Date.now()-1000*60*60*24*12,bootAt:Date.now()-1000*60*60*36-1000*60*14,temp:42.5,tempWarn:60,tempMax:70,cpu:18,ram:34,sd:71,ip1:'192.168.0.10',ip2:'—',link1:true,link2:false,ntp:true},
+  wear:{},
+  fhist:{'AI:lvl-tB':{n:3,last:Date.now()-1000*60*60*24*9},'DO:dose-3':{n:1,last:Date.now()-1000*60*60*24*2},'DO:dose-1':{n:2,last:Date.now()-1000*60*60*24*40,resolved:true},'AI:B2':{n:1,last:Date.now()-1000*60*60*24*70,resolved:true},'DO:vp02':{n:1,last:Date.now()-1000*60*60*24*120,resolved:true}},
+  calDate:{'lvl-tA':Date.now()-1000*60*60*24*180,'lvl-tB':Date.now()-1000*60*60*24*180,'A1':Date.now()-1000*60*60*24*95,'A2':Date.now()-1000*60*60*24*95,'B1':Date.now()-1000*60*60*24*210,'B2':Date.now()-1000*60*60*24*210},
   openValves:new Set(), activeFlow:null, mixing:false,
   runtime:{FCS1:1242,VP02:986,VP03:1011},
   cycles:{dose:48210,kl:9120,inlet:8640},
@@ -1161,8 +1211,9 @@ function seedAlarms(){
    {sev:'alarm',code:'E-204',time:t-1000*60*60*26,ti:'Lektest gefaald — restflow na dosering Calcal (opgelost)'}
  ];
 }
-const activeAlarms=()=>state.alarms.filter(a=>a.sev!=='info'||!a.ack);
-const worstSev=()=>{const a=state.alarms;if(a.some(x=>x.sev==='alarm'))return'alarm';if(a.some(x=>x.sev==='warn'))return'warn';return'ok';};
+function allAlarms(){return hwAlarms().concat(state.alarms);}
+const activeAlarms=()=>allAlarms().filter(a=>a.sev!=='info'||!a.ack);
+const worstSev=()=>{const a=allAlarms();if(a.some(x=>x.sev==='alarm'))return'alarm';if(a.some(x=>x.sev==='warn'))return'warn';return'ok';};
 
 /* ============================================================ TOPBAR */
 const ROLES=[['klant','Klant','user'],['service','Service','wrench'],['oem','OEM','shield']];
@@ -1570,6 +1621,7 @@ function modeLabel(){const s=curStep();const bak=state.rcp.bak;
 }
 function timeAgo(ts){const s=Math.floor((Date.now()-ts)/1000);if(s<60)return s+' s geleden';const m=Math.floor(s/60);if(m<60)return m+' min geleden';const h=Math.floor(m/60);if(h<24)return h+' u geleden';return Math.floor(h/24)+' d geleden';}
 function clockStr(ts){return new Date(ts).toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'});}
+function dateStr(ts){return new Date(ts).toLocaleDateString('nl-NL',{day:'numeric',month:'short',year:'numeric'});}
 
 /* ============================================================ SCHERM: RECEPTEN */
 let selRcp=RECIPES[0].id;
@@ -1613,7 +1665,7 @@ function mountRecepten(){
   $('#rcp-list').innerHTML=rcpListHTML();
   $('#rcp-detail').innerHTML=rcpDetailHTML();
   $$('#rcp-list .rcp-item').forEach(e=>e.onclick=()=>{selRcp=e.dataset.r;mountRecepten();});
-  const sb=$('#rcp-start');if(sb)sb.onclick=()=>{const r=RECIPES.find(x=>x.id===selRcp);state.rcp=r;state.seq=buildSequence(r);state.seqIdx=0;state.stepT=0;toast('Batch gestart — '+r.name,'play');go('overzicht');};
+  const sb=$('#rcp-start');if(sb)sb.onclick=()=>{const r=RECIPES.find(x=>x.id===selRcp);state.rcp=r;state.seq=buildSequence(r);state.seqIdx=0;state.stepT=0;state.leak=null;state.leakArm=false;state.alarms=state.alarms.filter(x=>!x.leak);toast('Batch gestart — '+r.name,'play');go('overzicht');};
   const nb=$('#rcp-new');if(nb)nb.onclick=()=>toast('Receptbeheer opent in de service-/OEM-modus','info');
 }
 
@@ -1671,12 +1723,15 @@ function mountAlarmen(){
         <div class="al-time">${clockStr(h.time)}<br>${timeAgo(h.time)}</div></div>`).join('');
     return;
   }
-  const act=state.alarms.slice().sort((a,b)=>a.time-b.time);
+  const all=allAlarms();
+  const foId=(all.filter(a=>a.sev!=='info'||!a.ack).slice().sort((a,b)=>a.time-b.time)[0]||{}).id;
+  const act=all.slice().sort((a,b)=>a.time-b.time);
   if(!act.length){card.innerHTML=`<div class="empty"><div class="ic">${ic('check',34,1.6)}</div>Geen actieve alarmen.</div>`;return;}
   card.innerHTML=`<div class="card-h"><h3>Actieve meldingen</h3><span class="sub">${activeAlarms().length} actief · gesorteerd op tijd</span></div>`+
    act.map(a=>{
-     const open=alOpen===a.id&&svc;
-     const badges=[a.firstout?'<span class="badge-fo">eerste melding</span>':'',a.suppressed?'<span class="badge-sup">opvolgmelding</span>':'',a.ack?'<span class="badge-ack">bevestigd</span>':''].join('');
+     const open=alOpen===a.id&&svc;const isFo=a.id===foId;
+     const badges=[isFo?'<span class="badge-fo">eerste melding</span>':'',a.suppressed?'<span class="badge-sup">opvolgmelding</span>':'',a.ack?'<span class="badge-ack">bevestigd</span>':''].join('');
+     const jump=(a.leak&&a.suspect)?`<button class="btn sm" data-hw="${a.suspect.slot}.${a.suspect.ch}">${ic('chip',15,2)} Naar verdachte klep</button>`:a.hw?`<button class="btn sm" data-hw="${a.slot}.${a.ch==null?'M':a.ch}">${ic('chip',15,2)} Naar hardware</button>`:`<button class="btn sm" data-io="1">${ic('io',15,2)} Naar I/O</button>`;
      return `<div class="al-row ${open?'open':''}" data-a="${a.id}" ${svc?'':'style=cursor:default'}>
        <div class="al-ic ${a.sev}">${ic(a.sev==='alarm'?'alarm':a.sev==='warn'?'warn':'info',16,2.2)}</div>
        <div></div>
@@ -1688,46 +1743,57 @@ function mountAlarmen(){
             <div class="al-det-row"><div class="k">Te controleren</div><div>${a.check}</div></div>
             <div style="margin-top:10px;display:flex;gap:8px">
               ${a.ack?'':`<button class="btn sm primary" data-ack="${a.id}">${ic('check',15,2.2)} Bevestigen</button>`}
-              <button class="btn sm" data-io="${a.id}">${ic('io',15,2)} Naar I/O</button>
+              ${jump}
             </div></div>`:`<div class="muted-2" style="font-size:12px;margin-top:6px">${ic('lock',12,2)} Diagnose en bevestigen via servicemonteur</div>`}
        </div>
        <div class="al-time">${clockStr(a.time)}<br>${timeAgo(a.time)}</div>
      </div>`;
    }).join('');
-  if(svc)$$('#al-card .al-row').forEach(r=>r.onclick=e=>{if(e.target.closest('[data-ack]')||e.target.closest('[data-io]'))return;const id=r.dataset.a;alOpen=alOpen===id?null:id;mountAlarmen();});
-  $$('#al-card [data-ack]').forEach(b=>b.onclick=()=>{const a=state.alarms.find(x=>x.id===b.dataset.ack);a.ack=true;toast('Melding '+a.code+' bevestigd','check');updateBell();renderNav();mountAlarmen();});
+  if(svc)$$('#al-card .al-row').forEach(r=>r.onclick=e=>{if(e.target.closest('[data-ack]')||e.target.closest('[data-io]')||e.target.closest('[data-hw]'))return;const id=r.dataset.a;alOpen=alOpen===id?null:id;mountAlarmen();});
+  $$('#al-card [data-ack]').forEach(b=>b.onclick=()=>{const id=b.dataset.ack;const al=allAlarms().find(x=>x.id===id);
+    if(al&&al.leak){resolveLeak();updateBell();renderNav();mountAlarmen();return;}
+    if(id.indexOf('hw-')===0)state.hwAck[id]=true;else{const a=state.alarms.find(x=>x.id===id);if(a)a.ack=true;}
+    toast('Melding '+(al?al.code:'')+' bevestigd','check');updateBell();renderNav();mountAlarmen();});
   $$('#al-card [data-io]').forEach(b=>b.onclick=()=>go('io'));
+  $$('#al-card [data-hw]').forEach(b=>b.onclick=()=>{const parts=b.dataset.hw.split('.');go('hardware');if(parts[1]!=='M')selectCh(+parts[0],+parts[1]);else selectElem(+parts[0]);});
 }
 
 /* ============================================================ SCHERM: SEQUENTIE */
 function viewSequentie(){
-  return `<div class="page-head"><div class="titles"><h1>Sequentie</h1><p>Stap-voor-stap procesverloop — toont exact waarop de machine wacht</p></div></div>
+  return `<div class="page-head"><div class="titles"><h1>Sequentie</h1><p>Stap-voor-stap procesverloop — toont exact waarop de machine wacht</p></div>
+    ${state.role!=='klant'?`<div class="page-actions"><button class="btn sm" id="seq-leak-demo">${ic('alarm',15,2)} Simuleer lekkende klep</button></div>`:''}</div>
+    <div id="seq-banner"></div>
     <div class="split-seq">
       <div class="card"><div class="card-h"><h3 id="seq-title">—</h3><span class="sub" id="seq-prog">—</span></div>
         <div class="card-pad"><div class="steps" id="seq-steps"></div></div></div>
       <div class="grid" style="gap:16px">
         <div class="card card-pad"><div class="eyebrow" style="margin-bottom:10px">Vergrendelingen</div><div id="seq-il" style="display:flex;flex-direction:column;gap:9px"></div></div>
         <div class="card card-pad"><div class="eyebrow" style="margin-bottom:10px">Lektest-principe</div>
-          <p class="muted" style="font-size:12.5px;margin:0">Na het doseren draait de hoofdpomp met alle doseerkleppen dicht. De flowmeter <strong>FC 01</strong> moet dan <strong>0 puls</strong> meten. Restflow betekent een lekkende klep — de batch wordt afgekeurd. Zo bewaakt één flowmeter zowel de dosering als de klepafdichting, zonder extra terugmeldsensoren.</p></div>
+          <p class="muted" style="font-size:12.5px;margin:0"><strong>Na elke doseer- en waterklep</strong> draait de hoofdpomp met alle kleppen dicht; <strong>FC 01</strong> moet dan <strong>0 puls</strong> meten. Restflow betekent dat een klep niet afsluit — de batch wordt afgekeurd. Omdat de test direct na een klep draait, is de <strong>laatst gesloten klep</strong> de waarschijnlijke veroorzaker (vermoeden, niet zeker). Zo bewaakt één flowmeter de dosering én de klepafdichting, zonder terugmeldsensor per klep.</p></div>
       </div>
     </div>`;
 }
 function seqStepsHTML(){
   return state.seq.map((s,i)=>{
-    let cls=i<state.seqIdx?'done':i===state.seqIdx?(running()?'active':'done'):'todo';
-    const knob=cls==='done'?ic('check',14,2.6):(i+1);
-    let waitTag='';
-    if(i===state.seqIdx&&running()){
+    const failed=state.leak&&i===state.leak.stepIdx;
+    let cls=failed?'fail':(i<state.seqIdx?'done':i===state.seqIdx?(running()?'active':'done'):'todo');
+    const knob=failed?ic('alarm',14,2.4):(cls==='done'?ic('check',14,2.6):(i+1));
+    let waitTag='',meta=s.meta;
+    if(failed){waitTag=`<span class="fail-tag">${ic('alarm',12,2.2)} restflow ${fix(state.leak.restflow,1)} L/min</span>`;meta='Gefaald — verdachte klep: '+state.leak.suspectName+'. Batch afgekeurd.';}
+    else if(i===state.seqIdx&&running()){
       let cond=s.leaktest?'Flow = 0 L/min':s.dose?('Doelvolume '+s.amt+' L'):s.transfer?'Tussenbak leeg':s.recirc?'Homogeen ('+ (s.dur) +' s)':s.flush?'Spoelen actief':'In uitvoering';
       waitTag=`<span class="wait-tag">${ic('clock',12,2.2)} ${cond}</span>`;
     }
     return `<div class="step ${cls}"><div class="marker"><div class="knob">${knob}</div><div class="stem"></div></div>
-      <div class="body"><div class="nm">${s.nm} ${waitTag}</div><div class="meta">${s.meta}</div></div></div>`;
+      <div class="body"><div class="nm">${s.nm} ${waitTag}</div><div class="meta"${failed?' style="color:var(--alarm)"':''}>${meta}</div></div></div>`;
   }).join('');
 }
 function ilRow(label,ok,note){return `<div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
    <span style="font-size:13px">${label}</span>${ok?pill('ok','OK'):pill('alarm','Actief')}${note?`<span class="muted-2" style="font-size:11px">${note}</span>`:''}</div>`;}
-function mountSequentie(){ refreshSequentie(); }
+function mountSequentie(){
+  const db=$('#seq-leak-demo');if(db)db.onclick=()=>{if(state.leak)return;state.leakArm=true;toast('Lektest gewapend — de eerstvolgende dichtheidstest faalt','warn');refreshSequentie();};
+  refreshSequentie();
+}
 function refreshSequentie(){
   if(state.screen!=='sequentie')return;
   const r=state.rcp;
@@ -1736,6 +1802,8 @@ function refreshSequentie(){
   $('#seq-prog').textContent=running()?('stap '+(state.seqIdx+1)+' / '+state.seq.length+' · '+prog+'%'):'gereed';
   $('#seq-steps').innerHTML=seqStepsHTML();
   $('#seq-il').innerHTML=ilRow('Noodstop',!state.estop)+ilRow('Luchtdruk',state.air,'nabij grens')+ilRow('Hoofdpomp FCS1',!state.fcsFlt);
+  const bn=$('#seq-banner');if(bn)bn.innerHTML=state.leak?`<div class="seq-banner"><span style="display:flex;flex:0 0 auto">${ic('alarm',17,2)}</span><div><b>Lektest gefaald — batch afgekeurd.</b> FC 01 meet ${fix(state.leak.restflow,1)} L/min met alle kleppen dicht. Waarschijnlijke veroorzaker: <b>${state.leak.suspectName}</b> (laatst gesloten klep) — vermoedelijk, niet zeker. Bevestig de melding in Alarmen na herstel.</div></div>`:'';
+  const db=$('#seq-leak-demo');if(db){db.disabled=!!state.leak;db.style.opacity=state.leak?'.55':'1';db.innerHTML=state.leak?(ic('alarm',15,2)+' Lektest gefaald'):(state.leakArm?(ic('clock',15,2)+' Lektest gewapend…'):(ic('alarm',15,2)+' Simuleer lekkende klep'));}
 }
 
 /* ============================================================ SCHERM: LIVE I/O */
@@ -1780,7 +1848,7 @@ function ioRowHTML(s){
   return `<tr class="${flt?'flt':''}" data-uid="${uidOf(s)}" data-s="${(addr+' '+s.tag+' '+s.nm+' '+s.comp).toLowerCase()}" data-t="${s.type}">
     <td><span class="io-type ${s.type}">${s.type}</span></td>
     <td class="tag" style="white-space:nowrap">${addr}${(s.tag&&s.tag!=='—')?`<div class="muted-2" style="font-size:10px;font-weight:500">${s.tag}</div>`:''}</td>
-    <td>${s.nm}${flt?` <span class="pill alarm" style="font-size:10px;padding:2px 7px;margin-left:4px">${v.fault.code}hex</span>`:(s.note?` <span class="muted-2" style="font-size:11px">· ${s.note}</span>`:'')}</td>
+    <td>${s.nm}${flt?` <span class="pill alarm" style="font-size:10px;padding:2px 7px;margin-left:4px">${v.fault.code}hex</span>`:(s.note?` <span class="muted-2" style="font-size:11px">· ${s.note}</span>`:'')}${handState(s)?' <span class="pill warn" style="font-size:10px;padding:2px 7px;margin-left:4px">HAND</span>':''}</td>
     <td class="muted" style="font-size:12.5px">${s.comp}</td>
     <td class="r val" id="ruw-${id}">${v.raw}</td>
     <td class="r val" id="sc-${id}">${v.scaled}</td>
@@ -2092,8 +2160,8 @@ function buildElem(slot){
   const eState=hwElemE(slot);const eLed=ledHTML('alarm',eState==='off'?'off':eState);
   const tab=`<div class="hw-tab ${el.kind}" data-slot="${slot}"><span class="n">${slot+1}</span></div>`;
   let chs='';
-  if(el.led){let cells='';for(let c=1;c<=el.ch;c++){const s=sigAt(slot,c);const flt=!!chFaultCode(slot,c);
-      cells+=`<button class="hw-ch${s?'':' free'}${flt?' flt':''}" data-slot="${slot}" data-ch="${c}">${ledHTML('amber',chOn(s)?'on':'off')}<span class="cn">${String(c).padStart(2,'0')}</span><span class="ab">${s?abbrev(s):'—'}</span><span class="pin"></span></button>`;}
+  if(el.led){let cells='';for(let c=1;c<=el.ch;c++){const s=sigAt(slot,c);const flt=!!chFaultCode(slot,c);const hd=s&&handState(s)==='hand';
+      cells+=`<button class="hw-ch${s?'':' free'}${flt?' flt':''}${hd?' hand':''}" data-slot="${slot}" data-ch="${c}">${ledHTML('amber',chOn(s)?'on':'off')}<span class="cn">${String(c).padStart(2,'0')}</span><span class="ab">${s?abbrev(s):'—'}</span><span class="hbadge">H</span><span class="pin"></span></button>`;}
     chs=`<div class="hw-chs">${cells}</div>`;
   }else{let cells='';for(let c=1;c<=el.ch;c++){const s=sigAt(slot,c);const flt=!!chFaultCode(slot,c);
       cells+=`<button class="hw-ch${s?'':' free'}${flt?' flt':''}" data-slot="${slot}" data-ch="${c}"><span class="cn">${String(c).padStart(2,'0')}</span><span class="ab">${s?abbrev(s):'—'}</span><span class="mA">${s?aiMA(s):''}</span><span class="pin"></span></button>`;}
@@ -2108,7 +2176,7 @@ function buildBp(){let cells='';for(let i=0;i<6;i++)cells+=buildElem(i);
 function buildRack(){return `<div class="hw-scroll"><div class="hw-rack">${buildCtrl()}${buildBp()}</div></div>`;}
 
 function hwListRowHTML(s){const v=ioStatus(s);const flt=!!v.fault;const addr=hwAddr(s)||'—';const id=idu(s);
-  return `<tr class="${flt?'flt':''}" data-uid="${uidOf(s)}"><td class="tag" style="white-space:nowrap">${addr}</td><td><span class="io-type ${s.type}">${s.type}</span></td><td>${s.nm}${flt?` <span class="pill alarm" style="font-size:10px;padding:2px 7px;margin-left:4px">${v.fault.code}hex</span>`:''}</td><td class="r val" id="hwru-${id}">${v.raw}</td><td class="r val" id="hwsc-${id}">${v.scaled}</td><td id="hwst-${id}"><span class="pill ${v.sev==='run'?'run':v.sev}" style="font-size:11px;padding:3px 8px">${ic(sevIcon(v.sev),12,2.2)} ${v.lbl}</span></td></tr>`;}
+  return `<tr class="${flt?'flt':''}" data-uid="${uidOf(s)}"><td class="tag" style="white-space:nowrap">${addr}</td><td><span class="io-type ${s.type}">${s.type}</span></td><td>${s.nm}${flt?` <span class="pill alarm" style="font-size:10px;padding:2px 7px;margin-left:4px">${v.fault.code}hex</span>`:''}${handState(s)?' <span class="pill warn" style="font-size:10px;padding:2px 7px;margin-left:4px">HAND</span>':''}</td><td class="r val" id="hwru-${id}">${v.raw}</td><td class="r val" id="hwsc-${id}">${v.scaled}</td><td id="hwst-${id}"><span class="pill ${v.sev==='run'?'run':v.sev}" style="font-size:11px;padding:3px 8px">${ic(sevIcon(v.sev),12,2.2)} ${v.lbl}</span></td></tr>`;}
 function buildHwList(){let rows='';
   for(let i=0;i<6;i++){const conf=state.hw.slots[i];if(!conf||!conf.type)continue;const el=ELEMENTS[conf.type];
     const sigs=[];for(let c=1;c<=el.ch;c++){const s=sigAt(i,c);if(s)sigs.push(s);}
@@ -2118,6 +2186,36 @@ function buildHwList(){let rows='';
   if(un.length){rows+=`<tr class="grp"><td colspan="6">Niet toegewezen <span class="muted-2" style="font-weight:500">· ${un.length} signaal${un.length>1?'en':''}</span></td></tr>`;un.forEach(s=>rows+=hwListRowHTML(s));}
   return `<table class="tbl hw-tbl"><thead><tr><th style="width:84px">Adres</th><th style="width:64px">Type</th><th>Signaal</th><th class="r" style="width:90px">Ruw</th><th class="r" style="width:116px">Geschaald</th><th style="width:150px">Status</th></tr></thead><tbody id="hw-list">${rows}</tbody></table>`;}
 
+function buildSysPanel(){
+  const sy=state.sys;const tempPct=Math.min(100,Math.round(sy.temp/sy.tempMax*100));const tempSev=sy.temp>=sy.tempWarn?'warn':'ok';
+  return `<div class="card sys-card">
+    <div class="sys-head"><span style="display:flex;color:var(--ink-2)">${ic('chip',17,2)}</span><h3>Besturing — AXC F 2152</h3><span class="muted-2" style="margin-left:auto;font-family:var(--mono);font-size:12px">PLCnext · Axioline F</span></div>
+    <div class="sys-grid">
+      <div class="sys-tile"><div class="k">Modus</div><div class="v"><span class="pill run">${ic('play',12,2.2)} ${sy.mode}</span></div></div>
+      <div class="sys-tile"><div class="k">Firmware</div><div class="v mono">${sy.fw}</div></div>
+      <div class="sys-tile"><div class="k">Project</div><div class="v" style="font-size:13px">${sy.proj} <span class="muted-2 mono">· CRC ${sy.crc}</span></div><div class="sub">geladen ${dateStr(sy.dl)}</div></div>
+      <div class="sys-tile"><div class="k">Bedrijfstijd</div><div class="v mono" id="sys-up">${uptimeStr()}</div><div class="sub" id="sys-time">${clockStr(Date.now())} · NTP ${sy.ntp?'gesync.':'—'}</div></div>
+      <div class="sys-tile"><div class="k">Boardtemperatuur</div><div class="v mono" id="sys-temp">${fix(sy.temp,1)} °C</div><div class="bar"><span id="sys-temp-bar" class="${tempSev}" style="width:${tempPct}%"></span><i style="left:${Math.round(sy.tempWarn/sy.tempMax*100)}%"></i></div></div>
+      <div class="sys-tile"><div class="k">CPU-belasting</div><div class="v mono" id="sys-cpu">${Math.round(sy.cpu)}%</div><div class="bar"><span id="sys-cpu-bar" style="width:${Math.round(sy.cpu)}%"></span></div></div>
+      <div class="sys-tile"><div class="k">Geheugen</div><div class="v mono">${sy.ram}%</div><div class="bar"><span style="width:${sy.ram}%"></span></div></div>
+      <div class="sys-tile"><div class="k">SD-kaart</div><div class="v mono">${100-sy.sd}% vrij</div><div class="sub">${sy.sd}% gebruikt</div></div>
+      <div class="sys-tile"><div class="k">Ethernet</div><div class="v" style="font-size:12.5px;line-height:1.6">${ledHTML(sy.link1?'ok':'info',sy.link1?'on':'off')} X1 <span class="muted-2 mono">${sy.ip1}</span><br>${ledHTML(sy.link2?'ok':'info',sy.link2?'on':'off')} X2 <span class="muted-2 mono">${sy.ip2}</span></div></div>
+      <div class="sys-tile"><div class="k">Voeding</div><div class="v" style="font-size:12.5px;line-height:1.6">${ledHTML('ok','on')} U_L 24 V<br>${ledHTML('ok','on')} U_P 24 V</div></div>
+    </div>
+    <div class="hw-hint" style="padding:10px 14px 12px">Systeemwaarden via PLCnext-systeemvariabelen (DEVICE_STATE, RTC, USER_PARTITION) — informatief; procesbewaking loopt via de alarmen.</div>
+  </div>`;
+}
+function updateSys(){
+  if(state.screen!=='hardware')return;const sy=state.sys;
+  sy.cpu=Math.max(9,Math.min(46,sy.cpu+(Math.random()*4-2)));
+  sy.temp=Math.max(39,Math.min(54,sy.temp+(Math.random()*0.6-0.3)));
+  const up=document.getElementById('sys-up');if(up)up.textContent=uptimeStr();
+  const tm=document.getElementById('sys-time');if(tm)tm.textContent=clockStr(Date.now())+' · NTP '+(sy.ntp?'gesync.':'—');
+  const tp=document.getElementById('sys-temp');if(tp)tp.textContent=fix(sy.temp,1)+' °C';
+  const tb=document.getElementById('sys-temp-bar');if(tb){tb.style.width=Math.min(100,Math.round(sy.temp/sy.tempMax*100))+'%';tb.className=sy.temp>=sy.tempWarn?'warn':'ok';}
+  const cp=document.getElementById('sys-cpu');if(cp)cp.textContent=Math.round(sy.cpu)+'%';
+  const cb=document.getElementById('sys-cpu-bar');if(cb)cb.style.width=Math.round(sy.cpu)+'%';
+}
 function viewHardware(){
   return `<div class="page-head"><div class="titles"><h1>Hardware — diagnose-tweeling</h1><p>Live spiegel van de PLCnext-besturing en Smart Elements · status-LED's, kanaal-diagnose en Axioline-foutcodes</p></div>
     <div class="seg" id="hw-mode"><button data-m="live" aria-pressed="${hwMode==='live'?'true':'false'}">Live</button><button data-m="edit" aria-pressed="${hwMode==='edit'?'true':'false'}">Samenstellen</button></div></div>
@@ -2131,6 +2229,7 @@ function viewHardware(){
       <span>${ledHTML('alarm','blink')} knippert — zie toelichting</span>
       <span>${ledHTML('ok','off')} uit / geen functie</span>
     </div>
+    ${buildSysPanel()}
     <div class="card" style="margin-top:20px;overflow:hidden"><div style="padding:13px 16px;border-bottom:1px solid var(--c-line);display:flex;align-items:center;gap:8px"><span style="display:flex;color:var(--ink-2)">${ic('io',17,2)}</span><h3 style="font-size:14px">Aangesloten signalen <span class="muted-2" style="font-weight:500">· per Smart Element · ${SIGNALS.length} I/O</span></h3></div>
       <div style="overflow:auto">${buildHwList()}</div></div>`;
 }
@@ -2160,7 +2259,7 @@ function setHwBar(){
     cls+=' '+(Lx.state==='off'?'info':(Lx.color==='ok'?'ok':Lx.color==='alarm'?'flt':'info'));icon=Lx.state==='off'?'info':(Lx.color==='ok'?'check':Lx.color==='alarm'?'alarm':'info');
     html=`<b>LED ${Lx.id} · ${stTxt}</b> <span class="sub">— ${Lx.meaning}</span>`;showReset=true;
   }else if(hwSel&&hwSel.kind==='ch'){const s=sigAt(hwSel.slot,hwSel.ch);const code=chFaultCode(hwSel.slot,hwSel.ch);const conf=state.hw.slots[hwSel.slot];const el=ELEMENTS[conf.type];const a=`S${hwSel.slot+1}·CH${String(hwSel.ch).padStart(2,'0')}`;
-    if(code){const cond=condOf(el.type,code);cls+=' flt';icon='alarm';html=`<b>${a} · ${s?s.nm:'—'}</b> — ${cond.nm} <span class="code">(${code}hex)</span>. <span class="sub">${cond.action}</span>`;}
+    if(code){const cond=condOf(conf.type,code);cls+=' flt';icon='alarm';html=`<b>${a} · ${s?s.nm:'—'}</b> — ${cond.nm} <span class="code">(${code}hex)</span>. <span class="sub">${cond.action}</span>`;}
     else{cls+=' ok';icon='check';html=`<b>${a} · ${s?s.nm:'vrij kanaal'}</b> <span class="sub">— geen storing${s?(' · '+el.name):''}</span>`;}
     showReset=true;
   }else if(hwSel&&hwSel.kind==='elem'){const conf=state.hw.slots[hwSel.slot];
@@ -2177,16 +2276,28 @@ function setHwBar(){
 }
 function openHwFaceplate(slot,ch){
   const conf=state.hw.slots[slot];if(!conf||!conf.type)return;const el=ELEMENTS[conf.type];
-  const s=ch?sigAt(slot,ch):null;const code=ch?chFaultCode(slot,ch):modFaultCode(slot);const cond=code?condOf(el.type,code):null;
+  const s=ch?sigAt(slot,ch):null;const code=ch?chFaultCode(slot,ch):modFaultCode(slot);const cond=code?condOf(conf.type,code):null;
   const addr=ch?`S${slot+1}·CH${String(ch).padStart(2,'0')}`:`S${slot+1} · module`;
+  const forced=s&&handState(s)==='hand';
   let head=cond?`<div class="dg-h flt"><div><div class="big">${cond.nm}</div><div style="font-size:12.5px;color:var(--ink-2);margin-top:2px">${el.name}${s?(' · '+s.nm):''}</div></div><span class="code">${code}hex</span></div>`
     :`<div class="dg-h ok"><div><div class="big">Geen storing</div><div style="font-size:12.5px;color:var(--ink-2);margin-top:2px">${el.name}${s?(' · '+s.nm):''}</div></div><span class="code">OK</span></div>`;
+  let body=head;
+  if(forced)body+=`<div class="dg-force"><span style="display:flex;flex:0 0 auto">${ic('hand',16,2)}</span><div><b>In handbediening</b> — dit kanaal is geforceerd en volgt niet de automaat. Zet terug op Auto via Hand / Auto.</div></div>`;
+  if(s&&state.leak&&state.leak.slot===slot&&state.leak.ch===ch)body+=`<div class="dg-suspect"><span style="display:flex;flex:0 0 auto">${ic('alarm',16,2)}</span><div><b>Verdachte klep bij gefaalde lektest</b> — FC 01 meet ${fix(state.leak.restflow,1)} L/min met alle kleppen dicht. Vermoedelijk sluit deze klep niet volledig af; zeker is dit niet.</div></div>`;
   let grid=`<dl class="dg-grid"><dt>Adres</dt><dd class="mono">${addr}</dd><dt>Smart Element</dt><dd>${el.name} <span class="muted-2">(${el.art})</span></dd><dt>Kanaaltype</dt><dd>${el.desc}</dd>`;
-  if(s){const v=ioStatus(s);grid+=`<dt>Signaal</dt><dd>${s.nm}</dd><dt>Component</dt><dd>${s.comp}</dd><dt>Actuele waarde</dt><dd class="mono">${v.scaled}${(v.raw&&v.raw!=='—')?(' · ruw '+v.raw):''}</dd>`;}
-  grid+=`</dl>`;
-  let body=head+grid;
+  if(s){const v=ioStatus(s);grid+=`<dt>Signaal</dt><dd>${s.nm}</dd><dt>Component</dt><dd>${s.comp}</dd><dt>Actuele waarde</dt><dd class="mono">${v.scaled}${(v.raw&&v.raw!=='—')?(' · ruw '+v.raw):''}${forced?' · <span style="color:var(--warn);font-weight:700">HAND</span>':''}</dd>`;}
+  grid+=`</dl>`;body+=grid;
   if(cond)body+=`<div class="dg-block"><h5>Vermoedelijke oorzaak</h5><p>${cond.cause}</p></div><div class="dg-block"><h5>Herstelactie</h5><p>${cond.action}</p></div>`;
   else body+=`<div class="dg-block"><h5>Status</h5><p>Dit kanaal werkt normaal — geen actieve diagnose op de lokale bus voor dit punt.</p></div>`;
+  if(s){
+    const w=wireOf(s);
+    body+=`<div class="dg-block"><h5>Bedrading</h5><div class="dg-wire"><span>${ic('io',13,2)} Klem <b>${w.term}</b></span><span>Ader <b>${w.wire}</b> · ${w.color}</span><span>Kabel ${w.cable}</span></div></div>`;
+    const fh=faultHistOf(s);let onder='';
+    if(s.type==='DO'){onder=isPumpSig(s)?`<b>${(hoursOf(s)||0).toLocaleString('nl-NL')}</b> bedrijfsuren`:`<b>${cyclesOf(s).toLocaleString('nl-NL')}</b> schakelingen`;}
+    else if(s.type==='AI'){const cd=state.calDate[s.k];onder=cd?`Laatste kalibratie <b>${dateStr(cd)}</b>`:'';}
+    const fhTxt=fh.n>0?`${fh.n}× storing in de laatste 90 dagen${fh.last?` · laatste ${dateStr(fh.last)}`:''}${fh.resolved?' (opgelost)':''}`:'geen eerdere storingen geregistreerd';
+    body+=`<div class="dg-block"><h5>Onderhoud &amp; historie</h5><p>${onder?onder+' · ':''}${fhTxt}</p></div>`;
+  }
   body+=`<div class="hw-hint" style="margin-top:2px">Diagnose via Axioline PDI-object 0018hex · gemeld door de lokale-busmaster van de AXC F 2152.</div>`;
   openModal('Diagnose · '+addr, body);
 }
@@ -2195,7 +2306,7 @@ function changeSlotType(slot,typeId){
   Object.keys(state.hw.map).forEach(uid=>{if(state.hw.map[uid].slot===slot)delete state.hw.map[uid];});
   Object.keys(state.hw.diag).forEach(key=>{if(+key.split('.')[0]===slot)delete state.hw.diag[key];});
   state.hw.slots[slot]={type:newType};
-  render();
+  render();renderNav();updateBell();
   toast(newType?('Slot '+(slot+1)+': '+ELEMENTS[newType].name):('Slot '+(slot+1)+' leeggemaakt'),'chip');
 }
 function openAssign(slot,ch){
@@ -2212,7 +2323,7 @@ function openAssign(slot,ch){
 function assignCh(slot,ch,uid){
   const cur=sigAt(slot,ch);if(cur)delete state.hw.map[uidOf(cur)];
   if(uid){delete state.hw.map[uid];state.hw.map[uid]={slot,ch};}
-  render();
+  render();renderNav();updateBell();
 }
 function updateHardware(){
   if(state.screen!=='hardware')return;
@@ -2222,17 +2333,18 @@ function updateHardware(){
   for(let i=0;i<6;i++){const conf=state.hw.slots[i];const box=$(`.hw-elem[data-slot="${i}"]`);if(!box||!conf||!conf.type)continue;const el=ELEMENTS[conf.type];
     box.classList.toggle('flt',activeFaults().some(x=>x.slot===i));
     const ef=box.querySelector('.hw-ef .led');if(ef){const eState=hwElemE(i);ef.className=ledClass('alarm',eState==='off'?'off':eState);}
-    box.querySelectorAll('.hw-ch').forEach(cell=>{const c=+cell.dataset.ch;const s=sigAt(i,c);cell.classList.toggle('flt',!!chFaultCode(i,c));
+    box.querySelectorAll('.hw-ch').forEach(cell=>{const c=+cell.dataset.ch;const s=sigAt(i,c);cell.classList.toggle('flt',!!chFaultCode(i,c));cell.classList.toggle('hand',!!(s&&handState(s)==='hand'));
       if(el.led){const dot=cell.querySelector('.led');if(dot)dot.className=ledClass('amber',chOn(s)?'on':'off');}
       else{const mA=cell.querySelector('.mA');if(mA)mA.textContent=s?aiMA(s):'';}});}
   SIGNALS.forEach(s=>{const v=ioStatus(s);const id=idu(s);const ru=document.getElementById('hwru-'+id),sc=document.getElementById('hwsc-'+id),st=document.getElementById('hwst-'+id);
     if(ru)ru.textContent=v.raw;if(sc)sc.textContent=v.scaled;
     if(st)st.innerHTML=`<span class="pill ${v.sev==='run'?'run':v.sev}" style="font-size:11px;padding:3px 8px">${ic(sevIcon(v.sev),12,2.2)} ${v.lbl}</span>`;});
-  setHwBar();
+  updateSys();setHwBar();
 }
-function hwAlarms(){return activeFaults().map((f,i)=>{const addr=f.ch?`S${f.slot+1}·CH${String(f.ch).padStart(2,'0')}`:`S${f.slot+1}`;
-  return {id:'hw'+i,sev:'alarm',code:f.code+'h',time:Date.now()-1000*60*(13+i*11),ack:false,
-    ti:`${f.cond.nm} — ${f.sig?f.sig.nm:f.elem.name}`,loc:`${f.elem.name} · ${addr}`,cause:f.cond.cause,check:f.cond.action,hw:true};});}
+function hwAlarms(){return activeFaults().map((f,i)=>{const addr=f.ch?`S${f.slot+1}·CH${String(f.ch).padStart(2,'0')}`:`S${f.slot+1}`;const id='hw-'+f.slot+'-'+(f.ch==null?'M':f.ch);
+  if(!state.hwAt[id])state.hwAt[id]=Date.now()-1000*60*(13+i*11);
+  return {id,sev:'alarm',code:f.code+'hex',time:state.hwAt[id],ack:!!state.hwAck[id],firstout:false,
+    ti:`${f.cond.nm} — ${f.sig?f.sig.nm:f.elem.name}`,loc:`${f.elem.name} · ${addr}`,cause:f.cond.cause,check:f.cond.action,hw:true,slot:f.slot,ch:f.ch};});}
 
 const VIEWS={overzicht:[viewOverzicht,mountOverzicht],recepten:[viewRecepten,mountRecepten],verbruik:[viewVerbruik,mountVerbruik],
  alarmen:[viewAlarmen,mountAlarmen],sequentie:[viewSequentie,mountSequentie],io:[viewIO,mountIO],handauto:[viewHandAuto,mountHandAuto],kalibratie:[viewKalibratie,mountKalibratie],onderhoud:[viewOnderhoud,mountOnderhoud],hardware:[viewHardware,mountHardware]};
@@ -2259,7 +2371,7 @@ function applyStepEffects(){
     if(s.dose){const n=srcByName(s.dose)?.n;if(n)state.openValves.add('dose-'+n);state.openValves.add('inlet-'+bak);
       state.fcsRun=true;state.hz=30;state.flow=27+Math.round(Math.random()*4);
       const col=s.dose==='Water'?'fl-w':(bak==='A'?'fl-a':'fl-b');state.activeFlow={feed:1,src:n,in:bak,col};
-    } else if(s.leaktest){state.fcsRun=true;state.hz=30;state.flow=0;
+    } else if(s.leaktest){state.fcsRun=true;state.hz=30;state.flow=state.leak?state.leak.restflow:0;
     } else if(s.recirc){state.openValves.add('recirc-'+bak);state.openValves.add(bak==='A'?'vp02':'vp03');state.mixing=true;state.activeFlow={rec:bak};
     } else if(s.transfer){state.openValves.add('kl-'+bak+'1');state.openValves.add('kl-'+bak+'2');state.openValves.add(bak==='A'?'vp02':'vp03');
       state.activeFlow={tr:bak};
@@ -2278,13 +2390,43 @@ function stepLevels(){const s=curStep();const bak=state.rcp.bak;if(!s)return;
 }
 function drain(){const s=curStep();const bak=state.rcp.bak;['A1','A2','B1','B2'].forEach(k=>{const tr=s&&s.transfer&&k[0]===bak;if(!tr)state.lvl[k]=Math.max(3,state.lvl[k]-(0.10+Math.random()*0.08));});}
 function syncRaw(){['lvl-tA','lvl-tB','A1','A2','B1','B2'].forEach(k=>{const lk=k==='lvl-tA'?'tA':k==='lvl-tB'?'tB':k;state.cal[k].raw=4+Math.max(0,Math.min(100,state.lvl[lk]))/100*16;});}
+function maybeLeakCheck(){const s=curStep();if(s&&s.leaktest&&state.leakArm&&!state.leak)triggerLeak(s);}
+function triggerLeak(s){
+  state.leakArm=false;
+  const name=s.after||'laatste klep';
+  const src=srcByName(name);
+  const key=name==='Water'?'dose-12':(src?('dose-'+src.n):null);
+  const sig=key?SIGNALS.find(x=>x.type==='DO'&&x.k===key):null;
+  const p=sig?state.hw.map[uidOf(sig)]:null;
+  const restflow=+(1.4+Math.random()*1.1).toFixed(1);
+  const id='E-204-'+Date.now();
+  state.leak={restflow,suspectName:name,suspectKey:key,slot:p?p.slot:null,ch:p?p.ch:null,time:Date.now(),alarmId:id,stepIdx:state.seqIdx};
+  state.alarms.unshift({id,sev:'alarm',code:'E-204',time:Date.now(),ack:false,leak:true,
+    suspect:p?{slot:p.slot,ch:p.ch}:null,
+    ti:'Lektest gefaald — restflow '+fix(restflow,1)+' L/min',
+    loc:'Doseerstraat · FC 01'+(name?(' · verdachte klep: '+name):''),
+    cause:'Bij de dichtheidstest na het sluiten van '+name+' meet FC 01 nog '+fix(restflow,1)+' L/min, terwijl alle kleppen dicht horen te staan. Omdat de test direct na deze klep draait, is '+name+' de waarschijnlijke veroorzaker — zeker is dit niet; een eerder gebruikte klep kan ook lekken of traag sluiten.',
+    check:'Controleer eerst '+name+' (klepzitting, aandrukking, persluchtdruk). Test zo nodig de overige in deze batch gebruikte kleppen afzonderlijk. De batch is afgekeurd; bevestig de melding na herstel om opnieuw te starten.'});
+  if(state.screen!=='alarmen')toast('Lektest gefaald — restflow '+fix(restflow,1)+' L/min · verdachte klep: '+name,'alarm','alarm big');
+}
+function resolveLeak(){
+  if(!state.leak)return;const lk=state.leak;
+  state.alarms=state.alarms.filter(a=>!a.leak);
+  state.history.unshift({sev:'alarm',code:'E-204',time:Date.now(),ti:'Lektest gefaald — restflow na '+lk.suspectName+' (afgehandeld · batch afgekeurd)'});
+  if(state.history.length>40)state.history.pop();
+  state.leak=null;
+  state.seq=buildSequence(state.rcp);state.seqIdx=0;state.stepT=0;
+  toast('Batch afgekeurd · doseerstraat opnieuw gestart','info');
+}
 function tick(){
   updateClock();
+  if(!state.leak){
   state.stepT++;
   const step=curStep();
   if(step&&state.stepT>=step.dur){
     state.stepT=0;state.seqIdx++;
-    if(state.seqIdx>=state.seq.length){
+    maybeLeakCheck();
+    if(!state.leak&&state.seqIdx>=state.seq.length){
       const fin=state.rcp;state.batchesToday++;state.lastBatch=fin.bak+' · '+fin.name;
       const Lbatch=fin.batch-2+Math.round(Math.random()*4);
       state.history.unshift({sev:'info',code:'I-050',time:Date.now(),ti:'Batch gereed — '+fin.bak+' · '+fin.name+' ('+Lbatch+' L)'});
@@ -2294,6 +2436,7 @@ function tick(){
       const avgA=(state.lvl.A1+state.lvl.A2)/2,avgB=(state.lvl.B1+state.lvl.B2)/2;const side=avgA<=avgB?'A':'B';
       state.rcp=RECIPES.find(r=>r.bak===side&&r.id.startsWith('std'))||RECIPES[0];state.seq=buildSequence(state.rcp);state.seqIdx=0;
     }
+  }
   }
   applyStepEffects();stepLevels();drain();syncRaw();
   state.flowHist.push(state.flow);if(state.flowHist.length>40)state.flowHist.shift();
@@ -2318,8 +2461,7 @@ function wire(){
 }
 function init(){
   seedAlarms();
-  state.alarms=hwAlarms().concat(state.alarms);
-  {const oldest=state.alarms.slice().sort((a,b)=>a.time-b.time)[0];state.alarms.forEach(a=>a.firstout=(a===oldest));}
+  initWear();
   state.seq=buildSequence(state.rcp);state.seqIdx=2;state.stepT=0; // start midden in een batch zodat het meteen leeft
   renderRoles();renderNav();wire();
   applyStepEffects();syncRaw();updateClock();updateBell();
