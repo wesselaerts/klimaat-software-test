@@ -461,6 +461,48 @@ hr.sep{border:none;border-top:1px solid var(--c-line);margin:18px 0}
 .kv{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid var(--c-line);font-size:13px}
 .kv:last-child{border-bottom:none}
 .kv .k{color:var(--ink-2)} .kv .v{font-weight:600;font-family:var(--mono)}
+/* ---- Recepten: voedingsschema-invoer ---- */
+.rcp-subbar{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.sf-sel{display:flex;flex-direction:column;gap:4px;font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-3);font-weight:600}
+.sf-sel select{min-width:240px}
+.sf-field input,.sf-field select,.sf-sel select,.vi input,.ph-row input,.vat-ed-row input,.vat-ed-row select{font-family:inherit;font-size:13.5px;color:var(--ink);background:var(--c-surface);border:1px solid var(--c-line-2);border-radius:9px;padding:9px 11px;min-height:42px;outline:none;width:100%}
+.sf-field input:focus,.sf-field select:focus,.sf-sel select:focus,.vi input:focus,.ph-row input:focus,.vat-ed-row input:focus,.vat-ed-row select:focus{border-color:var(--acc);box-shadow:0 0 0 3px var(--acc-50)}
+.sf-head{padding:16px}
+.sf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(178px,1fr));gap:12px}
+.sf-field{display:flex;flex-direction:column;gap:4px;font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-3);font-weight:600}
+.sf-field.wide{grid-column:span 2}
+.sf-field input{font-weight:500;text-transform:none;letter-spacing:0}
+.sf-meta{display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin-top:13px;font-size:12.5px}
+.sf-meta #sf-verval{font-weight:600;color:var(--ok)}
+.sf-meta #sf-verval.exp{color:var(--alarm)}
+.schema-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+@media(max-width:900px){.schema-grid{grid-template-columns:1fr}}
+.mb-col{background:var(--c-surface);border:1px solid var(--c-line);border-radius:var(--r-lg);padding:14px;box-shadow:var(--sh-1)}
+.mb-col.a{border-top:3px solid var(--a)}
+.mb-col.b{border-top:3px solid var(--b)}
+.mb-h{font-weight:700;font-size:14px;display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.vat-head{display:grid;grid-template-columns:1fr 132px 112px;gap:10px;font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-3);font-weight:600;padding:0 2px 6px;border-bottom:1px solid var(--c-line)}
+.vat-row{display:grid;grid-template-columns:1fr 132px 112px;gap:10px;align-items:center;padding:7px 2px;border-bottom:1px solid var(--c-line)}
+.vat-row:last-child{border-bottom:none}
+.vat-row .vn{font-size:13.5px;font-weight:500}
+.vi{display:flex;align-items:center;gap:7px}
+.vi input{text-align:right;font-family:var(--mono);padding:8px 10px;min-height:40px}
+.vi .u{font-size:12px;color:var(--ink-3);min-width:22px}
+.ccm{font-family:var(--mono);font-size:12px;color:var(--ink-2);text-align:right}
+.vat-sub{font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-3);font-weight:600;margin:11px 0 1px}
+.vat-empty{font-size:12.5px;color:var(--ink-3);padding:8px 2px}
+.sf-ph{padding:14px;margin-bottom:16px}
+.ph-row{display:flex;gap:12px;max-width:300px}
+.ph-row .sf-field{flex:1}
+.ph-row input{text-align:right;font-family:var(--mono)}
+.sf-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.vat-ed{padding:16px}
+.vat-ed-head{display:grid;grid-template-columns:34px 1.6fr 1fr 92px 92px 104px;gap:10px;font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-3);font-weight:600;padding-bottom:6px;border-bottom:1px solid var(--c-line)}
+.vat-ed-row{display:grid;grid-template-columns:34px 1.6fr 1fr 92px 92px 104px;gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid var(--c-line)}
+.vat-ed-row:last-of-type{border-bottom:none}
+.vat-ed-row .vn-num{font-family:var(--mono);color:var(--ink-3);font-weight:600;text-align:center}
+.vat-ed-row input,.vat-ed-row select{min-height:40px;padding:8px 10px}
+@media(max-width:780px){.vat-ed-head{display:none}.vat-ed-row{grid-template-columns:1fr 1fr;gap:8px;padding:10px 0}}
 
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:12px 18px;border-radius:var(--r-md);box-shadow:var(--sh-4);font-size:13.5px;font-weight:500;z-index:90;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;display:flex;align-items:center;gap:10px;max-width:90vw}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -1141,6 +1183,26 @@ function buildSequence(rcp){
   return steps;
 }
 
+/* ---------- VATEN (per installatie te labelen door service) + voedingsschema's ---------- */
+const VATS_BASE=[
+ {n:1,name:'Nitrokal',sub:'Viton',bak:'AB',unit:'kg',kind:'macro'},
+ {n:2,name:'Amnitra',sub:'',bak:'B',unit:'kg',kind:'macro'},
+ {n:3,name:'Calcal',sub:'',bak:'A',unit:'kg',kind:'macro'},
+ {n:4,name:'IJzer',sub:'Fe-DTPA',bak:'A',unit:'ml',kind:'micro'},
+ {n:5,name:'Baskal',sub:'',bak:'B',unit:'kg',kind:'macro'},
+ {n:6,name:'BFK',sub:'',bak:'B',unit:'kg',kind:'macro'},
+ {n:7,name:'SuperFK',sub:'',bak:'B',unit:'kg',kind:'macro'},
+ {n:8,name:'Zwakal',sub:'',bak:'B',unit:'kg',kind:'macro'},
+ {n:9,name:'Magnitra',sub:'',bak:'B',unit:'kg',kind:'macro'},
+ {n:10,name:'Sporen 1',sub:'Zwart',bak:'A',unit:'ml',kind:'micro'},
+ {n:11,name:'Sporen 2',sub:'Zwart',bak:'A',unit:'ml',kind:'micro'},
+ {n:12,name:'Water',sub:'',bak:'-',unit:'l',kind:'water'}
+];
+const SCHEMA_EXAMPLE={id:'sch-paprika',naam:'Paprika — Standaard',gewas:'Paprika',stadium:'Standard',substraat:'Steenwol',ec:'1,90',tankL:1000,conc:100,verval:'',
+  A:{3:'84,7',4:'5101',10:'200',11:'150'},
+  B:{1:'41,8',5:'27,1',6:'30,0',8:'59,0',9:'30,9'},
+  phKg:'0,34',phL:'0,26'};
+
 /* ---------- STATE ---------- */
 const state={
   role:'klant',
@@ -1164,6 +1226,7 @@ const state={
   wear:{},
   fhist:{'AI:lvl-tB':{n:3,last:Date.now()-1000*60*60*24*9},'DO:dose-3':{n:1,last:Date.now()-1000*60*60*24*2},'DO:dose-1':{n:2,last:Date.now()-1000*60*60*24*40,resolved:true},'AI:B2':{n:1,last:Date.now()-1000*60*60*24*70,resolved:true},'DO:vp02':{n:1,last:Date.now()-1000*60*60*24*120,resolved:true}},
   calDate:{'lvl-tA':Date.now()-1000*60*60*24*180,'lvl-tB':Date.now()-1000*60*60*24*180,'A1':Date.now()-1000*60*60*24*95,'A2':Date.now()-1000*60*60*24*95,'B1':Date.now()-1000*60*60*24*210,'B2':Date.now()-1000*60*60*24*210},
+  vats:VATS_BASE, schemas:[SCHEMA_EXAMPLE], draft:null,
   openValves:new Set(), activeFlow:null, mixing:false,
   runtime:{FCS1:1242,VP02:986,VP03:1011},
   cycles:{dose:48210,kl:9120,inlet:8640},
@@ -1625,14 +1688,17 @@ function dateStr(ts){return new Date(ts).toLocaleDateString('nl-NL',{day:'numeri
 
 /* ============================================================ SCHERM: RECEPTEN */
 let selRcp=RECIPES[0].id;
+let rcpTab='schema', schemaSel=null, vatEditOn=false;
 function viewRecepten(){
-  return `<div class="page-head"><div class="titles"><h1>Recepten</h1><p>Samenstelling, doseervolgorde en hoeveelheden per batch</p></div>
-    <div class="page-actions"><button class="btn" id="rcp-new">${ic('beaker',18,2)} Nieuw recept</button></div></div>
-    <div class="card"><div class="rcp">
-      <div class="rcp-list" id="rcp-list"></div>
-      <div class="rcp-detail" id="rcp-detail"></div>
-    </div></div>`;
+  return `<div class="page-head"><div class="titles"><h1>Recepten</h1><p>Voedingsschema invoeren vanaf het adviesblad — en de draaiklare receptuur</p></div>
+    <div class="page-actions"><div class="tabs" id="rcp-tabs">
+      <button data-t="schema" aria-selected="${rcpTab==='schema'}">Voedingsschema</button>
+      <button data-t="lib" aria-selected="${rcpTab==='lib'}">Draaiklaar</button>
+    </div></div></div>
+    <div id="rcp-body"></div>`;
 }
+
+/* ---- draaiklare bibliotheek (per bak) ---- */
 function rcpListHTML(){return RECIPES.map(r=>`<div class="rcp-item" data-r="${r.id}" aria-current="${selRcp===r.id}">
    <div class="nm">${r.name}<span class="chip ${r.bak.toLowerCase()==='a'?'a':'b'}">${r.bak}</span></div>
    <div class="mt"><span class="mono">${r.batch} L</span><span>EC ${fix(r.ec,1)}</span><span>pH ${fix(r.ph,1)}</span></div>
@@ -1661,12 +1727,119 @@ function rcpDetailHTML(){const r=RECIPES.find(x=>x.id===selRcp);const L=r.bak.to
        <div class="amt">${fix(amt)} L</div></div>`;}).join('')}
    <div class="dose-row" style="border-top:2px solid var(--c-line-2);border-bottom:none;margin-top:4px"><div></div><div class="muted">Totaal</div><div class="amt">${fix(total)} L</div></div>`;
 }
+
+/* ---- voedingsschema (spiegelt het adviesblad) ---- */
+function numNL(s){const n=parseFloat(String(s).replace(',','.'));return isFinite(n)?n:0;}
+function ccm3(amount){const t=numNL(state.draft.tankL)||1000,c=numNL(state.draft.conc)||100;return Math.round(numNL(amount)*1e6/(t*c));}
+function vatsTank(tank,kind){return state.vats.filter(v=>v.kind===kind&&(v.bak===tank||v.bak==='AB'));}
+function blankDraft(){return {id:null,naam:'',gewas:'',stadium:'Standard',substraat:'Steenwol',ec:'',tankL:1000,conc:100,verval:'',A:{},B:{},phKg:'',phL:''};}
+function loadDraft(id){const s=id?state.schemas.find(x=>x.id===id):null;state.draft=s?JSON.parse(JSON.stringify(s)):blankDraft();schemaSel=s?s.id:null;}
+function saveDraft(){const d=state.draft;if(!d.naam||!d.naam.trim()){toast('Geef het recept eerst een naam','info');return;}
+  if(d.id){const i=state.schemas.findIndex(s=>s.id===d.id);if(i>=0)state.schemas[i]=JSON.parse(JSON.stringify(d));}
+  else{d.id='sch-'+Date.now();state.schemas.push(JSON.parse(JSON.stringify(d)));schemaSel=d.id;}
+  toast('Recept opgeslagen — '+d.naam,'check');}
+function dupDraft(){const c=JSON.parse(JSON.stringify(state.draft));c.id=null;c.naam=(c.naam||'Recept')+' (kopie)';state.draft=c;schemaSel=null;toast('Recept gedupliceerd — pas aan en sla op','beaker');}
+function vervalText(d){if(!d.verval)return{cls:'',txt:'Geen vervaldatum'};const exp=new Date(d.verval)<new Date(new Date().toDateString());const ds=dateStr(new Date(d.verval).getTime());return{cls:exp?'exp':'',txt:exp?('⚠ Recept verlopen ('+ds+')'):('Geldig t/m '+ds)};}
+function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
+
+function schemaFormHTML(){
+  const d=state.draft;
+  const field=(f,label,ph,wide)=>`<label class="sf-field${wide?' wide':''}"><span>${label}</span><input data-f="${f}" value="${esc(d[f])}" placeholder="${ph||''}"></label>`;
+  const colHTML=(tank)=>{const cls=tank==='A'?'a':'b';const macros=vatsTank(tank,'macro'),micros=vatsTank(tank,'micro');
+    const row=(v)=>{const amt=(d[tank][v.n]??'');return `<div class="vat-row"><div class="vn">${v.name}${v.sub?`<span class="muted-2"> · ${v.sub}</span>`:''}</div>
+        <div class="vi"><input inputmode="decimal" data-tank="${tank}" data-vat="${v.n}" value="${esc(amt)}" placeholder="0"><span class="u">${v.unit}</span></div>
+        <div class="ccm" id="ccm-${tank}-${v.n}">${amt!==''?(fix(ccm3(amt))+' cc/m³'):'—'}</div></div>`;};
+    return `<div class="mb-col ${cls}">
+      <div class="mb-h"><span class="chip ${cls}">${tank}</span> Mestbak ${tank}</div>
+      <div class="vat-head"><span>Meststof</span><span>hoeveelheid</span><span>cc/m³ <span class="muted-2" style="font-weight:400">↔ blad</span></span></div>
+      ${macros.length?macros.map(row).join(''):'<div class="vat-empty">geen macro-vat voor deze bak</div>'}
+      ${micros.length?`<div class="vat-sub">Spoorelementen</div>${micros.map(row).join('')}`:''}
+    </div>`;};
+  const vv=vervalText(d);
+  return `<div class="card sf-head">
+      <div class="sf-grid">
+        ${field('naam','Receptnaam','bv. Tomaat — vegetatief',true)}
+        ${field('gewas','Gewas','Tomaat')}
+        ${field('stadium','Gewasstadium','Standard')}
+        ${field('substraat','Substraat','Steenwol')}
+        ${field('ec','EC-doel (mS/cm)','2,4')}
+        ${field('tankL','Mestbakgrootte (l)','1000')}
+        ${field('conc','Concentratie (×)','100')}
+        <label class="sf-field"><span>Vervaldatum</span><input type="date" data-f="verval" value="${esc(d.verval)}"></label>
+      </div>
+      <div class="sf-meta"><span id="sf-verval" class="${vv.cls}">${vv.txt}</span>
+        <span class="muted-2">cc/m³ = hoeveelheid × (1.000.000 / bakgrootte × concentratie) — vergelijk met de cc/m³-kolom op het blad.</span></div>
+    </div>
+    <div class="schema-grid">${colHTML('A')}${colHTML('B')}</div>
+    <div class="card sf-ph">
+      <div class="mb-h">pH-correctie <span class="muted-2" style="font-weight:400">· Nitrokal (los op het adviesblad)</span></div>
+      <div class="ph-row">
+        <label class="sf-field"><span>kg</span><input inputmode="decimal" data-ph="kg" value="${esc(d.phKg)}" placeholder="0"></label>
+        <label class="sf-field"><span>liter</span><input inputmode="decimal" data-ph="l" value="${esc(d.phL)}" placeholder="0"></label>
+      </div>
+    </div>
+    <div class="sf-actions">
+      <button class="btn primary" id="schema-save">${ic('check',18,2.2)} Recept opslaan</button>
+      <span class="muted-2">${schemaSel?'Wijzigingen worden onder dit recept opgeslagen.':'Nieuw recept — geef het een naam en sla op.'}</span>
+    </div>`;
+}
+
+function vatEditorHTML(){
+  const opt=(cur,val,lbl)=>`<option value="${val}" ${cur===val?'selected':''}>${lbl}</option>`;
+  return `<div class="card vat-ed">
+    <div class="mb-h">${ic('chip',16,2)} Vaten beheren <span class="muted-2" style="font-weight:400">· label elk vat met het product dat deze teler gebruikt</span></div>
+    <div class="vat-ed-head"><span>#</span><span>Productnaam</span><span>Toevoeging</span><span>Bak</span><span>Eenheid</span><span>Soort</span></div>
+    ${state.vats.map(v=>`<div class="vat-ed-row" data-vn="${v.n}">
+       <span class="vn-num">${v.n}</span>
+       <input data-ve="name" value="${esc(v.name)}" placeholder="product">
+       <input data-ve="sub" value="${esc(v.sub)}" placeholder="—">
+       <select data-ve="bak">${opt(v.bak,'A','A')}${opt(v.bak,'B','B')}${opt(v.bak,'AB','A+B')}${opt(v.bak,'-','—')}</select>
+       <select data-ve="unit">${opt(v.unit,'kg','kg')}${opt(v.unit,'l','liter')}${opt(v.unit,'ml','ml')}${opt(v.unit,'g','gram')}</select>
+       <select data-ve="kind">${opt(v.kind,'macro','macro')}${opt(v.kind,'micro','spoor')}${opt(v.kind,'water','water')}</select>
+     </div>`).join('')}
+    <div class="muted-2" style="font-size:12px;margin-top:10px">${ic('lock',12,2)} De fysieke vaten liggen vast (11 + water); hier label en configureer je alleen wat erin zit. Zet de eenheid gelijk aan die op het adviesblad, dan klopt de cc/m³-controle.</div>
+  </div>`;
+}
+
+function refreshSchemaDerived(){
+  state.vats.forEach(v=>['A','B'].forEach(t=>{const el=document.getElementById('ccm-'+t+'-'+v.n);if(el){const a=state.draft[t][v.n];el.textContent=(a!==undefined&&a!=='')?(fix(ccm3(a))+' cc/m³'):'—';}}));
+  const sv=document.getElementById('sf-verval');if(sv){const vv=vervalText(state.draft);sv.className=vv.cls;sv.textContent=vv.txt;}
+}
+
 function mountRecepten(){
-  $('#rcp-list').innerHTML=rcpListHTML();
-  $('#rcp-detail').innerHTML=rcpDetailHTML();
-  $$('#rcp-list .rcp-item').forEach(e=>e.onclick=()=>{selRcp=e.dataset.r;mountRecepten();});
+  $$('#rcp-tabs button').forEach(b=>b.onclick=()=>{rcpTab=b.dataset.t;render();});
+  if(rcpTab==='lib'){mountRcpLib();return;}
+  mountSchema();
+}
+function mountRcpLib(){
+  $('#rcp-body').innerHTML=`<div class="card"><div class="rcp"><div class="rcp-list" id="rcp-list"></div><div class="rcp-detail" id="rcp-detail"></div></div></div>`;
+  $('#rcp-list').innerHTML=rcpListHTML();$('#rcp-detail').innerHTML=rcpDetailHTML();
+  $$('#rcp-list .rcp-item').forEach(e=>e.onclick=()=>{selRcp=e.dataset.r;mountRcpLib();});
   const sb=$('#rcp-start');if(sb)sb.onclick=()=>{const r=RECIPES.find(x=>x.id===selRcp);state.rcp=r;state.seq=buildSequence(r);state.seqIdx=0;state.stepT=0;state.leak=null;state.leakArm=false;state.alarms=state.alarms.filter(x=>!x.leak);toast('Batch gestart — '+r.name,'play');go('overzicht');};
-  const nb=$('#rcp-new');if(nb)nb.onclick=()=>toast('Receptbeheer opent in de service-/OEM-modus','info');
+}
+function mountSchema(){
+  const svc=state.role!=='klant';
+  const opts=state.schemas.map(s=>`<option value="${s.id}" ${schemaSel===s.id?'selected':''}>${esc(s.naam)}</option>`).join('')+`<option value="__new" ${schemaSel?'':'selected'}>+ Nieuw recept…</option>`;
+  $('#rcp-body').innerHTML=`
+    <div class="rcp-subbar">
+      <label class="sf-sel"><span>Recept</span><select id="schema-sel">${opts}</select></label>
+      <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn sm" id="schema-dup">${ic('beaker',15,2)} Dupliceren</button>
+        ${svc?`<button class="btn sm" id="vat-edit" aria-pressed="${vatEditOn}">${ic('chip',15,2)} Vaten beheren</button>`:''}
+      </div>
+    </div>
+    <div id="schema-main">${(vatEditOn&&svc)?vatEditorHTML():schemaFormHTML()}</div>`;
+  const sel=$('#schema-sel');if(sel)sel.onchange=()=>{const v=sel.value;loadDraft(v==='__new'?null:v);vatEditOn=false;mountSchema();};
+  const dup=$('#schema-dup');if(dup)dup.onclick=()=>{dupDraft();vatEditOn=false;mountSchema();};
+  const ve=$('#vat-edit');if(ve)ve.onclick=()=>{vatEditOn=!vatEditOn;mountSchema();};
+  if(vatEditOn&&svc){
+    $$('#schema-main [data-ve]').forEach(inp=>{const h=()=>{const row=inp.closest('[data-vn]');const n=+row.dataset.vn;const v=state.vats.find(x=>x.n===n);if(v)v[inp.dataset.ve]=inp.value;};inp.oninput=h;inp.onchange=h;});
+    return;
+  }
+  $$('#schema-main [data-f]').forEach(inp=>inp.oninput=()=>{state.draft[inp.dataset.f]=inp.value;refreshSchemaDerived();});
+  $$('#schema-main [data-tank][data-vat]').forEach(inp=>inp.oninput=()=>{state.draft[inp.dataset.tank][+inp.dataset.vat]=inp.value;refreshSchemaDerived();});
+  $$('#schema-main [data-ph]').forEach(inp=>inp.oninput=()=>{state.draft[inp.dataset.ph==='kg'?'phKg':'phL']=inp.value;});
+  const sv=$('#schema-save');if(sv)sv.onclick=()=>{saveDraft();mountSchema();};
 }
 
 /* ============================================================ SCHERM: VERBRUIK */
@@ -2462,6 +2635,7 @@ function wire(){
 function init(){
   seedAlarms();
   initWear();
+  loadDraft(state.schemas[0]?state.schemas[0].id:null);
   state.seq=buildSequence(state.rcp);state.seqIdx=2;state.stepT=0; // start midden in een batch zodat het meteen leeft
   renderRoles();renderNav();wire();
   applyStepEffects();syncRaw();updateClock();updateBell();
