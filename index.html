@@ -1158,6 +1158,33 @@ body{background:linear-gradient(177deg,#F0F4F0 0%,#E7EDE8 100%);background-attac
 .sys-tile .bar span.warn{background:var(--warn)}.sys-tile .bar span.ok{background:var(--ok)}
 .sys-tile .bar i{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--alarm);opacity:.55}
 
+/* ---- diagnose & service-paneel ---- */
+.dg-sub{font-size:11px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--ink-2);margin:0 0 8px}
+.diag-cols{display:grid;grid-template-columns:1fr 1fr;gap:22px;padding:14px 16px 4px}
+@media (max-width:760px){.diag-cols{grid-template-columns:1fr}}
+.diag-bits{border-top:1px solid var(--c-line)}
+.diag-bitrow{display:flex;align-items:center;gap:9px;padding:5px 0;border-bottom:1px solid var(--c-line)}
+.diag-bitrow .bn{font-family:var(--mono);font-size:11.5px;min-width:84px;color:var(--ink-2)}
+.diag-bitrow .bd{font-size:12.5px;flex:1;min-width:0}
+.diag-bitrow .bg{font-family:var(--mono);font-size:10px;color:var(--ink-3);margin-left:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:42%}
+.diag-gds-grp{margin-bottom:11px}
+.diag-gds-row{display:flex;flex-direction:column;gap:1px;padding:5px 0;border-bottom:1px solid var(--c-line)}
+.diag-gds-row code{font-family:var(--mono);font-size:11px;color:var(--acc-700);word-break:break-all}
+.diag-gds-row span{font-size:12px;color:var(--ink-3)}
+.diag-pn{padding:0 16px}
+.diag-pn-row{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid var(--c-line);font-size:13px}
+.diag-det{margin:10px 16px 0;border:1px solid var(--c-line);border-radius:var(--r-md);background:var(--c-sunken)}
+.diag-det summary{cursor:pointer;padding:9px 13px;font-size:12.5px;font-weight:600;color:var(--ink-2);user-select:none}
+.diag-det[open] summary{border-bottom:1px solid var(--c-line)}
+.diag-det>div{padding:0 13px 12px}
+.diag-det .diag-bits{margin:0 13px 10px}
+#diag-cat{padding:0 16px 14px}
+.dcat-grp{margin-bottom:13px}
+.dcat-row{display:flex;align-items:baseline;gap:11px;padding:4px 0;border-bottom:1px solid var(--c-line)}
+.dcat-row .dc-code{font-family:var(--mono);font-size:11.5px;color:var(--alarm);min-width:64px;font-weight:600}
+.dcat-row .dc-nm{font-size:12.5px;color:var(--ink);min-width:0}
+#diag-panel .pick-search{margin:6px 16px 10px}
+
 .hw-tbl tr.grp td{background:var(--c-sunken);font-size:11px;font-weight:700;letter-spacing:.02em;color:var(--ink-2);text-transform:none;padding:8px 14px}
 .hw-tbl tr.grp td .smono{font-family:var(--mono);color:var(--acc-700);font-size:11.5px}
 .tbl tr.flt td{background:var(--alarm-bg)}
@@ -1349,11 +1376,11 @@ const DIAG={
     {code:'2344',lvl:'ch',nm:'Kortsluiting of overbelasting uitgang',cause:'De uitgang is kortgesloten of overbelast (> 0,5 A) en is elektronisch afgeschakeld.',action:'Controleer de aangesloten actuator en bedrading op kortsluiting; de uitgang herstart automatisch na opheffen.'},
     ...DIAG_COMMON],
   AI4I:[
-    {code:'8002',lvl:'ch',nm:'Draadbreuk / open circuit (< 3,6 mA)',cause:'De meetstroom is onder ±3,6 mA gezakt: gebroken draad, losse aansluiting of defecte sensor.',action:'Controleer de sensorbedrading en de sensor; bevestig dat draadbreukbewaking gewenst is op dit kanaal.'},
-    {code:'8001',lvl:'ch',nm:'Meetbereik overschreden (overrange)',cause:'Het ingangssignaal overschrijdt het meetbereik (> 21 mA).',action:'Controleer de sensor en het ingestelde meetbereik.'},
+    {code:'7710',lvl:'ch',nm:'Draadbreuk / open circuit (< 3,6 mA)',cause:'De meetstroom is onder ±3,6 mA gezakt: gebroken draad, losse aansluiting of defecte sensor.',action:'Controleer de sensorbedrading en de sensor; bevestig dat draadbreukbewaking gewenst is op dit kanaal.'},
+    {code:'8910',lvl:'ch',nm:'Meetbereik overschreden (overrange)',cause:'Het ingangssignaal overschrijdt het meetbereik (> 21 mA).',action:'Controleer de sensor en het ingestelde meetbereik.'},
     ...DIAG_COMMON],
   AI4U:[
-    {code:'8001',lvl:'ch',nm:'Meetbereik over-/onderschreden',cause:'Het spanningssignaal valt buiten 0–10 V.',action:'Controleer de sensor en de bedrading.'},
+    {code:'8910',lvl:'ch',nm:'Meetbereik over-/onderschreden',cause:'Het spanningssignaal valt buiten 0–10 V.',action:'Controleer de sensor en de bedrading.'},
     ...DIAG_COMMON],
   AO4I:[
     {code:'7710',lvl:'ch',nm:'Open last / draadbreuk uitgang',cause:'De stroomuitgang ziet een open circuit (geen last of gebroken draad).',action:'Controleer de aangesloten last en de bedrading.'},
@@ -1475,19 +1502,187 @@ function fieldbusCompat(id){
   return{ok:true,reason:'',conn:''};
 }
 
-/* Uitgebreide Axioline I/O-foutcodetabel (UM EN AXL F SYS DIAG) — voor de details-/codelijst */
-const IO_CODES={
-  '0000':'Geen fout','1000':'Algemene storing','2000':'Stroom','2130':'Kortsluiting/overbelasting analoge uitgang',
-  '2211':'Overbelasting ingang (sensorvoeding)','2344':'Kortsluiting/overbelasting uitgang','2345':'Sensorvoeding overbelast',
-  '3000':'Spanning','3130':'I/O-voedingsspanning UP afwezig','3300':'Uitgangsspanning — kortsluiting/overbelasting',
-  '3400':'Uitval I/O-voedingsspanning','3412':'Sensorvoeding niet aanwezig','3422':'Actuatorvoeding niet aanwezig',
-  '4000':'Temperatuur (bv. overtemperatuur)','5000':'Apparaat-hardware','5112':'Defecte 24 V-voeding (kortsluiting/overbelasting)',
-  '6100':'Firmwarefout','6130':'Module ontbreekt / niet geplugd','6320':'Parameterfout',
-  '7710':'Open last / draadbreuk uitgang','8001':'Meetbereik overschreden','8002':'Draadbreuk / open circuit ingang',
-  '0A2F':'Aantal modules is nul (geen I/O gevonden)','0A1C':'Maximaal aantal modules overschreden',
-  '0BC1':'Lokale-busvoeding niet aanwezig','0C01':'Geconfigureerde module onbereikbaar (verwijderd na configuratie)',
-  '0C02':'Niet-geconfigureerde module gedetecteerd','EXT-ERR':'Uitbreidingsmodule-fout (EXT)'
+/* ============================================================
+   DIAGNOSECATALOGUS — volledige Axioline F / PLCnext foutreferentie
+   Bron: UM EN AXL F SYS DIAG (8663), UM EN AXC F X152 (107708),
+   PLCnext Info Center (plcnext.help) — register-/bitniveau.
+   Gegroepeerd zodat de servicemonteur elke code kan opzoeken.
+   ============================================================ */
+const DIAG_CATALOG=[
+  {grp:'Busdiagnose — configuratie & lokale bus',note:'Gemeld door de Axioline-busmaster. Een BUS-fout koppelt de bus los en reset F_RUN. Parameterregister 2 wijst het slot/apparaat aan (vanaf 1).',rows:[
+    {code:'0BC1',nm:'Spanningsfout op de Axioline-bus (lokale-busvoeding ontbreekt/te laag)',lvl:'bus'},
+    {code:'0BD1',nm:'Bus kon niet worden geactiveerd door busstoringen',lvl:'bus'},
+    {code:'0BF1',nm:'Geconfigureerde module is niet bereikbaar',lvl:'bus'},
+    {code:'0BF2',nm:'Geconfigureerde module na het verbinden van de configuratie van de bus verwijderd',lvl:'bus'},
+    {code:'0BF3',nm:'Niet-geconfigureerde module gedetecteerd',lvl:'bus'},
+    {code:'0C01',nm:'Extra module aan het einde van de bus toegevoegd na configuratie',lvl:'bus'},
+    {code:'0C02',nm:'Module zit niet in het geconfigureerde slot',lvl:'bus'},
+    {code:'0C11',nm:'Actieve module op een andere plaats ingestoken na configuratie',lvl:'bus'},
+    {code:'0C12',nm:'Module bereikbaar maar niet gestart — ontbrekende parameters / verkeerde instance-ID',lvl:'bus'},
+    {code:'0C13',nm:'Procesdatalengte komt niet overeen met de configuratie',lvl:'bus'},
+    {code:'0C14',nm:'Procesdatabreedte van een actieve module gewijzigd na configuratie',lvl:'bus'},
+    {code:'0C15',nm:'Moduletype / module-ID komt niet overeen met de configuratie',lvl:'bus'}
+  ]},
+  {grp:'Gebruikers- & systeemfouten (busmaster)',note:'Treden op bij service-aanroepen of bij het opbouwen van de bus.',rows:[
+    {code:'0903',nm:'Buffer te klein',lvl:'sys'},
+    {code:'0904',nm:'Inconsistente parameters',lvl:'sys'},
+    {code:'0905',nm:'Ongeldige parameters',lvl:'sys'},
+    {code:'0908',nm:'Te veel parallelle services',lvl:'sys'},
+    {code:'0913',nm:'Service wordt niet ondersteund',lvl:'sys'},
+    {code:'0A01',nm:'Hardware-/firmwarefout',lvl:'sys'},
+    {code:'0A02',nm:'Service niet toegestaan in de huidige busmaster-toestand',lvl:'sys'},
+    {code:'0A1C',nm:'Maximaal aantal modules overschreden',lvl:'sys'},
+    {code:'0A2F',nm:'Aantal modules is nul (geen I/O gevonden)',lvl:'sys'},
+    {code:'0A54',nm:'Maximaal aantal toegestane I/O-punten overschreden',lvl:'sys'},
+    {code:'0A73',nm:'Niet-ondersteunde chipversie (< V1.1)',lvl:'sys'},
+    {code:'0A74',nm:'Niet-ondersteunde fabrikant',lvl:'sys'},
+    {code:'0A75',nm:'Ernstige apparaatfout (bv. defecte EEPROM) — vervangen nodig',lvl:'sys'},
+    {code:'0A77',nm:'Interfacefout tussen elektronica- en bus-basismodule',lvl:'sys'},
+    {code:'0A79',nm:'Module vereist parameters',lvl:'sys'}
+  ]},
+  {grp:'PDI- / acyclische-servicefouten (0Fxx)',note:'Acyclische lees-/schrijftoegang (PDI_READ/WRITE, RDREC/WRREC, AsynCom). dwDiagCode bevat dezelfde code.',rows:[
+    {code:'0201',nm:'Object niet benaderbaar — module afwezig of verkeerd nummer',lvl:'pdi'},
+    {code:'0602',nm:'Hardwarefout (bv. I/O-spanning afwezig)',lvl:'pdi'},
+    {code:'0F04',nm:'Inconsistente parameters',lvl:'pdi'},
+    {code:'0F08',nm:'Maximaal aantal parallelle PDI-services overschreden',lvl:'pdi'},
+    {code:'0F12',nm:'Time-out van de module',lvl:'pdi'},
+    {code:'0F13',nm:'Module verwijderd',lvl:'pdi'},
+    {code:'0F21',nm:'Ongeldig slotnummer',lvl:'pdi'},
+    {code:'0F22',nm:'Slot niet actief',lvl:'pdi'},
+    {code:'0F23',nm:'Ongeldige datalengte',lvl:'pdi'},
+    {code:'0F24',nm:'Ongeldig aantal parameters',lvl:'pdi'},
+    {code:'09B0',nm:'Ontvangst-array te klein (RDREC)',lvl:'pdi'}
+  ]},
+  {grp:'I/O-modulefouten (kanaal / module)',note:'Per kanaal of module, gemeld via PDI-object 0018hex. De daadwerkelijk uitgezonden codes verschillen per moduletype — raadpleeg het datasheet van de module.',rows:[
+    {code:'0000',nm:'Geen fout'},
+    {code:'1000',nm:'Algemene storing'},
+    {code:'2130',nm:'Kortsluiting/overbelasting analoge uitgang'},
+    {code:'2211',nm:'Overbelasting ingang (sensorvoeding)'},
+    {code:'2340',nm:'Overbelasting/kortsluiting sensor-/actuatorvoeding (L+)'},
+    {code:'2344',nm:'Kortsluiting/overbelasting uitgang (incl. IO-Link C/Q)'},
+    {code:'2345',nm:'Sensorvoeding overbelast'},
+    {code:'3130',nm:'I/O-voedingsspanning UP afwezig'},
+    {code:'3184',nm:'Overspanning aan incrementele-encoder-signaalingang'},
+    {code:'3186',nm:'Onderspanning aan incrementele-encoder-signaalingang'},
+    {code:'3300',nm:'Uitgangsspanning — kortsluiting/overbelasting'},
+    {code:'3400',nm:'Uitval I/O-voedingsspanning'},
+    {code:'3401',nm:'Overspanning aan poort'},
+    {code:'3403',nm:'Onderspanning aan poort'},
+    {code:'3412',nm:'Sensorvoeding niet aanwezig'},
+    {code:'3422',nm:'Actuatorvoeding niet aanwezig'},
+    {code:'4210',nm:'Overtemperatuur'},
+    {code:'5112',nm:'Kortsluiting/overbelasting 24 V-voeding'},
+    {code:'5113',nm:'Kortsluiting/overbelasting 5 V-voeding'},
+    {code:'5120',nm:'Koudlas-/referentietemperatuur ongeldig (temperatuurmodules)'},
+    {code:'5160',nm:'Voedingsspanning gestoord / I/O-voeding overbelast'},
+    {code:'6100',nm:'Firmwarefout — update nodig'},
+    {code:'6130',nm:'Module ontbreekt / niet geplugd'},
+    {code:'6300',nm:'Parameterrecord ongeldig'},
+    {code:'6301',nm:'Apparaatfout'},
+    {code:'6310',nm:'Parameters verloren'},
+    {code:'6320',nm:'Parameterfout — parametertabel ongeldig'},
+    {code:'7710',nm:'Draadbreuk / open last'},
+    {code:'8001',nm:'Meetbereik overschreden (legacy-alias → 8910)'},
+    {code:'8002',nm:'Draadbreuk ingang (legacy-alias → 7710)'},
+    {code:'8600',nm:'Fout aan incrementele-encoder-ingang'},
+    {code:'8910',nm:'Meetbereik overschreden (overrange)'},
+    {code:'8920',nm:'Meetbereik onderschreden (underrange)'},
+    {code:'A001',nm:'Geen module aan IO-Link-poort'},
+    {code:'A002',nm:'Verkeerd apparaat aan IO-Link-poort'},
+    {code:'A014',nm:'Parameteriserings-/data-storage-fout (IO-Link)'},
+    {code:'A020',nm:'Communicatiefout (IO-Link)'},
+    {code:'A030',nm:'Configuratiefout (IO-Link)'},
+    {code:'A041',nm:'Hardwarefout (IO-Link)'},
+    {code:'A042',nm:'Firmwarefout (IO-Link)'}
+  ]},
+  {grp:'Uitbreiding (links-aanbouw)',note:'EXT-LED op de controller.',rows:[
+    {code:'EXT-ERR',nm:'Uitbreidingsmodule-fout (EXT) — XT-module ontbreekt, zit verkeerd of is defect'}
+  ]}
+];
+/* platte lookup (code → omschrijving) — voor snelle resolutie overal in de app */
+const IO_CODES=Object.fromEntries(DIAG_CATALOG.flatMap(g=>g.rows.map(r=>[r.code,r.nm])));
+
+/* Axioline-diagnosestatusregister — bits + bijbehorende GDS-systeemvariabelen.
+   Dit is de hoofdbron die de Linux-service uitleest om de héle lokale bus te begrijpen. */
+const AXIO_STATUS_BITS=[
+  {bit:0, name:'F_PW',     gds:'AXIO_DIAG_STATUS_REG_PW',     nm:'I/O-waarschuwing — minstens één module meldt een I/O-waarschuwing',pr:5},
+  {bit:1, name:'F_PF',     gds:'AXIO_DIAG_STATUS_REG_PF',     nm:'I/O-fout (peripheral fault) — minstens één module meldt een I/O-fout',pr:4},
+  {bit:2, name:'F_BUS',    gds:'AXIO_DIAG_STATUS_REG_BUS',    nm:'Busfout — lokale bus losgekoppeld',pr:2},
+  {bit:3, name:'F_CTRL',   gds:'AXIO_DIAG_STATUS_REG_CTRL',   nm:'Controllerfout — interne fout in de busmaster-driver',pr:1},
+  {bit:5, name:'F_RUN',    gds:'AXIO_DIAG_STATUS_REG_RUN',    nm:'Run — datacycli worden uitgewisseld, uitgangen vrijgegeven',pr:99},
+  {bit:6, name:'F_ACTIVE', gds:'AXIO_DIAG_STATUS_REG_ACT',    nm:'Active — configuratie actief, PDI mogelijk, data nog niet geldig',pr:99},
+  {bit:7, name:'F_READY',  gds:'AXIO_DIAG_STATUS_REG_RDY',    nm:'Ready — master gereed, nog geen data-uitwisseling',pr:99},
+  {bit:8, name:'F_BD',     gds:'AXIO_DIAG_STATUS_REG_BD',     nm:'Bus different — module gedetecteerd die niet in de actieve configuratie staat',pr:6},
+  {bit:9, name:'F_BASP',   gds:'AXIO_DIAG_STATUS_REG_SYSFAIL',nm:'SYS_FAIL — controller STOP / geen programma; uitgangen geblokkeerd (substitutiewaarden)',pr:7},
+  {bit:10,name:'F_FORCE',  gds:'AXIO_DIAG_STATUS_REG_FORCE',  nm:'Force-modus actief (opstarttool / I/O-check)',pr:99},
+  {bit:11,name:'F_SYNC',   gds:'AXIO_DIAG_STATUS_REG_SYNC',   nm:'Synchronisatie tussen hoger systeem en master mislukt',pr:3},
+  {bit:12,name:'F_PARA_REQ',gds:'AXIO_DIAG_STATUS_REG_PARA',  nm:'Minstens één module vraagt parameters aan',pr:8}
+];
+/* Foutprioriteit van de busmaster — hoogste wint in de parameterregisters */
+const ERR_PRIORITY=['F_CTRL','F_BUS','F_SYNC','F_PF','F_PW'];
+
+/* PROFINET-diagnosebitveld (WBM / firmware DiagnosticInfo) — bitsgewijs gecodeerd */
+const PN_DIAG_BITS=[
+  {bit:0, nm:'Geen verbinding (verbinding met device verloren)'},
+  {bit:1, nm:'Data ongeldig'},
+  {bit:2, nm:'Diagnose beschikbaar'},
+  {bit:3, nm:'Module-verschil (configuratieverschil)'},
+  {bit:4, nm:'AR is gedeactiveerd'},
+  {bit:5, nm:'Buurinformatie niet beschikbaar'},
+  {bit:6, nm:'Buurinformatie niet uniek'},
+  {bit:7, nm:'Identify.cnf op alias ontvangen, naam al in andere AR geconfigureerd'},
+  {bit:8, nm:'Maintenance Required (onderhoud aanbevolen)'},
+  {bit:9, nm:'Maintenance Demanded (onderhoud vereist)'},
+  {bit:10,nm:'Kanaal- of fabrikantspecifieke diagnose beschikbaar'}
+];
+
+/* GDS-systeemvariabelen die de Linux-service uitleest (RSC IDataAccessService /
+   ISubscriptionService via gRPC, of REST/OPC UA). Hiermee kan de service de
+   gehele lijn uitlezen zonder PLCnext Engineer. */
+const GDS_VARS=[
+  {grp:'Axioline lokale bus',rows:[
+    {path:'Arp.Io.AxlC/...AXIO_DIAG_STATUS_REG_HI/_LOW',nm:'Diagnosestatusregister (woord) — de 12 statusbits hierboven'},
+    {path:'...AXIO_DIAG_STATUS_REG_PF / _PW / _BUS / _RUN / _ACT / _RDY / _SYSFAIL',nm:'Losse status-bits als BOOL'},
+    {path:'...AXIO_DIAG_PARAM_REG_HI/_LOW',nm:'Parameterregister 1 — foutcode (hoogste prioriteit)'},
+    {path:'...AXIO_DIAG_PARAM_2_REG_HI/_LOW',nm:'Parameterregister 2 — foutlocatie (slot/apparaat, vanaf 1)'}
+  ]},
+  {grp:'Module-diagnose',rows:[
+    {path:'PDI-object 0018hex (DiagState)',nm:'Per module: prioriteit, kanaal, code, klaartekst (opslagdiepte 1)'},
+    {path:'E800hex / E806hex',nm:'DiagStateLong / ComplDiagState — meer dan één gelijktijdige melding'}
+  ]},
+  {grp:'Controller / systeem',rows:[
+    {path:'Arp.Plc.Eclr/DEVICE_STATE.CPU_LOAD_ALL_CORES',nm:'CPU-belasting'},
+    {path:'DEVICE_STATE.* / RTC / USER_PARTITION',nm:'Toestand, klok, geheugen'}
+  ]},
+  {grp:'PROFINET',rows:[
+    {path:'WBM PROFINET-pagina / PN-device-statusvariabelen',nm:'Het PN-diagnosebitveld hierboven, per device'}
+  ]}
+];
+
+/* Stroom- (UBus, mA) en procesdatabudget (bytes IN/OUT) per Smart Element.
+   Richtwaarden uit de datasheets — controleer altijd het exacte datasheet per module. */
+const ELEM_SPEC={
+  DI16:{cur:41,pdIn:2,pdOut:0}, DO16:{cur:45,pdIn:0,pdOut:2},
+  AI4I:{cur:46,pdIn:8,pdOut:0}, AI4U:{cur:46,pdIn:8,pdOut:0},
+  AO4I:{cur:46,pdIn:0,pdOut:8}, AO4U:{cur:46,pdIn:0,pdOut:8},
+  RTD4:{cur:50,pdIn:8,pdOut:0}
 };
+/* idem voor losse Axioline F-rail-modules. PWR1H is een voedingsmodule: voedt nieuwe UBus (reset budget). */
+const AXLF_SPEC={
+  DI16F:{cur:50,pdIn:2,pdOut:0}, DO16F:{cur:60,pdIn:0,pdOut:2},
+  DIO2H:{cur:70,pdIn:2,pdOut:2}, PWR1H:{cur:0,pdIn:0,pdOut:0,feed:4000}, ILADAPT:{cur:0,pdIn:0,pdOut:0}
+};
+/* Per-controller systeemgrenzen voor de samenstel-validatie.
+   ubus = max. UBus-logicastroom (mA, ~≤55 °C); leftBase = aantal links-modules zonder EXP;
+   pdDir = max. procesdata per richting (byte) over de lokale bus. Richtwaarden — verifieer per datasheet. */
+const CTRL_SPEC={
+  F1152:{ubus:1000,leftBase:0,pdDir:244},
+  F2152:{ubus:1000,leftBase:1,pdDir:244},
+  F3152:{ubus:1000,leftBase:2,pdDir:1024},
+  F1252:{ubus:1000,leftBase:1,pdDir:244}
+};
+const MAX_AXIO=63;            // harde systeemgrens: max. modules op de lokale bus
+const EXP_LEFT_MAX=3;         // met AXC F XT EXP: tot 3 links-modules
 
 const HW_DEFAULT_SLOTS=['DI16','DO16','DO16','AI4I','AI4I',null];
 const HW_DEFAULT_CH=[
@@ -1502,7 +1697,7 @@ function buildHwState(){
   const slots=HW_DEFAULT_SLOTS.map(t=>({type:t}));
   const map={};
   HW_DEFAULT_CH.forEach((arr,si)=>arr.forEach((uid,i)=>{if(uid)map[uid]={slot:si,ch:i+1};}));
-  const diag={'3.2':'8002','1.3':'2344'};
+  const diag={'3.2':'7710','1.3':'2344'};
   return {ctrlId:'F2152',sd:'SD8L',leftExt:[],
     rail:[{kind:'se',bp:'SE6',uid:1}], _uid:2, fieldbus:[],
     ctrl:'AXC F 2152',ctrlArt:'2404267',slots,map,diag};
@@ -1526,9 +1721,11 @@ function xtCompat(xtId,ctrlId){
   return{ok:true,reason:''};
 }
 /* hoeveel XT-modules mag de huidige opstelling dragen? (EXP-switch verhoogt dit) */
+function ctrlSpec(id){return CTRL_SPEC[id||state.hw.ctrlId]||CTRL_SPEC.F2152;}
 function xtCapacity(){
   if(!hwCtrl().leftExt)return 0;
-  return state.hw.leftExt.includes('EXP')?4:1;
+  const base=ctrlSpec().leftBase||1;
+  return state.hw.leftExt.includes('EXP')?Math.max(EXP_LEFT_MAX,base):base;
 }
 const uidOf=s=>s.type+':'+s.k;
 function sigByUid(uid){return SIGNALS.find(s=>uidOf(s)===uid)||null;}
@@ -1536,7 +1733,7 @@ function sigAt(slot,ch){for(const[u,p]of Object.entries(state.hw.map)){if(p.slot
 function hwAddr(s){const p=state.hw.map[uidOf(s)];return p?('S'+(p.slot+1)+'·CH'+String(p.ch).padStart(2,'0')):null;}
 function chFaultCode(slot,ch){return state.hw.diag[slot+'.'+ch]||null;}
 function modFaultCode(slot){return state.hw.diag[slot+'.M']||null;}
-function condOf(elemId,code){return (DIAG[elemId]||[]).find(c=>c.code===code)||{code,nm:'Onbekende diagnose',cause:'',action:'',lvl:'mod'};}
+function condOf(elemId,code){return (DIAG[elemId]||[]).find(c=>c.code===code)||{code,nm:IO_CODES[code]||'Onbekende diagnose',cause:IO_CODES[code]?'Diagnose gemeld via de Axioline-busmaster (zie diagnosecatalogus).':'',action:'',lvl:'mod'};}
 function sigFault(s){const p=state.hw.map[uidOf(s)];if(!p)return null;const el=state.hw.slots[p.slot];if(!el||!el.type)return null;const code=chFaultCode(p.slot,p.ch)||modFaultCode(p.slot);if(!code)return null;return {code,cond:condOf(el.type,code),slot:p.slot,ch:p.ch};}
 function activeFaults(){
   const out=[];
@@ -1568,6 +1765,45 @@ function hwCtrlLeds(){
   ];
 }
 function hwExtFault(){return Object.keys(state.hw.diag).some(k=>k.indexOf('xt.')===0);}
+/* ---- samenstel-validatie: modules / UBus-stroom / procesdata tegen de controllergrenzen ---- */
+function systemBudget(ctx){
+  ctx=ctx||state.hw;const sp=ctrlSpec(ctx.ctrlId);const segs=seSegs(ctx);
+  let nMod=0,pdIn=0,pdOut=0,seg=0,segPeak=0;
+  (ctx.rail||[]).forEach((r,ri)=>{
+    if(r.kind==='se'){const sg=segs.find(s=>s.ri===ri);if(!sg)return;
+      for(let i=sg.start;i<sg.start+sg.count;i++){const t=ctx.slots[i]&&ctx.slots[i].type;if(!t)continue;
+        const s=ELEM_SPEC[t]||{cur:0,pdIn:0,pdOut:0};nMod++;pdIn+=s.pdIn||0;pdOut+=s.pdOut||0;seg+=s.cur||0;segPeak=Math.max(segPeak,seg);}
+    }else{const s=AXLF_SPEC[r.type]||{cur:0,pdIn:0,pdOut:0};nMod++;pdIn+=s.pdIn||0;pdOut+=s.pdOut||0;
+      if(s.feed)seg=0;else{seg+=s.cur||0;segPeak=Math.max(segPeak,seg);}}
+  });
+  const cName=(CONTROLLERS[ctx.ctrlId]||CONTROLLERS.F2152).name;const warn=[];
+  if(nMod>MAX_AXIO)warn.push('Te veel modules: '+nMod+' van max. '+MAX_AXIO+' op de lokale bus.');
+  if(segPeak>sp.ubus)warn.push('UBus-stroom ~'+segPeak+' mA overschrijdt de ~'+sp.ubus+' mA van de '+cName+' — plaats een AXL F PWR 1H vóór dit punt.');
+  if(pdIn>sp.pdDir)warn.push('Procesdata IN '+pdIn+' byte > '+sp.pdDir+' byte ('+cName+').');
+  if(pdOut>sp.pdDir)warn.push('Procesdata OUT '+pdOut+' byte > '+sp.pdDir+' byte ('+cName+').');
+  return {nMod,pdIn,pdOut,curPeak:segPeak,ubus:sp.ubus,pdDir:sp.pdDir,warn};
+}
+/* welke statusbit hoort bij een foutcode (voor parameterregister-prioriteit) */
+function codeStatus(code){
+  if(code==='6130'||code==='0BF1'||code==='0BF2'||code==='0BD1'||code==='0BC1')return 'F_BUS';
+  if(code==='0BF3'||code==='0C01'||code==='0C02'||/^0C1/.test(code))return 'F_BD';
+  return 'F_PF';
+}
+/* leid het Axioline-diagnosestatusregister + parameterregisters af uit de actieve storingen */
+function deriveAxioStatus(){
+  const f=activeFaults();const set={};AXIO_STATUS_BITS.forEach(b=>set[b.name]=false);
+  set.F_RUN=true;set.F_ACTIVE=true;set.F_READY=true;
+  let busErr=false,bd=false,pf=false;
+  f.forEach(x=>{const st=codeStatus(x.code);if(st==='F_BUS')busErr=true;else if(st==='F_BD')bd=true;else pf=true;});
+  if(pf)set.F_PF=true;
+  if(bd)set.F_BD=true;
+  if(busErr){set.F_BUS=true;set.F_RUN=false;}
+  /* parameterregister 1/2 = hoogste-prioriteit fout */
+  let top=null;
+  for(const st of ERR_PRIORITY){const hit=f.find(x=>codeStatus(x.code)===st);if(hit){top={code:hit.code,slot:hit.slot,ch:hit.ch,status:st};break;}}
+  if(!top&&f.length){const x=f[0];top={code:x.code,slot:x.slot,ch:x.ch,status:codeStatus(x.code)};}
+  return {set,top,nFault:f.length};
+}
 function hwSlotState(slot){const el=state.hw.slots[slot];if(!el||!el.type)return 'empty';
   const f=activeFaults().filter(x=>x.slot===slot);if(!f.length)return 'ok';return f.some(x=>x.code==='6130')?'missing':'fault';}
 function hwElemE(slot,ctx){ctx=ctx||state.hw;const dg=ctx.diag||{};const codes=Object.keys(dg).filter(k=>{const p=k.split('.');return /^\d+$/.test(p[0])&&+p[0]===slot;}).map(k=>dg[k]);if(!codes.length)return 'off';
@@ -2881,7 +3117,8 @@ function buildLeftExt(){
   const cap=xtCapacity();const canAdd=hwMode==='edit'&&c.leftExt&&list.length<cap;
   const addBtn=canAdd?`<button class="hw-xt add" data-pick="xt"><span class="plus">+</span><span class="t">XT toevoegen</span></button>`:'';
   if(!list.length&&!addBtn)return '';
-  return `<div class="hw-bsl"><div class="hw-bsl-spine"><span>AXC BS L 2 · 1064312</span></div><div class="hw-xt-row">${cards}${addBtn}</div></div>`;
+  const bsLabel=state.hw.ctrlId==='F3152'?'AXL F BS AXC 3X5X':'AXC BS L 2 · 1064312';
+  return `<div class="hw-bsl"><div class="hw-bsl-spine"><span>${bsLabel}</span></div><div class="hw-xt-row">${cards}${addBtn}</div></div>`;
 }
 function buildTypeSelect(slot){const cur=state.hw.slots[slot]?state.hw.slots[slot].type:null;
   let opts='<option value="">— leeg (slotafdekking) —</option>';
@@ -2987,7 +3224,7 @@ function buildHwList(){let rows='';
 function buildSysPanel(){
   const sy=state.sys;const tempPct=Math.min(100,Math.round(sy.temp/sy.tempMax*100));const tempSev=sy.temp>=sy.tempWarn?'warn':'ok';
   return `<div class="card sys-card">
-    <div class="sys-head"><span style="display:flex;color:var(--ink-2)">${ic('chip',17,2)}</span><h3>Besturing — AXC F 2152</h3><span class="muted-2" style="margin-left:auto;font-family:var(--mono);font-size:12px">PLCnext · Axioline F</span></div>
+    <div class="sys-head"><span style="display:flex;color:var(--ink-2)">${ic('chip',17,2)}</span><h3>Besturing — ${hwCtrl().name}</h3><span class="muted-2" style="margin-left:auto;font-family:var(--mono);font-size:12px">PLCnext · Axioline F</span></div>
     <div class="sys-grid">
       <div class="sys-tile"><div class="k">Modus</div><div class="v"><span class="pill run">${ic('play',12,2.2)} ${sy.mode}</span></div></div>
       <div class="sys-tile"><div class="k">Firmware</div><div class="v mono">${sy.fw}</div></div>
@@ -3001,6 +3238,78 @@ function buildSysPanel(){
       <div class="sys-tile"><div class="k">Voeding</div><div class="v" style="font-size:12.5px;line-height:1.6">${ledHTML('ok','on')} U_L 24 V<br>${ledHTML('ok','on')} U_P 24 V</div></div>
     </div>
     <div class="hw-hint" style="padding:10px 14px 12px">Systeemwaarden via PLCnext-systeemvariabelen (DEVICE_STATE, RTC, USER_PARTITION) — informatief; procesbewaking loopt via de alarmen.</div>
+  </div>`;
+}
+function buildBudgetPanel(){
+  const b=systemBudget();const c=hwCtrl();
+  const bar=(val,max,sev)=>{const pct=Math.min(100,Math.round(val/Math.max(max,1)*100));return `<div class="bar"><span class="${sev}" style="width:${pct}%"></span></div>`;};
+  const sev=(v,m)=>v>m?'warn':'ok';
+  const warnHtml=b.warn.length
+    ?`<div class="hw-hint" style="margin:0 14px 12px;border-color:var(--alarm)">${ic('alarm',14,2)} <span>${b.warn.join('<br>')}</span></div>`
+    :`<div class="hw-hint" style="margin:0 14px 12px">${ic('check',14,2)} <span>Samenstelling binnen alle grenzen van de ${c.name}.</span></div>`;
+  return `<div class="card sys-card" style="margin-top:20px">
+    <div class="sys-head"><span style="display:flex;color:var(--ink-2)">${ic('io',17,2)}</span><h3>Systeemcheck — samenstelling</h3><span class="muted-2" style="margin-left:auto;font-family:var(--mono);font-size:12px">${c.name} · lokale bus</span></div>
+    <div class="sys-grid">
+      <div class="sys-tile"><div class="k">Modules op de bus</div><div class="v mono">${b.nMod} / ${MAX_AXIO}</div>${bar(b.nMod,MAX_AXIO,sev(b.nMod,MAX_AXIO))}</div>
+      <div class="sys-tile"><div class="k">UBus-stroom (richtwaarde)</div><div class="v mono">~${b.curPeak} / ${b.ubus} mA</div>${bar(b.curPeak,b.ubus,sev(b.curPeak,b.ubus))}</div>
+      <div class="sys-tile"><div class="k">Procesdata IN</div><div class="v mono">${b.pdIn} / ${b.pdDir} B</div>${bar(b.pdIn,b.pdDir,sev(b.pdIn,b.pdDir))}</div>
+      <div class="sys-tile"><div class="k">Procesdata OUT</div><div class="v mono">${b.pdOut} / ${b.pdDir} B</div>${bar(b.pdOut,b.pdDir,sev(b.pdOut,b.pdDir))}</div>
+    </div>
+    ${warnHtml}
+  </div>`;
+}
+function buildDiagPanel(){
+  const ax=deriveAxioStatus();const errBits=['F_PF','F_BUS','F_CTRL','F_SYNC','F_BD','F_BASP'];
+  const statusRows=AXIO_STATUS_BITS.map(b=>{const on=ax.set[b.name];const color=on?(errBits.includes(b.name)?'alarm':'ok'):'info';
+    return `<div class="diag-bitrow">${ledHTML(color,on?'on':'off')}<code class="bn">${b.name}</code><span class="bd" style="color:${on?'var(--ink)':'var(--ink-3)'}">${b.nm}</span><code class="bg">${b.gds}</code></div>`;}).join('');
+  const top=ax.top;
+  const paramHtml=top
+    ?`<dl class="dg-grid"><dt>Parameterregister 1 — code</dt><dd class="mono">${top.code}hex · ${IO_CODES[top.code]||'—'}</dd>
+       <dt>Parameterregister 2 — locatie</dt><dd class="mono">slot ${top.slot+1}${top.ch?(' · CH'+String(top.ch).padStart(2,'0')):''}</dd>
+       <dt>Hoogste prioriteit</dt><dd>${top.status} <span class="muted-2">· bij meerdere fouten toont de master alleen de hoogste (CTRL › BUS › SYNC › PF › PW)</span></dd></dl>`
+    :`<div class="hw-hint" style="margin:0">${ic('check',14,2)} <span>Geen actieve fout — parameterregisters 0000hex.</span></div>`;
+  const gdsHtml=GDS_VARS.map(g=>`<div class="diag-gds-grp"><div class="dg-sub">${g.grp}</div>${g.rows.map(r=>`<div class="diag-gds-row"><code>${r.path}</code><span>${r.nm}</span></div>`).join('')}</div>`).join('');
+  /* PROFINET-stations uit de samenstelling */
+  const pnStations=(state.hw.fieldbus||[]).filter(st=>{const fb=FIELDBUS[st.coupler];return fb&&/PROFINET/i.test(fb.proto);});
+  const pnHtml=pnStations.length
+    ?pnStations.map((st,i)=>{const fb=FIELDBUS[st.coupler];const comp=fieldbusCompat(st.coupler);
+       return `<div class="diag-pn-row">${ledHTML(comp.ok?'ok':'alarm','on')}<b>${fb.name}</b><span class="muted-2">${fb.art}</span><span style="margin-left:auto;font-family:var(--mono);font-size:11px">${comp.ok?'online · code 0x0000':'geen verbinding · code 0x0023 (bit 0,1)'}</span></div>`;}).join('')
+    :`<div class="muted-2" style="font-size:12.5px;padding:2px 0">Geen PROFINET-stations in de samenstelling. Voeg ze toe onder “Veldbus / decentraal”.</div>`;
+  const pnLegend=PN_DIAG_BITS.map(b=>`<div class="diag-bitrow"><code class="bn" style="min-width:46px">bit ${b.bit}</code><span class="bd">${b.nm}</span></div>`).join('');
+  /* volledige, doorzoekbare foutcatalogus */
+  const catHtml=DIAG_CATALOG.map(g=>{
+    const rows=g.rows.map(r=>`<div class="dcat-row" data-s="${(r.code+' '+r.nm).toLowerCase().replace(/"/g,'')}"><code class="dc-code">${r.code}${/^[0-9A-F]/.test(r.code)?'hex':''}</code><span class="dc-nm">${r.nm}</span></div>`).join('');
+    return `<div class="dcat-grp"><div class="dg-sub">${g.grp} <span class="muted-2" style="font-weight:500">· ${g.rows.length}</span></div>${g.note?`<div class="muted-2" style="font-size:11.5px;margin:0 0 6px">${g.note}</div>`:''}${rows}</div>`;
+  }).join('');
+  return `<div class="card sys-card" id="diag-panel" style="margin-top:20px">
+    <div class="sys-head"><span style="display:flex;color:var(--ink-2)">${ic('alarm',17,2)}</span><h3>Diagnose &amp; service — uitlezen van de hele lijn</h3><span class="muted-2" style="margin-left:auto;font-family:var(--mono);font-size:12px">Axioline-busmaster · PROFINET</span></div>
+    <div class="diag-cols">
+      <div class="diag-col">
+        <div class="dg-sub">Diagnosestatusregister (live)</div>
+        <div class="diag-bits">${statusRows}</div>
+        <div class="dg-sub" style="margin-top:14px">Parameterregisters</div>
+        ${paramHtml}
+      </div>
+      <div class="diag-col">
+        <div class="dg-sub">GDS-uitleespaden voor de service</div>
+        <div class="hw-hint" style="margin:0 0 10px">${ic('info',14,2)} <span>De Linux-service leest deze variabelen via RSC IDataAccessService (gRPC, lokaal zonder credentials) of REST/OPC UA — zonder PLCnext Engineer.</span></div>
+        ${gdsHtml}
+      </div>
+    </div>
+    <div class="dg-sub" style="margin:16px 16px 8px">PROFINET-stations</div>
+    <div class="diag-pn">${pnHtml}</div>
+    <details class="diag-det"><summary>PROFINET-diagnosebitveld (legenda) — bitsgewijs gecodeerd</summary><div class="diag-bits" style="margin-top:8px">${pnLegend}</div></details>
+    <details class="diag-det"><summary>Foutafhandeling — controller vs. module</summary>
+      <div class="muted-2" style="font-size:12.5px;line-height:1.6;margin-top:8px">
+        <b>Controller/runtime zelf:</b> applicatiefouten (FAIL), watchdog, STOP/SYS_FAIL (uitgangen → substitutiewaarden) en configuratiemismatch bij opstart.<br>
+        <b>Busmaster:</b> busactivatie, ontbrekende/extra/verkeerde modules, procesdata-breedte (0BD1, 0BFx, 0Cxx).<br>
+        <b>Module zelf:</b> kortsluiting, overbelasting, draadbreuk, overtemperatuur, meetbereik (via 0018hex → PF/PW).<br>
+        <b>Herstel:</b> PF/PW/BUS herstellen automatisch zodra de oorzaak weg is; CTRL, 0A75 (EEPROM), 0A77 en configuratiemismatch blijven staan tot herstart/herconfiguratie.
+      </div>
+    </details>
+    <div class="dg-sub" style="margin:16px 16px 8px">Volledige foutcatalogus <span class="muted-2" style="font-weight:500">· alle ${Object.keys(IO_CODES).length} codes</span></div>
+    <div class="pick-search" style="margin:6px 16px 10px"><span style="display:flex">${ic('search',16,2)}</span><input id="diag-q" placeholder="Zoek op code (bv. 0BF2) of omschrijving (bv. draadbreuk)…" autocomplete="off" spellcheck="false"></div>
+    <div id="diag-cat">${catHtml}</div>
   </div>`;
 }
 function updateSys(){
@@ -3029,10 +3338,16 @@ function viewHardware(){
     </div>
     <div id="hw-fb">${buildFieldbus()}</div>
     ${buildSysPanel()}
+    ${buildBudgetPanel()}
+    ${buildDiagPanel()}
     <div class="card" style="margin-top:20px;overflow:hidden"><div style="padding:13px 16px;border-bottom:1px solid var(--c-line);display:flex;align-items:center;gap:8px"><span style="display:flex;color:var(--ink-2)">${ic('io',17,2)}</span><h3 style="font-size:14px">Aangesloten signalen <span class="muted-2" style="font-weight:500">· per Smart Element · ${SIGNALS.length} I/O</span></h3></div>
       <div style="overflow:auto">${buildHwList()}</div></div>`;
 }
-function mountHardware(){hwSel=null;wireHwRack();setHwBar();}
+function mountHardware(){hwSel=null;wireHwRack();setHwBar();
+  const dq=$('#diag-q');if(dq)dq.oninput=()=>{const v=(dq.value||'').trim().toLowerCase();
+    $$('#diag-cat .dcat-row').forEach(r=>{r.style.display=(!v||(r.dataset.s||'').indexOf(v)>=0)?'':'none';});
+    $$('#diag-cat .dcat-grp').forEach(g=>{const any=Array.from(g.querySelectorAll('.dcat-row')).some(r=>r.style.display!=='none');g.style.display=any?'':'none';});};
+}
 function wireHwRack(){
   const host=$('#hw-rack-host');
   if(host)host.onclick=e=>{
@@ -3118,7 +3433,7 @@ function openHwFaceplate(slot,ch){
     const fhTxt=fh.n>0?`${fh.n}× storing in de laatste 90 dagen${fh.last?` · laatste ${dateStr(fh.last)}`:''}${fh.resolved?' (opgelost)':''}`:'geen eerdere storingen geregistreerd';
     body+=`<div class="dg-block"><h5>Onderhoud &amp; historie</h5><p>${onder?onder+' · ':''}${fhTxt}</p></div>`;
   }
-  body+=`<div class="hw-hint" style="margin-top:2px">Diagnose via Axioline PDI-object 0018hex · gemeld door de lokale-busmaster van de AXC F 2152.</div>`;
+  body+=`<div class="hw-hint" style="margin-top:2px">Diagnose via Axioline PDI-object 0018hex · gemeld door de lokale-busmaster van de ${hwCtrl().name}.</div>`;
   openModal('Diagnose · '+addr, body);
 }
 function changeSlotType(slot,typeId,ctx){ctx=ctx||state.hw;
@@ -3156,7 +3471,7 @@ function buildConfigBar(){
   const xtTxt=list.length?(list.length+'× XT-uitbreiding'):(c.leftExt?'Toevoegen…':'Niet ondersteund');
   return `<div class="hw-config" id="hw-config">
     <div class="cfg-grid">
-      <button class="cfg-card ${c.leftExt?'':'dis'}" data-pick="xt"><span class="k">${ic('network',14,2)} Links-uitbreiding</span><span class="v">${xtTxt}</span><span class="m">${c.leftExt?('AXC BS L 2 · max '+xtCapacity()):'alleen 2152/3152/1252'}</span></button>
+      <button class="cfg-card ${c.leftExt?'':'dis'}" data-pick="xt"><span class="k">${ic('network',14,2)} Links-uitbreiding</span><span class="v">${xtTxt}</span><span class="m">${c.leftExt?((state.hw.ctrlId==='F3152'?'AXL F BS AXC 3X5X':'AXC BS L 2')+' · max '+xtCapacity()):'alleen 2152/3152/1252'}</span></button>
       <button class="cfg-card" data-pick="ctrl"><span class="k">${ic('chip',14,2)} Controller</span><span class="v">${c.name}</span><span class="m">Ord.No ${c.art} · ${c.klass}</span></button>
       <button class="cfg-card" data-pick="sd"><span class="k">${ic('shield',14,2)} SD-kaart</span><span class="v">${sd.name}</span><span class="m">${sd.id==='none'?'geen kaart':sd.art+(sd.lic?' · licentie':'')}</span></button>
       <button class="cfg-card grow" data-pick="rail"><span class="k">${ic('io',14,2)} Op de DIN-rail <span class="cfg-add">+ toevoegen</span></span><span class="v">${nSe} houder${nSe===1?'':'s'} · ${nMod} losse module${nMod===1?'':'s'}</span><span class="m rail-sum">${railSummary()}</span></button>
@@ -3205,7 +3520,7 @@ function openSdPicker(){
 function openXtPicker(){
   const c=hwCtrl();
   if(!c.leftExt){openModal('Links-uitbreiding',`<div class="hw-hint">${c.name} ondersteunt géén links-aanbouwbare AXC F XT-uitbreidingen. Kies een AXC F 2152, 3152 of 1252 om PROFIBUS, INTERBUS, safety, extra Ethernet of ML toe te voegen.</div>`);return;}
-  if((state.hw.leftExt||[]).length>=xtCapacity()){openModal('Links-uitbreiding',`<div class="hw-hint">Maximaal aantal XT-modules bereikt (${xtCapacity()}). Voeg een <b>AXC F XT EXP</b> toe om tot 4 uitbreidingen te dragen, of verwijder eerst een module.</div>`);return;}
+  if((state.hw.leftExt||[]).length>=xtCapacity()){openModal('Links-uitbreiding',`<div class="hw-hint">Maximaal aantal XT-modules bereikt (${xtCapacity()}). ${state.hw.leftExt.includes('EXP')?'':`Voeg een <b>AXC F XT EXP</b> toe om tot ${EXP_LEFT_MAX} uitbreidingen te dragen, of `}verwijder eerst een module.</div>`);return;}
   const items=XT_ORDER.map(id=>{const xt=XT_MODULES[id];const comp=xtCompat(id);
     return {id,name:xt.name,sub:xt.desc,meta:xt.art,ic:ic(xt.icon,16,2),dis:!comp.ok,why:comp.reason,cur:false,tags:xt.iface+' '+id};});
   openPicker('XT-uitbreiding toevoegen','Zit links van de controller op de AXC BS L 2 bus-basismodule. Typ bijv. “profibus”, “safety” of “ethernet”.',items,id=>{addXt(id);closeModal();});
