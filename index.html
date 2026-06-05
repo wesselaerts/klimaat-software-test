@@ -387,15 +387,15 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .activity .sub{font-size:12.5px;color:var(--ink-2)}
 
 /* mimic */
-.mimic-wrap{padding:10px 8px 4px}
+.mimic-wrap{padding:18px 16px 8px}
 .mimic{width:100%;height:auto;display:block}
 .legend{display:flex;gap:18px;flex-wrap:wrap;padding:10px 18px 4px;font-size:12px;color:var(--ink-2);border-top:1px solid var(--c-line)}
 .legend span{display:inline-flex;align-items:center;gap:7px}
 
 /* SVG dynamic */
 
-.pipe-base{stroke:#D6DDD6;stroke-width:6;fill:none;stroke-linecap:round;stroke-linejoin:round}
-.pipe-flow{stroke-width:4.4;fill:none;stroke-linecap:round;stroke-linejoin:round;opacity:0;transition:opacity .3s}
+.pipe-base{stroke:#D6DDD6;stroke-width:8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.pipe-flow{stroke-width:6;fill:none;stroke-linecap:round;stroke-linejoin:round;opacity:0;transition:opacity .3s}
 .pipe-flow.on{opacity:1;stroke-dasharray:7 9;animation:march var(--flow-dur,1s) linear infinite}
 /* --- living liquid: damped level + kabbelend oppervlak (twee golflagen) --- */
 .liqlvl{transition:transform .85s var(--ease-out)}
@@ -428,20 +428,26 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .fl-w{stroke:#5AA7BC}.fl-a{stroke:var(--a)}.fl-b{stroke:var(--b)}.fl-mix{stroke:#A7B3A8}
 
 .svessel{fill:var(--c-sunken);stroke:#C6CFC6;stroke-width:1.5}
-.svessel-lbl{font-family:var(--mono);font-size:10.5px;fill:var(--ink-2)}
+.svessel-lbl{font-family:var(--mono);font-size:13px;fill:var(--ink-2)}
+.ssrc-nm{font-family:var(--font);font-size:11.5px;font-weight:600;fill:var(--ink)}
 
-.sval path{fill:#AEB8AE;transition:fill .2s}
+.sval .val-glow{fill:none;stroke:var(--acc);stroke-width:2.5;opacity:0;transform-box:fill-box;transform-origin:center}
+.sval .val-seat{fill:none;stroke:transparent;stroke-width:1.8;transition:stroke .2s,fill .2s}
+.sval path{fill:#9AA89E;transition:fill .2s}
+.sval.open .val-seat{stroke:var(--acc);fill:var(--acc-50)}
 .sval.open path{fill:var(--acc)}
+.sval.open .val-glow{animation:valveglow 2s var(--ease) infinite}
+@keyframes valveglow{0%,100%{opacity:.12;transform:scale(.92)}50%{opacity:.55;transform:scale(1.2)}}
 
 .spump circle{fill:#FFFFFF;stroke:#C6CFC6;stroke-width:1.5;transition:stroke .2s}
 
 .spump path{fill:#AEB8AE;transition:fill .2s}
 .spump.run path{fill:var(--acc)}
 .spump.run circle{stroke:var(--acc)}
-.sreadout{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:11px;fill:var(--ink)}
-.sreadout-lbl{font-family:var(--font);font-size:10px;fill:var(--ink-3)}
-.stank-lbl{font-family:var(--font);font-size:12px;font-weight:600;fill:var(--ink)}
-.stank-pc{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14px;font-weight:600;fill:var(--ink)}
+.sreadout{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14px;font-weight:600;fill:var(--ink)}
+.sreadout-lbl{font-family:var(--font);font-size:12.5px;font-weight:500;fill:var(--ink-3)}
+.stank-lbl{font-family:var(--font);font-size:15px;font-weight:600;fill:var(--ink)}
+.stank-pc{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:19px;font-weight:700;fill:var(--ink)}
 .liquid{transition:height .9s cubic-bezier(.22,.61,.36,1),y .9s cubic-bezier(.22,.61,.36,1)}
 
 /* modal */
@@ -816,36 +822,76 @@ body{background:linear-gradient(177deg,#F0F4F0 0%,#E7EDE8 100%);background-attac
 .hw-bp{flex:0 0 auto;display:flex;align-self:stretch}
 .hw-spine{flex:0 0 22px;background:linear-gradient(180deg,#cdd3d1,#bcc3c0);border:1px solid #9aa3a0;border-right:0;border-radius:7px 0 0 7px;display:flex;align-items:center;justify-content:center}
 .hw-spine span{writing-mode:vertical-rl;transform:rotate(180deg);font-family:var(--mono);font-size:8.5px;font-weight:700;letter-spacing:.07em;color:#46514b;white-space:nowrap}
-.hw-grid{display:grid;grid-template-columns:repeat(3,158px);grid-auto-rows:302px;gap:9px;padding:9px;background:#ccd2d0;border:1px solid #9aa3a0;border-radius:0 7px 7px 0}
+.hw-grid{display:grid;grid-template-columns:repeat(3,162px);grid-auto-rows:344px;gap:9px;padding:9px;background:#ccd2d0;border:1px solid #9aa3a0;border-radius:0 7px 7px 0}
 
-/* ---- SMART ELEMENT ---- */
-.hw-elem{display:flex;border-radius:6px;overflow:hidden;border:1px solid #a1aaa6;background:linear-gradient(180deg,#CDD3D1,#C0C7C4);box-shadow:var(--sh-1);transition:box-shadow var(--dur) var(--ease),border-color var(--dur) var(--ease)}
-.hw-elem.flt{border-color:var(--alarm);box-shadow:0 0 0 2px var(--alarm-line),0 0 16px rgba(206,58,46,.2)}
-.hw-elem.empty{background:repeating-linear-gradient(45deg,#DADFDD,#DADFDD 9px,#D0D6D4 9px,#D0D6D4 18px);border-style:dashed;border-color:#aeb6b2}
-.hw-tab{flex:0 0 20px;background:#8b948f;color:#fff;display:flex;flex-direction:column;align-items:center;padding:7px 0;cursor:pointer}
-.hw-tab .n{font-size:14px;font-weight:800;line-height:1;font-family:var(--mono)}
-.hw-tab.DI{background:#2E6E8E}.hw-tab.DO{background:#C2791F}.hw-tab.AI{background:#4E8A6B}.hw-tab.AO{background:#6A5FB0}
-.hw-elem.flt .hw-tab{background:var(--alarm)}
+/* ---- SMART ELEMENT (realistische AXL SE) ---- */
+.hw-elem{position:relative;display:flex;border-radius:7px 7px 5px 5px;overflow:hidden;border:1px solid #99a29d;
+  background:
+    repeating-linear-gradient(90deg,rgba(255,255,255,.10) 0,rgba(255,255,255,.10) 1px,transparent 1px,transparent 6px),
+    linear-gradient(180deg,#DBE0DD 0%,#CDD3D0 6px,#C4CBC7 60%,#BAC2BD 100%);
+  box-shadow:var(--sh-2),inset 0 1px 0 rgba(255,255,255,.5),inset -2px 0 4px rgba(0,0,0,.07);
+  transition:box-shadow var(--dur) var(--ease),border-color var(--dur) var(--ease)}
+.hw-elem.flt{border-color:var(--alarm);box-shadow:0 0 0 2px var(--alarm),0 0 22px rgba(206,58,46,.32),inset 0 1px 0 rgba(255,255,255,.4)}
+.hw-elem.empty{background:repeating-linear-gradient(45deg,#DADFDD,#DADFDD 9px,#D0D6D4 9px,#D0D6D4 18px);border-style:dashed;border-color:#aeb6b2;box-shadow:inset 0 1px 3px rgba(18,38,26,.06)}
+
+/* left coding strip (kleur = type, herkenning) */
+.hw-tab{flex:0 0 19px;background:#8b948f;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:6px;padding:7px 0;cursor:pointer;box-shadow:inset -2px 0 4px rgba(0,0,0,.22)}
+.hw-tab .n{font-size:13px;font-weight:800;line-height:1;font-family:var(--mono)}
+.hw-tab .fn{opacity:.92;display:flex}
+.hw-tab .fn svg{display:block}
+.hw-tab.DI{background:linear-gradient(180deg,#3A7C9A,#2E6E8E)}
+.hw-tab.DO{background:linear-gradient(180deg,#D08828,#C2791F)}
+.hw-tab.AI{background:linear-gradient(180deg,#5C9A7B,#4E8A6B)}
+.hw-tab.AO{background:linear-gradient(180deg,#7A6FC0,#6A5FB0)}
+.hw-elem.flt .hw-tab{background:linear-gradient(180deg,#D9483A,#CE3A2C)}
 .hw-elem.empty .hw-tab{background:#9aa3a0}
 .hw-ebody{flex:1;display:flex;flex-direction:column;min-width:0}
-.hw-etype{padding:5px 7px 4px;font-family:var(--mono);font-size:10px;font-weight:700;color:#28312c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-bottom:1px solid rgba(0,0,0,.08);background:rgba(255,255,255,.4)}
-.hw-chs{flex:1;display:flex;flex-direction:column;padding:3px;gap:1px;overflow:hidden}
-.hw-ch{display:flex;align-items:center;gap:5px;height:14px;padding:0 4px;border-radius:3px;background:rgba(255,255,255,.5);border:1px solid transparent;cursor:pointer;font:inherit;text-align:left;flex:0 0 auto}
-.hw-ch:hover{background:#fff;border-color:rgba(0,0,0,.12)}
-.hw-ch .cn{font-family:var(--mono);font-size:8px;font-weight:700;color:#46514b;flex:0 0 auto;width:14px}
+
+/* module-kop: PC-merk + type + artikelnr */
+.hw-head{padding:5px 7px 4px;border-bottom:1px solid rgba(0,0,0,.10);background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,.18))}
+.hw-head .pcrow{display:flex;align-items:center;gap:4px;margin-bottom:2px}
+.hw-head .pcmk{width:11px;height:11px;border-radius:2.5px;background:#16a04a;display:flex;align-items:center;justify-content:center;color:#fff;font-size:7px;font-weight:800;flex:0 0 auto;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
+.hw-head .pcw{font-size:6.5px;font-weight:800;letter-spacing:.08em;color:#3c463f}
+.hw-head .nm{font-family:var(--mono);font-size:10px;font-weight:700;color:#222a25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hw-head .art{font-family:var(--mono);font-size:7.5px;font-weight:600;color:#6c766f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* diagnose-strip D/E bovenin (zoals echte module) */
+.hw-de{display:flex;align-items:center;gap:9px;padding:3px 8px;background:linear-gradient(180deg,#2b332e,#222824);border-bottom:1px solid rgba(0,0,0,.3)}
+.hw-de .dd{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:8px;font-weight:800;color:#aeb8b1;letter-spacing:.04em}
+.hw-de .hw-ef{margin:0;padding:0;border:0;background:none;display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:8px;font-weight:800;color:#aeb8b1}
+.hw-de .tylbl{margin-left:auto;font-family:var(--mono);font-size:7.5px;font-weight:600;color:#7d8881}
+
+.hw-chs{flex:1;display:flex;flex-direction:column;padding:3px 3px 2px;gap:1.5px;overflow:hidden}
+.hw-ch{display:flex;align-items:center;gap:5px;height:14px;padding:0 3px 0 4px;border-radius:3px;background:linear-gradient(180deg,rgba(255,255,255,.62),rgba(255,255,255,.40));border:1px solid rgba(0,0,0,.05);cursor:pointer;font:inherit;text-align:left;flex:0 0 auto}
+.hw-ch:hover{background:#fff;border-color:rgba(0,0,0,.16)}
+.hw-ch .led{margin-left:1px}
+.hw-ch .cn{font-family:var(--mono);font-size:8px;font-weight:700;color:#46514b;flex:0 0 auto;width:13px}
 .hw-ch .ab{font-size:8.5px;color:#39433d;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;flex:1;min-width:0}
 .hw-ch .mA{font-family:var(--mono);font-size:8px;color:#2c352f;flex:0 0 auto}
-.hw-ch .pin{width:6px;height:8px;border-radius:1.5px;background:#9aa3a0;box-shadow:inset 0 1px 1px rgba(0,0,0,.25);flex:0 0 auto}
-.hw-ch.free{opacity:.5}.hw-ch.free .ab{font-style:italic;color:#76807a}
-.hw-ch.flt{background:var(--alarm-bg);border-color:var(--alarm-line);box-shadow:0 0 0 1px var(--alarm-line)}
+/* realistische donkere push-in klem (zoals echte AXL SE): metalen klemsleuf + contact */
+.hw-ch .pin{position:relative;width:12px;height:11px;border-radius:2px;background:linear-gradient(180deg,#454e48,#262d28);box-shadow:inset 0 0 0 1px rgba(0,0,0,.55),inset 0 1px 1px rgba(255,255,255,.10);flex:0 0 auto;overflow:hidden}
+.hw-ch .pin::before{content:"";position:absolute;left:2.5px;right:2.5px;top:2.5px;height:3.5px;border-radius:1px;background:linear-gradient(180deg,#aeb5af,#838c86);box-shadow:inset 0 1px 1px rgba(0,0,0,.35)}
+.hw-ch .pin::after{content:"";position:absolute;left:3.5px;right:3.5px;bottom:2px;height:2px;border-radius:.5px;background:#0e120e}
+.hw-ch.free{opacity:.55}.hw-ch.free .ab{font-style:italic;color:#76807a}
+.hw-ch.free .pin{filter:brightness(.95)}
+/* oranje potentiaal-/voedingsklem (UP) midden in de module */
+.hw-pot{display:flex;align-items:center;gap:4px;height:13px;margin:2px 1px;padding:0 4px;border-radius:3px;background:linear-gradient(180deg,rgba(226,149,47,.30),rgba(207,127,28,.18));border:1px solid rgba(196,118,20,.55);flex:0 0 auto}
+.hw-pot .pl{font-family:var(--mono);font-size:7px;font-weight:800;color:#945c11;letter-spacing:.05em;flex:1;white-space:nowrap}
+.hw-pot .pt{position:relative;width:12px;height:10px;border-radius:2px;background:linear-gradient(180deg,#e8983a,#cf7f1c);box-shadow:inset 0 0 0 1px rgba(120,70,10,.45),inset 0 1px 1px rgba(255,255,255,.45);flex:0 0 auto;overflow:hidden}
+.hw-pot .pt::after{content:"";position:absolute;left:3px;right:3px;bottom:1.5px;height:2px;border-radius:.5px;background:#7a4a0c}
+.hw-ch.flt{background:var(--alarm-bg);border-color:var(--alarm);box-shadow:0 0 0 1px var(--alarm),0 1px 4px rgba(206,58,46,.18)}
 .hw-ch.flt .cn,.hw-ch.flt .ab,.hw-ch.flt .mA{color:var(--alarm);font-weight:700}
-.hw-ch.flt .pin{background:var(--alarm)}
+.hw-ch.flt .led{background:var(--alarm)!important;box-shadow:0 0 7px rgba(206,58,46,.9),inset 0 0 0 1px rgba(255,255,255,.25)!important;animation:ledblink 1s steps(1,end) infinite!important}
 .hw-ch.sel{outline:2px solid var(--acc);outline-offset:-1px;background:#fff}
-.hw-spare{flex:1;display:flex;flex-wrap:wrap;align-content:flex-start;gap:3px;padding:5px 4px;opacity:.5}
-.hw-spare i{width:7px;height:9px;border-radius:1.5px;background:#9aa3a0}
-.hw-ef{display:flex;align-items:center;gap:5px;padding:4px 7px;border-top:1px solid rgba(0,0,0,.1);background:rgba(255,255,255,.32);font-family:var(--mono)}
-.hw-ef .t{font-size:8px;font-weight:800;color:#46514b}
-.hw-ef .ty{margin-left:auto;font-size:8px;color:#59635e;font-weight:600}
+.hw-spare{flex:1;display:flex;flex-wrap:wrap;align-content:flex-start;gap:3px;padding:6px 4px 4px;opacity:.45}
+.hw-spare i{position:relative;width:11px;height:9px;border-radius:1.5px;background:linear-gradient(180deg,#454e48,#262d28);box-shadow:inset 0 0 0 1px rgba(0,0,0,.4)}
+.hw-spare i::before{content:"";position:absolute;left:2px;right:2px;top:2px;height:2.5px;border-radius:1px;background:#838c86}
+
+/* basis-voet: bus/voeding (zoals onderzijde echte module) */
+.hw-ef{display:flex;align-items:center;gap:6px;padding:3px 7px;margin-top:auto;border-top:1px solid rgba(0,0,0,.12);background:linear-gradient(180deg,rgba(255,255,255,.30),rgba(0,0,0,.04));font-family:var(--mono)}
+.hw-ef .t{font-size:7.5px;font-weight:800;color:#46514b;letter-spacing:.03em}
+.hw-ef .ty{margin-left:auto;font-size:7.5px;color:#59635e;font-weight:600}
+.hw-ef .ty2{margin:0 auto;font-family:var(--mono);font-size:9px;font-weight:700;color:#2c352f;letter-spacing:.02em}
 .hw-elem.empty .cover{margin:auto;text-align:center;font-size:10.5px;color:var(--ink-3);padding:14px;line-height:1.55}
 
 /* ---- status bar ---- */
@@ -869,14 +915,210 @@ body{background:linear-gradient(177deg,#F0F4F0 0%,#E7EDE8 100%);background-attac
 /* ---- configurator ---- */
 .hw-elem.edit .hw-ch{border-style:dashed;border-color:rgba(0,0,0,.18)}
 .hw-elem.edit .hw-ch:hover{outline:1.5px dashed var(--acc)}
-.hw-sel-type{font:inherit;font-family:var(--mono);font-size:9.5px;font-weight:700;color:#28312c;background:#fff;border:1px solid var(--c-line-2);border-radius:4px;padding:3px 4px;margin:5px;width:calc(100% - 10px);cursor:pointer}
-.pick-list{display:flex;flex-direction:column;gap:6px;max-height:50vh;overflow:auto}
-.pick-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--c-line);border-radius:var(--r-sm);background:var(--c-surface);cursor:pointer;text-align:left;font:inherit}
+.hw-head.hw-pick{display:block;width:100%;border:0;cursor:pointer;font:inherit;text-align:left;position:relative}
+.hw-head.hw-pick:hover{background:linear-gradient(180deg,var(--acc-50),rgba(233,244,237,.6))}
+.hw-head.hw-pick .pick-chip{margin-left:auto;font-family:var(--font);font-size:7.5px;font-weight:700;color:var(--acc);background:var(--acc-50);border:1px solid var(--acc-100);border-radius:99px;padding:1px 5px}
+.hw-head.hw-pick .pcrow{display:flex;align-items:center}
+.cover.hw-pick.add-slot{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:100%;height:100%;border:0;background:none;cursor:pointer;color:var(--acc);font:inherit;padding:14px}
+.cover.hw-pick.add-slot:hover{background:var(--acc-50)}
+.cover.hw-pick.add-slot .plus{font-size:22px;font-weight:300;line-height:1;color:var(--acc)}
+.cover.hw-pick.add-slot span:not(.plus):not(.sub){font-size:11px;font-weight:600}
+.cover.hw-pick.add-slot .sub{font-size:9px;color:var(--ink-3)}
+
+/* config-bouwbalk */
+.hw-config{margin:-6px 0 16px}
+.cfg-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(184px,1fr));gap:10px}
+.cfg-card{display:flex;flex-direction:column;gap:3px;align-items:flex-start;padding:11px 13px;border:1px solid var(--c-line);border-radius:var(--r-md);background:var(--c-surface);box-shadow:var(--sh-1);cursor:pointer;text-align:left;font:inherit;transition:border-color var(--dur),background var(--dur)}
+.cfg-card:hover:not(.static):not(.dis){border-color:var(--acc);background:var(--acc-50)}
+.cfg-card .k{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-3)}
+.cfg-card .k svg{color:var(--ink-3)}
+.cfg-card .v{font-size:14px;font-weight:700;color:var(--ink);line-height:1.25}
+.cfg-card .m{font-size:11px;color:var(--ink-3);font-family:var(--mono)}
+.cfg-card.static{cursor:default}
+.cfg-card.toggle.on{border-color:var(--acc);background:var(--acc-50)}
+.cfg-card.toggle.on .v{color:var(--acc-700)}
+.cfg-card.dis{opacity:.6;cursor:not-allowed}
+.cfg-card .seg.sm{margin:2px 0}
+.seg.sm{display:inline-flex;background:var(--c-sunken);border:1px solid var(--c-line);border-radius:var(--r-pill);padding:2px}
+.seg.sm button{font:inherit;font-size:11.5px;font-weight:600;border:0;background:none;color:var(--ink-2);padding:3px 10px;border-radius:var(--r-pill);cursor:pointer}
+.seg.sm button[aria-pressed="true"]{background:var(--acc);color:#fff}
+.cfg-hint{display:flex;align-items:flex-start;gap:7px;margin-top:10px;font-size:12px;color:var(--ink-2);line-height:1.5}
+.cfg-hint svg{flex:0 0 auto;color:var(--ink-3);margin-top:1px}
+
+/* links-aanbouw (AXC BS L 2 + XT) */
+.hw-bsl{flex:0 0 auto;display:flex;flex-direction:column;align-self:stretch;border-radius:7px;border:1px solid #9aa3a0;background:linear-gradient(180deg,#cdd3d1,#bcc3c0);overflow:hidden;margin-right:2px}
+.hw-bsl-spine{padding:4px 0;text-align:center;background:linear-gradient(180deg,#3a433e,#2b342e);color:#cfe0d6}
+.hw-bsl-spine span{font-family:var(--mono);font-size:8px;font-weight:700;letter-spacing:.04em}
+.hw-xt-row{flex:1;display:flex;gap:6px;padding:8px;align-items:stretch}
+.hw-xt{flex:0 0 92px;display:flex;border-radius:6px;overflow:hidden;border:1px solid #a1aaa6;background:linear-gradient(180deg,#D7DCDA,#C4CBC7);box-shadow:var(--sh-1)}
+.hw-xt.hw-pick{cursor:pointer}
+.hw-xt.hw-pick:hover{border-color:var(--acc);box-shadow:0 0 0 2px var(--acc-100)}
+.hw-xt.flt{border-color:var(--alarm);box-shadow:0 0 0 2px var(--alarm-line),0 0 16px rgba(206,58,46,.22)}
+.hw-xt-tab{flex:0 0 18px;background:linear-gradient(180deg,#5a635e,#454e48);color:#fff;display:flex;align-items:flex-start;justify-content:center;padding-top:7px}
+.hw-xt.flt .hw-xt-tab{background:var(--alarm)}
+.hw-xt-body{flex:1;display:flex;flex-direction:column;gap:3px;padding:7px 7px 6px;min-width:0}
+.hw-xt-pc .pcmk{display:inline-flex;align-items:center;justify-content:center;width:13px;height:13px;border-radius:3px;background:#16a04a;color:#fff;font-size:7px;font-weight:800}
+.hw-xt-nm{font-family:var(--mono);font-size:9.5px;font-weight:700;color:#222a25;line-height:1.15}
+.hw-xt-if{font-size:8.5px;color:#5a635e;line-height:1.2;flex:1}
+.hw-xt-de{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:8px;font-weight:700;color:#46514b}
+.hw-xt-art{font-family:var(--mono);font-size:7.5px;color:#76807a}
+.hw-xt.add{flex:0 0 86px;flex-direction:column;align-items:center;justify-content:center;gap:4px;border-style:dashed;border-color:var(--acc);background:var(--acc-50);color:var(--acc);cursor:pointer;font:inherit}
+.hw-xt.add .plus{font-size:22px;font-weight:300;line-height:1}
+.hw-xt.add .t{font-size:9.5px;font-weight:700;text-align:center;padding:0 4px}
+
+/* rail-keten (geen DIN-rail meer getekend) */
+.hw-railrow{display:flex;align-items:stretch;gap:12px;min-width:max-content;padding:2px}
+
+/* direct-op-rail Axioline F-module (voeding/IO) */
+.hw-axlf{flex:0 0 auto;width:96px;align-self:stretch;display:flex;border-radius:6px;overflow:hidden;border:1px solid #a1aaa6;background:linear-gradient(180deg,#D7DCDA,#C4CBC7);box-shadow:var(--sh-2)}
+.hw-axlf.hw-pick{cursor:pointer}
+.hw-axlf.hw-pick:hover{border-color:var(--acc);box-shadow:0 0 0 2px var(--acc-100)}
+.hw-axlf.flt{border-color:var(--alarm);box-shadow:0 0 0 2px var(--alarm),0 0 18px rgba(206,58,46,.28)}
+.hw-axlf.pwr{background:linear-gradient(180deg,#E6CB8A,#D3B25C);border-color:#b59134}
+.hw-axlf-tab{flex:0 0 18px;background:linear-gradient(180deg,#5a635e,#454e48);color:#fff;display:flex;align-items:flex-start;justify-content:center;padding-top:7px}
+.hw-axlf.pwr .hw-axlf-tab{background:linear-gradient(180deg,#9a7a22,#6b5212)}
+.hw-axlf.flt .hw-axlf-tab{background:var(--alarm)}
+.hw-axlf-body{flex:1;display:flex;flex-direction:column;gap:4px;padding:7px 7px 7px;min-width:0}
+.hw-axlf-pc{display:flex;align-items:center;gap:5px}
+.hw-axlf-pc .pcmk{display:inline-flex;align-items:center;justify-content:center;width:13px;height:13px;border-radius:3px;background:#16a04a;color:#fff;font-size:7px;font-weight:800}
+.hw-axlf.pwr .hw-axlf-pc .pcmk{background:#6b5212}
+.hw-axlf-nm{font-family:var(--mono);font-size:10px;font-weight:700;color:#222a25;line-height:1.15}
+.hw-axlf-if{font-size:9px;color:#5a635e;line-height:1.25;flex:1}
+.hw-axlf.pwr .hw-axlf-if{color:#5a4410}
+.hw-axlf-foot{display:flex;align-items:center;justify-content:space-between;gap:4px;border-top:1px solid rgba(0,0,0,.12);padding-top:4px}
+.hw-axlf-de{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:8px;font-weight:800;color:#46514b}
+.hw-axlf-art{font-family:var(--mono);font-size:7.5px;color:#76807a}
+.seg-chip{font-family:var(--font);font-size:7.5px;font-weight:700;color:var(--acc);background:var(--acc-50);border:1px solid var(--acc-100);border-radius:99px;padding:1px 6px;margin-left:auto}
+.hw-bp.hw-pick .hw-spine{cursor:pointer}
+.hw-bp.hw-pick:hover .hw-spine{background:linear-gradient(180deg,#2f6a45,#1f5234)}
+.hw-spine{position:relative}
+
+/* + Op de rail toevoegen */
+.hw-railadd{flex:0 0 auto;width:96px;align-self:stretch;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;border-radius:6px;border:2px dashed var(--acc);background:var(--acc-50);color:var(--acc);cursor:pointer;font:inherit}
+.hw-railadd .plus{font-size:26px;font-weight:300;line-height:1}
+.hw-railadd .t{font-size:10px;font-weight:700;text-align:center;padding:0 6px}
+.hw-railadd:hover{background:var(--acc-100)}
+
+/* standalone Axioline F-module op de rail (zelfde stijl als SE-module) */
+.hw-elem.axlf{flex:0 0 auto;width:162px;align-self:flex-start}
+.hw-tab.PWR{background:linear-gradient(180deg,#E0A92E,#C2791F)}
+.hw-tab.ADAPT{background:linear-gradient(180deg,#6b746e,#5a635e)}
+.hw-tab.DIO{background:linear-gradient(180deg,#D08828,#C2791F)}
+.hw-elem.axlf.PWR{background:repeating-linear-gradient(90deg,rgba(255,255,255,.10) 0,rgba(255,255,255,.10) 1px,transparent 1px,transparent 6px),linear-gradient(180deg,#E6CF95 0%,#Dcc079 60%,#D3B25C 100%);border-color:#b59134}
+.hw-pwrbody{flex:1;display:flex;flex-direction:column;gap:6px;padding:8px 8px}
+.hw-pwr-row{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:9.5px;font-weight:700;color:#4a3a0c}
+.hw-pwr-terms{display:grid;grid-template-columns:repeat(2,1fr);gap:4px;margin-top:2px}
+.hw-pwr-terms .t{font-family:var(--mono);font-size:8px;font-weight:700;color:#4a3a0c;text-align:center;padding:5px 0;border-radius:3px;box-shadow:inset 0 1px 1px rgba(0,0,0,.18)}
+.hw-pwr-terms .t.rd{background:linear-gradient(180deg,#d98a82,#c0473b);color:#fff}
+.hw-pwr-terms .t.bl{background:linear-gradient(180deg,#7ea0c4,#3f6f9c);color:#fff}
+.hw-pwr-note{font-size:9px;color:#6b5212;line-height:1.3;margin-top:auto}
+.hw-adaptbody{flex:1;display:flex;flex-direction:column;padding:4px}
+.hw-elem.axlf .hw-ch[tabindex]{cursor:default}
+.hw-elem.axlf.hw-pick .hw-head{cursor:pointer}
+.hw-elem.axlf.hw-pick:hover{box-shadow:0 0 0 2px var(--acc-100),var(--sh-2)}
+
+/* '+ toevoegen'-chip op configkaart */
+.cfg-add{font-family:var(--font);font-size:9px;font-weight:700;color:var(--acc-700);background:var(--acc-50);border:1px solid var(--acc-100);border-radius:99px;padding:0 6px;margin-left:4px;text-transform:none;letter-spacing:0}
+
+/* decentrale veldbus-stations */
+.fb-card{margin-top:20px;padding:0;overflow:hidden}
+.fb-cardhead{display:flex;align-items:center;gap:8px;padding:13px 16px;border-bottom:1px solid var(--c-line)}
+.fb-cardhead h3{font-size:14px}
+.fb-row{display:flex;align-items:stretch;gap:0;padding:18px 16px;overflow-x:auto}
+.fb-plc{flex:0 0 auto;width:104px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:12px 8px;border-radius:var(--r-md);border:1px solid var(--c-line-2);background:linear-gradient(180deg,#D7DCDA,#C6CDCB);color:var(--ink);box-shadow:var(--sh-1);text-align:center}
+.fb-plc svg{color:var(--ink-2)}
+.fb-plc span{font-family:var(--mono);font-size:11px;font-weight:700;line-height:1.2}
+.fb-plc .fb-plc-sub{font-family:var(--font);font-size:10px;font-weight:600;color:var(--ink-3)}
+.fb-bus{flex:0 0 34px;align-self:stretch;display:flex;align-items:center}
+.fb-bus .fb-busline{flex:1;height:3px;border-radius:2px;background:repeating-linear-gradient(90deg,var(--info) 0,var(--info) 6px,transparent 6px,transparent 11px)}
+.fb-node{flex:0 0 auto;width:168px;margin-right:14px;position:relative;padding-top:20px}
+.fb-node.hw-pick{cursor:pointer}
+.fb-link{position:absolute;top:0;left:0;right:0;display:flex;justify-content:center}
+.fb-proto{font-family:var(--mono);font-size:9px;font-weight:800;color:var(--info);background:var(--info-bg);border:1px solid var(--info-line);border-radius:99px;padding:1px 9px}
+.fb-node.bad .fb-proto{color:var(--warn);background:var(--warn-bg);border-color:var(--warn-line)}
+.fb-coupler{border:1px solid var(--c-line-2);border-radius:var(--r-md);background:linear-gradient(180deg,#DBE0DD,#C8CFCB);box-shadow:var(--sh-1);padding:9px 10px;display:flex;flex-direction:column;gap:5px}
+.fb-node.bad .fb-coupler{border-color:var(--warn-line);box-shadow:0 0 0 1px var(--warn-line)}
+.fb-node.hw-pick:hover .fb-coupler{border-color:var(--acc);box-shadow:0 0 0 2px var(--acc-100)}
+.fb-head{display:flex;align-items:center;gap:6px}
+.fb-head .pcmk{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:3px;background:#16a04a;color:#fff;font-size:7.5px;font-weight:800;flex:0 0 auto}
+.fb-head .fb-nm{font-family:var(--mono);font-size:11px;font-weight:700;color:#222a25}
+.fb-art{font-family:var(--mono);font-size:9px;color:var(--ink-3)}
+.fb-mods{display:flex;align-items:center;gap:3px;padding:3px 0}
+.fb-mods i{width:11px;height:26px;border-radius:2px;background:linear-gradient(180deg,#CDD3D1,#B8C0BB);border:1px solid #a1aaa6}
+.fb-mods .fb-more{font-size:9.5px;color:var(--ink-3);font-style:italic;margin-left:3px}
+.fb-conn{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;color:var(--info);font-weight:600}
+.fb-conn svg{color:var(--info)}
+.fb-conn.bad,.fb-conn.bad svg{color:var(--warn)}
+.fb-add{flex:0 0 auto;width:148px;align-self:stretch;min-height:96px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;border-radius:var(--r-md);border:2px dashed var(--acc);background:var(--acc-50);color:var(--acc);cursor:pointer;font:inherit;margin-top:20px}
+.fb-add .plus{font-size:24px;font-weight:300;line-height:1}
+.fb-add .t{font-size:11px;font-weight:700;text-align:center;padding:0 8px}
+.fb-add:hover{background:var(--acc-100)}
+.fb-empty{flex:0 0 auto;align-self:center;color:var(--ink-3);font-size:12.5px;font-style:italic;padding:0 16px}
+
+/* realistische buskoppelaar (zoals AXL F BK PN TPS) */
+.fb-cpl{flex:0 0 auto;align-self:stretch;border-right:2px dashed var(--info-line)}
+.fb-cpl.bad{border-right-color:var(--warn-line)}
+.fb-cpl.hw-pick{cursor:pointer}
+.fb-cpl.hw-pick:hover{box-shadow:0 0 0 2px var(--acc-100),var(--sh-2)}
+.fb-cpl .hw-terms.cpl{grid-template-columns:repeat(2,1fr)}
+.fb-cpl .hw-window{min-height:60px}
+.cpl-eth{display:flex;flex-direction:column;gap:9px;padding:8px}
+.cpl-port{display:flex;flex-direction:column;align-items:center;gap:2px}
+.cpl-la{display:flex;justify-content:space-between;width:36px;font-family:var(--mono);font-size:6px;font-weight:700;color:#5a635e;letter-spacing:.02em}
+.cpl-jack{width:36px;height:25px;border-radius:3px;background:linear-gradient(180deg,#3a433e,#262d28);display:flex;align-items:flex-end;justify-content:center;gap:4px;padding-bottom:3px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.45)}
+.cpl-jack i{width:6px;height:4px;border-radius:1px;background:#3a463f}
+.cpl-port.up .cpl-jack i:first-child{background:var(--ok);box-shadow:0 0 5px var(--ok)}
+.cpl-port.up .cpl-jack i:last-child{background:#E0A92E;box-shadow:0 0 4px rgba(224,169,46,.7)}
+.cpl-pn{font-family:var(--mono);font-size:8px;font-weight:700;color:#46514b}
+.fb-protoband{font-family:var(--mono);font-size:8.5px;font-weight:800;letter-spacing:.18em;text-align:center;color:#46514b;background:rgba(0,0,0,.05);border-radius:3px;margin:4px 6px;padding:3px 0}
+.fb-protoband.bad{color:var(--warn)}
+.fb-connline{display:flex;align-items:center;gap:5px;font-size:9.5px;font-weight:600;color:var(--info);padding:4px 8px 6px}
+.fb-connline svg{color:var(--info);flex:0 0 auto}
+.fb-connline.bad,.fb-connline.bad svg{color:var(--warn)}
+
+/* veldbus-stations met eigen I/O-rail (zelfde opbouw als PLC) */
+.fb-hint{display:flex;align-items:flex-start;gap:7px;padding:11px 16px 0;font-size:12px;color:var(--ink-2);line-height:1.5}
+.fb-hint svg{flex:0 0 auto;color:var(--ink-3);margin-top:1px}
+.fb-stations{display:flex;flex-direction:column;gap:14px;padding:14px 16px 18px}
+.fb-station{display:flex;align-items:stretch;gap:0;border:1px solid var(--c-line);border-radius:var(--r-lg);background:var(--c-sunken);overflow-x:auto;position:relative}
+.fb-station::before{content:"";position:absolute;left:188px;top:50%;width:18px;height:2px;background:var(--info);transform:translateY(-50%);opacity:.5}
+.fb-coupler{flex:0 0 188px;display:flex;flex-direction:column;gap:5px;justify-content:center;padding:12px 14px;border-right:2px dashed var(--info-line);background:linear-gradient(180deg,#DBE0DD,#C8CFCB);border-radius:var(--r-lg) 0 0 var(--r-lg)}
+.fb-coupler.hw-pick{cursor:pointer}
+.fb-coupler.hw-pick:hover{background:linear-gradient(180deg,#e7f0ea,#d6e4dc)}
+.fb-coupler.bad{border-right-color:var(--warn-line)}
+.fb-io{flex:1;min-width:0;padding:12px 14px;display:flex;align-items:stretch}
+.fb-io .hw-railrow{padding:0}
+.fb-station .fb-proto{align-self:flex-start}
+
+/* SD-kaart in controller */
+.hw-sd{width:100%;border:0;background:#c0c7c4;border-radius:5px;padding:6px;display:flex;flex-direction:column;gap:5px;cursor:default;font:inherit}
+.hw-sd.hw-pick{cursor:pointer}
+.hw-sd.hw-pick:hover{outline:1.5px solid var(--acc);outline-offset:1px}
+.hw-sd .slot.has{display:flex;align-items:center;justify-content:center;background:linear-gradient(90deg,#1f4a33,#2a6f50 70%,#1f4a33)}
+.hw-sd .slot.has .sdsz{font-family:var(--mono);font-size:7px;font-weight:700;color:#cfe7d6}
+
+/* doorzoekbare kiezer */
+.pick-search{display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid var(--c-line-2);border-radius:var(--r-md);background:var(--c-sunken)}
+.pick-search svg{color:var(--ink-3);flex:0 0 auto}
+.pick-search input{flex:1;border:0;background:none;font:inherit;font-size:14px;color:var(--ink);outline:none}
+.pick-list{display:flex;flex-direction:column;gap:6px;max-height:48vh;overflow:auto;margin-top:4px}
+.pick-row{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--c-line);border-radius:var(--r-sm);background:var(--c-surface);cursor:pointer;text-align:left;font:inherit}
 .pick-row:hover{border-color:var(--acc);background:var(--acc-50)}
 .pick-row.cur{border-color:var(--acc);background:var(--acc-50)}
-.pick-row .nm{font-size:13px;color:var(--ink);font-weight:500}
-.pick-row .meta{font-size:11.5px;color:var(--ink-3);margin-left:auto;font-family:var(--mono)}
-.pick-row.clear{color:var(--ink-2);font-style:italic}
+.pick-row.dis{opacity:.62;cursor:not-allowed;background:var(--c-sunken)}
+.pick-row.dis:hover{border-color:var(--c-line)}
+.pick-row .pr-l{display:flex;align-items:center;gap:10px;min-width:0;flex:1}
+.pick-row .pr-ic{flex:0 0 auto;width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;background:var(--c-sunken);color:var(--ink-2)}
+.pick-row .pr-ic.DI{background:#E7F0F4;color:#2E6E8E}.pick-row .pr-ic.DO{background:#FBF0DC;color:#B26A00}
+.pick-row .pr-ic.AI,.pick-row .pr-ic.AO{background:#EDEBF7;color:#6A5FB0}
+.pick-row .pr-ic.alarm{background:var(--alarm-bg);color:var(--alarm)}.pick-row .pr-ic.idle{background:var(--idle-bg);color:var(--ink-3)}
+.pick-row .pr-txt{display:flex;flex-direction:column;gap:1px;min-width:0}
+.pick-row .nm{font-size:13.5px;color:var(--ink);font-weight:600;line-height:1.25}
+.pick-row .sub{font-size:11.5px;color:var(--ink-2);line-height:1.35}
+.pick-row .why{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--warn);margin-top:1px}
+.pick-row .meta{font-size:11px;color:var(--ink-3);margin-left:auto;font-family:var(--mono);flex:0 0 auto;text-align:right;white-space:nowrap}
+.pick-row .curtag{display:inline-block;font-family:var(--font);font-size:9.5px;font-weight:700;color:var(--acc-700);background:var(--acc-50);border:1px solid var(--acc-100);border-radius:99px;padding:0 6px;margin-left:4px}
+.pick-empty{display:none;padding:18px;text-align:center;color:var(--ink-3);font-size:12.5px}
 
 /* ---- diagnostic faceplate ---- */
 .dg-h{display:flex;align-items:center;gap:12px;padding:14px 15px;border-radius:var(--r-md);margin-bottom:16px}
@@ -1013,7 +1255,9 @@ const I = {
   wave:'<path d="M2 12c2 0 2-3 4-3s2 3 4 3 2-3 4-3 2 3 4 3 2-3 4-3"/>',
   beaker:'<path d="M9 3h6M10 3v6.5L5.5 18A2 2 0 0 0 7.3 21h9.4a2 2 0 0 0 1.8-2.5L14 9.5V3"/>',
   leaf:'<path d="M5 21c0-7 5-13 14-15 -1 9 -6 14 -14 15z"/><path d="M5 21C8 16 12 13 17 11"/>',
-  chip:'<rect x="7" y="7" width="10" height="10" rx="1.5"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/>'
+  chip:'<rect x="7" y="7" width="10" height="10" rx="1.5"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/>',
+  network:'<rect x="3" y="3" width="6.5" height="5" rx="1"/><rect x="14.5" y="3" width="6.5" height="5" rx="1"/><rect x="8.5" y="16" width="7" height="5" rx="1"/><path d="M6.25 8v3h11.5V8M12 11v5"/>',
+  cpu:'<rect x="6" y="6" width="12" height="12" rx="1.5"/><rect x="9.5" y="9.5" width="5" height="5"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/>'
 };
 const svg=(p,sz=22,sw=2)=>`<svg width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
 const ic=(name,sz=22,sw=2)=>svg(I[name]||'',sz,sw);
@@ -1119,6 +1363,132 @@ const DIAG={
     {code:'7710',lvl:'ch',nm:'Draadbreuk / open circuit sensor',cause:'De Pt100-sensor of bedrading is onderbroken.',action:'Controleer de RTD-sensor en de aansluitdraden.'},
     ...DIAG_COMMON]
 };
+
+/* ============================================================
+   PRODUCTCATALOGUS — volledige AXC F productlijn (Phoenix Contact)
+   Bron: officiële productpagina's + UM EN AXC F X152 / AXL F SYS DIAG
+   ============================================================ */
+const CONTROLLERS={
+  F1152:{id:'F1152',name:'AXC F 1152',art:'1151412',klass:'Instap',ports:2,cpu:'Arm Cortex-A9 1×800 MHz',ram:'512 MB',pn:16,maxAxio:63,
+    leftExt:false,ml:false,ups:false,sdLic:true,
+    desc:'Instap PLCnext Control voor directe Axioline F I/O. Twee geschakelde Ethernet-poorten. Géén links-aanbouwbare uitbreidingen (EXT-LED zonder functie).',
+    note:'Goedkoopste keuze. Kan GEEN XT-uitbreidingen dragen — kies 2152/3152/1252 als je PROFIBUS, safety of extra Ethernet nodig hebt.'},
+  F2152:{id:'F2152',name:'AXC F 2152',art:'2404267',klass:'Midden',ports:2,cpu:'Arm Cortex-A9 2×800 MHz',ram:'512 MB',pn:64,maxAxio:63,
+    leftExt:true,ml:false,ups:false,sdLic:true,
+    desc:'De werkpaard-controller. Dual-core, directe Axioline F I/O, twee geschakelde Ethernet-poorten. Draagt links-aanbouwbare AXC F XT-uitbreidingen.',
+    note:'Huidige besturing van deze installatie. Vereist een AXC BS L 2 bus-basismodule om XT-uitbreidingen aan te koppelen.'},
+  F3152:{id:'F3152',name:'AXC F 3152',art:'1069208',klass:'High-end',ports:3,cpu:'Intel Atom x5 2×1,3 GHz',ram:'2048 MB',pn:128,maxAxio:63,
+    leftExt:true,ml:true,ups:true,sdLic:true,
+    desc:'Krachtigste controller. Drie onafhankelijke Ethernet-poorten (eigen IP), geïntegreerde UPS, TSN-ready. Draagt alle XT-uitbreidingen, incl. de ML 1000.',
+    note:'Enige controller die de AXC F XT ML 1000 (machine learning) ondersteunt. Optionele insteek-ventilatormodule.'},
+  F1252:{id:'F1252',name:'AXC F 1252',art:'1646469',klass:'Nieuw',ports:2,cpu:'Arm Cortex-A55 2×1,7 GHz',ram:'—',pn:'—',maxAxio:63,
+    leftExt:true,ml:false,ups:false,sdLic:true,
+    desc:'Nieuwste generatie (Cortex-A55). Directe Axioline F I/O, twee Ethernet-poorten. Draagt links-aanbouwbare XT-uitbreidingen.',
+    note:'Modernste 1xxx-controller. Volledige RAM/flash-specs bevestigen op de officiële productpagina vóór bestelling.'}
+};
+const CONTROLLER_ORDER=['F1152','F2152','F3152','F1252'];
+
+/* Links-aanbouwbare AXC F XT-uitbreidingen (zitten LINKS van de controller) */
+const XT_MODULES={
+  ETH:{id:'ETH',name:'AXC F XT ETH 1TX',art:'2403115',icon:'network',iface:'1× Ethernet 10/100/1000',supp:['F2152','F3152','F1252'],
+    desc:'Extra, los routeerbare Ethernet-poort (eigen IP/netwerk-scheiding).',codes:['EXT-ERR']},
+  KIT:{id:'KIT',name:'AXC F XT KIT',art:'1383116',icon:'chip',iface:'Mini-PCIe',supp:['F2152','F3152'],
+    desc:'Mini-PCIe-kit voor klantspecifieke insteekkaarten (bv. WLAN/modem).',codes:['EXT-ERR']},
+  EXP:{id:'EXP',name:'AXC F XT EXP',art:'1139999',icon:'network',iface:'PCIe-switch · 3 poorten',supp:['F2152','F3152','F1252'],
+    desc:'PCIe-uitbreidingsswitch — maakt tot 3 extra XT-modules op één PLC mogelijk.',codes:['EXT-ERR'],enablesMulti:true},
+  PB:{id:'PB',name:'AXC F XT PB',art:'1091657',icon:'network',iface:'PROFIBUS · 9-pol D-SUB',supp:['F2152','F3152','F1252'],
+    desc:'PROFIBUS-master (max. 488 byte procesdata). Niet voor de 1152.',codes:['EXT-ERR']},
+  IB:{id:'IB',name:'AXC F XT IB',art:'2403018',icon:'network',iface:'INTERBUS · 9-pol D-SUB',supp:['F2152','F3152','F1252'],
+    desc:'INTERBUS-master (max. 512 byte; 500 kbps/2 Mbps). Niet voor de 1152.',codes:['EXT-ERR']},
+  ML:{id:'ML',name:'AXC F XT ML 1000',art:'1259849',icon:'cpu',iface:'Machine learning',supp:['F3152'],
+    desc:'Machine-learning-module voor AI-toepassingen. Uitsluitend voor de AXC F 3152.',codes:['EXT-ERR']},
+  SPLC1000:{id:'SPLC1000',name:'AXC F XT SPLC 1000',art:'1159811',icon:'shield',iface:'PROFIsafe · tot 32 devices',supp:['F2152','F3152','F1252'],
+    desc:'Veiligheidsbesturing (functional safety) voor tot 32 PROFIsafe-devices. Niet voor de 1152.',codes:['EXT-ERR']},
+  SPLC3000:{id:'SPLC3000',name:'AXC F XT SPLC 3000',art:'1160157',icon:'shield',iface:'PROFIsafe · tot 300 devices',supp:['F2152','F3152','F1252'],
+    desc:'Veiligheidsbesturing voor tot 300 PROFIsafe-devices. Niet voor de 1152.',codes:['EXT-ERR']}
+};
+const XT_ORDER=['ETH','EXP','PB','IB','SPLC1000','SPLC3000','ML','KIT'];
+
+/* Toebehoren die NIET in de Smart-Element-houder passen */
+const ACCESSORIES={
+  BSL2:{id:'BSL2',name:'AXC BS L 2',art:'1064312',icon:'chip',mount:'links',
+    desc:'Bus-basismodule voor links-aanbouw. Vereist om welke AXC F XT-uitbreiding dan ook mechanisch/elektrisch aan een 2xxx-controller te koppelen.'},
+  PWR1H:{id:'PWR1H',name:'AXL F PWR 1H',art:'2688297',icon:'bolt',mount:'rail',
+    desc:'Axioline F voedingsmodule voor de logica-bus (UBus), max. 4 A. Plaats deze in de I/O-keten als de UBus-stroomgrens van de controller (1 A bij ≤55 °C) wordt bereikt.'},
+  ILADAPT:{id:'ILADAPT',name:'AXC F IL ADAPT',art:'1020304',icon:'io',mount:'rail',
+    desc:'Rechts-aanbouwbare Inline-adapter — bouwt een PLCnext Inline-station met klassieke Inline-klemmen i.p.v. Axioline F.'}
+};
+
+/* PLCnext SD-geheugenkaarten (in de SD-sleuf van de controller) */
+const SD_CARDS={
+  none:{id:'none',name:'Geen SD-kaart',art:'—',size:'—',lic:false,desc:'Geen insteekkaart. Programma draait uit intern flash; geen externe configuratie-/licentieopslag.'},
+  SD2:{id:'SD2',name:'SD FLASH 2GB',art:'1043501',size:'2 GB',lic:false,desc:'Programma-/configuratiegeheugen, 2 GB. Zonder licentieopslag.'},
+  SD8:{id:'SD8',name:'SD FLASH 8GB',art:'1061701',size:'8 GB',lic:false,desc:'Programma-/configuratiegeheugen, 8 GB. Zonder licentieopslag.'},
+  SD8L:{id:'SD8L',name:'SD FLASH 8GB LIC',art:'1151112',size:'8 GB',lic:true,desc:'8 GB mét licentieopslag — nodig voor PLCnext Store-apps/licenties.'},
+  SD16L:{id:'SD16L',name:'SD FLASH 16GB LIC',art:'1831737',size:'16 GB',lic:true,desc:'16 GB mét licentieopslag.'},
+  SD32L:{id:'SD32L',name:'SD FLASH 32GB LIC',art:'1151111',size:'32 GB',lic:true,desc:'32 GB mét licentieopslag — ruimste DataLogger-opslag.'}
+};
+const SD_ORDER=['none','SD2','SD8','SD8L','SD16L','SD32L'];
+
+/* I/O-houders: Smart-Element-backplanes (alléén híer passen AXL SE Smart Elements) */
+const BACKPLANES={
+  SE4:{id:'SE4',name:'AXL F BP SE4',art:'1088135',slots:4,kind:'se',desc:'Backplane met 4 sleuven voor Axioline Smart Elements. Klikt op de DIN-rail.'},
+  SE6:{id:'SE6',name:'AXL F BP SE6',art:'1088136',slots:6,kind:'se',desc:'Backplane met 6 sleuven voor Axioline Smart Elements. Klikt op de DIN-rail.'}
+};
+
+/* Volwaardige Axioline F-modules die DIRECT op de DIN-rail klikken (nooit in een SE-houder) */
+const AXLF_MODULES={
+  PWR1H:{id:'PWR1H',name:'AXL F PWR 1H',art:'2688297',kind:'PWR',ch:0,led:false,icon:'bolt',
+    desc:'Voedingsmodule voor de logica-bus (UBus), max. 4 A. Op de rail tussen modules wanneer de UBus-stroomgrens van de controller (1 A) wordt bereikt.'},
+  DI16F:{id:'DI16F',name:'AXL F DI16/1 1H',art:'2688310',kind:'DI',ch:16,led:true,icon:'io',
+    desc:'Axioline F digitale-ingangsmodule · 16× 24 V DC. Eigen bus-basismodule, direct op de rail.'},
+  DO16F:{id:'DO16F',name:'AXL F DO16/1 1H',art:'2688349',kind:'DO',ch:16,led:true,icon:'io',
+    desc:'Axioline F digitale-uitgangsmodule · 16× 24 V DC / 0,5 A. Eigen bus-basismodule, direct op de rail.'},
+  DIO2H:{id:'DIO2H',name:'AXL F DI16/1 DO16/1 2H',art:'2702106',kind:'DIO',ch:32,led:true,icon:'io',
+    desc:'Axioline F combimodule · 16 digitale in + 16 digitale uit. Direct op de rail.'},
+  ILADAPT:{id:'ILADAPT',name:'AXC F IL ADAPT',art:'1020304',kind:'ADAPT',ch:0,led:false,icon:'io',
+    desc:'Inline-adapter — bouwt een PLCnext Inline-station met klassieke Inline-klemmen i.p.v. Axioline F.'}
+};
+const AXLF_ORDER=['DI16F','DO16F','DIO2H','PWR1H','ILADAPT'];
+
+/* Decentrale veldbus-stations — staan LOS van de hoofd-PLC, verbonden via netwerk/master.
+   Een buskoppelaar vormt een eigen Axioline F-station op een eigen DIN-rail. */
+const FIELDBUS={
+  BKPN:{id:'BKPN',name:'AXL F BK PN TPS',art:'2403869',proto:'PROFINET',via:'eth',
+    desc:'Axioline F PROFINET-buskoppelaar (device). Vormt een decentraal I/O-station, verbonden met de PLC via Ethernet (X1/X2).'},
+  BKEIP:{id:'BKEIP',name:'AXL F BK EIP',art:'2403094',proto:'EtherNet/IP',via:'eth',
+    desc:'Axioline F EtherNet/IP-buskoppelaar. Decentraal station via Ethernet.'},
+  BKETH:{id:'BKETH',name:'AXL F BK ETH',art:'—',proto:'Modbus/TCP',via:'eth',
+    desc:'Axioline F Modbus/TCP-buskoppelaar. Decentraal station via Ethernet. (Artikelnr. controleren.)'},
+  BKPB:{id:'BKPB',name:'AXL F BK PB',art:'2688518',proto:'PROFIBUS DP',via:'pb',
+    desc:'Axioline F PROFIBUS DP-buskoppelaar. Vereist een AXC F XT PB-master in de PLC.'},
+  BKIB:{id:'BKIB',name:'IB IL station',art:'—',proto:'INTERBUS',via:'ib',
+    desc:'INTERBUS decentraal station. Vereist een AXC F XT IB-master in de PLC.'}
+};
+const FIELDBUS_ORDER=['BKPN','BKEIP','BKETH','BKPB','BKIB'];
+/* kan dit station verbonden worden met de huidige opstelling? */
+function fieldbusCompat(id){
+  const fb=FIELDBUS[id];if(!fb)return{ok:false,reason:'Onbekend station.'};
+  if(fb.via==='eth')return{ok:true,reason:'',conn:'via Ethernet '+(hwCtrl().ports>=3?'(X1–X3)':'(X1/X2)')};
+  if(fb.via==='pb')return state.hw.leftExt.includes('PB')?{ok:true,reason:'',conn:'via AXC F XT PB-master'}:{ok:false,reason:'Vereist een AXC F XT PB-master links op de controller.',conn:'AXC F XT PB ontbreekt'};
+  if(fb.via==='ib')return state.hw.leftExt.includes('IB')?{ok:true,reason:'',conn:'via AXC F XT IB-master'}:{ok:false,reason:'Vereist een AXC F XT IB-master links op de controller.',conn:'AXC F XT IB ontbreekt'};
+  return{ok:true,reason:'',conn:''};
+}
+
+/* Uitgebreide Axioline I/O-foutcodetabel (UM EN AXL F SYS DIAG) — voor de details-/codelijst */
+const IO_CODES={
+  '0000':'Geen fout','1000':'Algemene storing','2000':'Stroom','2130':'Kortsluiting/overbelasting analoge uitgang',
+  '2211':'Overbelasting ingang (sensorvoeding)','2344':'Kortsluiting/overbelasting uitgang','2345':'Sensorvoeding overbelast',
+  '3000':'Spanning','3130':'I/O-voedingsspanning UP afwezig','3300':'Uitgangsspanning — kortsluiting/overbelasting',
+  '3400':'Uitval I/O-voedingsspanning','3412':'Sensorvoeding niet aanwezig','3422':'Actuatorvoeding niet aanwezig',
+  '4000':'Temperatuur (bv. overtemperatuur)','5000':'Apparaat-hardware','5112':'Defecte 24 V-voeding (kortsluiting/overbelasting)',
+  '6100':'Firmwarefout','6130':'Module ontbreekt / niet geplugd','6320':'Parameterfout',
+  '7710':'Open last / draadbreuk uitgang','8001':'Meetbereik overschreden','8002':'Draadbreuk / open circuit ingang',
+  '0A2F':'Aantal modules is nul (geen I/O gevonden)','0A1C':'Maximaal aantal modules overschreden',
+  '0BC1':'Lokale-busvoeding niet aanwezig','0C01':'Geconfigureerde module onbereikbaar (verwijderd na configuratie)',
+  '0C02':'Niet-geconfigureerde module gedetecteerd','EXT-ERR':'Uitbreidingsmodule-fout (EXT)'
+};
+
 const HW_DEFAULT_SLOTS=['DI16','DO16','DO16','AI4I','AI4I',null];
 const HW_DEFAULT_CH=[
   ['DI:flow','DI:fcs-run','DI:fcs-hi','DI:fcs-flt','DI:estop','DI:air'],
@@ -1133,7 +1503,32 @@ function buildHwState(){
   const map={};
   HW_DEFAULT_CH.forEach((arr,si)=>arr.forEach((uid,i)=>{if(uid)map[uid]={slot:si,ch:i+1};}));
   const diag={'3.2':'8002','1.3':'2344'};
-  return {ctrl:'AXC F 2152',ctrlArt:'2404267',bp:'AXL F BP SE6',bpArt:'1088136',slots,map,diag};
+  return {ctrlId:'F2152',sd:'SD8L',leftExt:[],
+    rail:[{kind:'se',bp:'SE6',uid:1}], _uid:2, fieldbus:[],
+    ctrl:'AXC F 2152',ctrlArt:'2404267',slots,map,diag};
+}
+/* afgeleide hardware-info uit de keuzes */
+function hwCtrl(){return CONTROLLERS[state.hw.ctrlId]||CONTROLLERS.F2152;}
+function hwSd(){return SD_CARDS[state.hw.sd]||SD_CARDS.none;}
+function nextSegUid(ctx){ctx=ctx||state.hw;return ctx._uid=(ctx._uid||1)+1;}
+/* SE-segmenten met hun globale slot-bereik (start..start+count-1) */
+function seSegs(ctx){ctx=ctx||state.hw;const out=[];let start=0;(ctx.rail||[]).forEach((seg,ri)=>{if(seg.kind==='se'){const c=(BACKPLANES[seg.bp]||BACKPLANES.SE6).slots;out.push({ri,uid:seg.uid,bp:seg.bp,count:c,start});start+=c;}});return out;}
+function hwSlotCount(ctx){return seSegs(ctx).reduce((n,s)=>n+s.count,0);}
+function segOfSlot(slot,ctx){const segs=seSegs(ctx);for(const s of segs){if(slot>=s.start&&slot<s.start+s.count)return s;}return null;}
+/* houd de platte slots-array gelijk aan het totaal SE-sleuven */
+function ensureSlots(ctx){ctx=ctx||state.hw;if(!ctx.slots)ctx.slots=[];const n=hwSlotCount(ctx);while(ctx.slots.length<n)ctx.slots.push({type:null});if(ctx.slots.length>n)ctx.slots.length=n;}
+/* compatibiliteit van een XT-uitbreiding met de gekozen controller */
+function xtCompat(xtId,ctrlId){
+  const xt=XT_MODULES[xtId];const c=CONTROLLERS[ctrlId||state.hw.ctrlId];
+  if(!xt||!c)return{ok:false,reason:'Onbekende combinatie.'};
+  if(!c.leftExt)return{ok:false,reason:c.name+' ondersteunt geen links-aanbouwbare uitbreidingen.'};
+  if(!xt.supp.includes(c.id))return{ok:false,reason:xt.name+' is niet vrijgegeven voor de '+c.name+'.'};
+  return{ok:true,reason:''};
+}
+/* hoeveel XT-modules mag de huidige opstelling dragen? (EXP-switch verhoogt dit) */
+function xtCapacity(){
+  if(!hwCtrl().leftExt)return 0;
+  return state.hw.leftExt.includes('EXP')?4:1;
 }
 const uidOf=s=>s.type+':'+s.k;
 function sigByUid(uid){return SIGNALS.find(s=>uidOf(s)===uid)||null;}
@@ -1168,13 +1563,15 @@ function hwCtrlLeds(){
     {id:'BF-C',state:'off',color:'info',meaning:'PROFINET-controllerfunctie niet in gebruik (geen PROFINET geconfigureerd).'},
     {id:'BF-D',state:'off',color:'info',meaning:'PROFINET-devicefunctie niet in gebruik.'},
     {id:'SF',state:'off',color:'alarm',meaning:'Geen PROFINET-groepsdiagnose aanwezig.'},
-    {id:'EXT',state:'off',color:'info',meaning:'Uitbreidingsbus zonder functie op de AXC F 2152.'}
+    {id:'EXT',state:hwExtFault()?'on':(state.hw.leftExt&&state.hw.leftExt.length?'on':'off'),color:hwExtFault()?'alarm':(state.hw.leftExt&&state.hw.leftExt.length?'ok':'info'),
+      meaning:!hwCtrl().leftExt?(hwCtrl().name+' ondersteunt geen links-aanbouwbare uitbreidingen — EXT zonder functie.'):hwExtFault()?'Uitbreidingsfout (EXT rood): een AXC F XT-module ontbreekt, zit verkeerd of is defect.':(state.hw.leftExt&&state.hw.leftExt.length?(state.hw.leftExt.length+'× AXC F XT-uitbreiding actief zonder fout (EXT groen).'):'Geen links-aanbouwbare uitbreiding geplaatst.')}
   ];
 }
+function hwExtFault(){return Object.keys(state.hw.diag).some(k=>k.indexOf('xt.')===0);}
 function hwSlotState(slot){const el=state.hw.slots[slot];if(!el||!el.type)return 'empty';
   const f=activeFaults().filter(x=>x.slot===slot);if(!f.length)return 'ok';return f.some(x=>x.code==='6130')?'missing':'fault';}
-function hwElemE(slot){const f=activeFaults().filter(x=>x.slot===slot);if(!f.length)return 'off';
-  if(f.some(x=>x.code==='6100'))return 'blink05';if(f.some(x=>x.code==='6130'))return 'blink4';return 'on';}
+function hwElemE(slot,ctx){ctx=ctx||state.hw;const dg=ctx.diag||{};const codes=Object.keys(dg).filter(k=>{const p=k.split('.');return /^\d+$/.test(p[0])&&+p[0]===slot;}).map(k=>dg[k]);if(!codes.length)return 'off';
+  if(codes.indexOf('6100')>=0)return 'blink05';if(codes.indexOf('6130')>=0)return 'blink4';return 'on';}
 function chOn(s){
   if(!s)return false;
   if(s.type==='DO')return state.openValves.has(s.k);
@@ -1402,12 +1799,12 @@ const MX={ /* coordinaten */
   tankTop:300,tankH:92,tankW:104,
   tA:300,tB:900,
   pumpY:418,klManY:460,vbTop:498,vbH:92,vbW:84,
-  A1:250,A2:360,B1:840,B2:960,
+  A1:240,A2:380,B1:822,B2:978,
   recircAX:196,recircBX:1004
 };
 const srcX=i=>70+i*((1130-70)/11); // i:0..11
 
-function valveSVG(id,cx,cy,dev){const w=7,h=8;return `<g class="sval${dev?' clk':''}" id="${id}"${dev?` data-dev="${dev}"`:''}>${dev?`<circle class="dev-halo" cx="${cx}" cy="${cy}" r="20"/>`:''}<path d="M${cx-w} ${cy-h}L${cx} ${cy}L${cx-w} ${cy+h}Z"/><path d="M${cx+w} ${cy-h}L${cx} ${cy}L${cx+w} ${cy+h}Z"/></g>`;}
+function valveSVG(id,cx,cy,dev){const w=7.5,h=8.5;return `<g class="sval${dev?' clk':''}" id="${id}"${dev?` data-dev="${dev}"`:''}>${dev?`<circle class="dev-halo" cx="${cx}" cy="${cy}" r="22"/>`:''}<circle class="val-glow" cx="${cx}" cy="${cy}" r="15"/><circle class="val-seat" cx="${cx}" cy="${cy}" r="13"/><path d="M${cx-w} ${cy-h}L${cx} ${cy}L${cx-w} ${cy+h}Z"/><path d="M${cx+w} ${cy-h}L${cx} ${cy}L${cx+w} ${cy+h}Z"/></g>`;}
 function pumpSVG(id,cx,cy,r,dev){r=r||14;return `<g class="spump${dev?' clk':''}" id="${id}"${dev?` data-dev="${dev}"`:''}>${dev?`<circle class="dev-halo" cx="${cx}" cy="${cy}" r="22"/>`:''}<circle class="spump-glow" cx="${cx}" cy="${cy}" r="${r+4}"/><circle cx="${cx}" cy="${cy}" r="${r}"/><path d="M${cx-5} ${cy-6}L${cx-5} ${cy+6}L${cx+7} ${cy}Z"/></g>`;}
 function wavePath(cx,w,top,h,amp,wl){
   const x0=+(cx-w/2-wl).toFixed(1), x1=+(cx+w/2+wl).toFixed(1), half=wl/2;
@@ -1445,10 +1842,10 @@ function buildMimic(){
      <linearGradient id="sheen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity=".22"/><stop offset=".6" stop-color="#ffffff" stop-opacity="0"/></linearGradient>
    </defs>`;
   // zone backgrounds
-  s+=`<rect x="184" y="290" width="232" height="320" rx="16" fill="${COL.aBg}" opacity=".45"/>`;
-  s+=`<rect x="788" y="290" width="232" height="320" rx="16" fill="${COL.bBg}" opacity=".5"/>`;
-  s+=`<text x="300" y="307" text-anchor="middle" class="stank-lbl" fill="${COL.a}" font-size="11">A-ZIJDE</text>`;
-  s+=`<text x="900" y="307" text-anchor="middle" class="stank-lbl" fill="${COL.b}" font-size="11">B-ZIJDE</text>`;
+  s+=`<rect x="176" y="290" width="248" height="320" rx="16" fill="${COL.aBg}" opacity=".45"/>`;
+  s+=`<rect x="776" y="290" width="248" height="320" rx="16" fill="${COL.bBg}" opacity=".5"/>`;
+  s+=`<circle cx="200" cy="306" r="4" fill="${COL.a}" opacity=".7"/><text x="210" y="310" text-anchor="start" class="stank-lbl" fill="${COL.a}" font-size="11" font-weight="700" opacity=".7">A</text>`;
+  s+=`<circle cx="1000" cy="306" r="4" fill="${COL.b}" opacity=".7"/><text x="990" y="310" text-anchor="end" class="stank-lbl" fill="${COL.b}" font-size="11" font-weight="700" opacity=".7">B</text>`;
 
   // collector
   s+=`<path class="pipe-base" d="M62 ${cy}H1138"/>`;
@@ -1458,9 +1855,11 @@ function buildMimic(){
     const x=srcX(i);
     const bakCol=src.bak==='A'?COL.a:src.bak==='B'?COL.b:src.bak==='AB'?COL.ink2:COL.water;
     const bakTxt=src.bak==='-'?'H₂O':src.bak;
-    s+=`<text x="${x}" y="46" text-anchor="middle" font-family="${COL.mono}" font-size="9.5" font-weight="600" fill="${bakCol}">${bakTxt}</text>`;
-    s+=`<rect class="svessel" x="${x-m.srcW/2}" y="${m.srcY}" width="${m.srcW}" height="${m.srcH}" rx="7"/>`;
-    s+=`<text transform="rotate(-90 ${x} ${m.srcY+m.srcH/2})" x="${x}" y="${m.srcY+m.srcH/2}" text-anchor="middle" dominant-baseline="central" class="svessel-lbl">${src.name}</text>`;
+    s+=`<text x="${x}" y="42" text-anchor="middle" class="ssrc-nm">${src.name}</text>`;
+    s+=`<rect class="svessel" x="${x-m.srcW/2}" y="${m.srcY+6}" width="${m.srcW}" height="${m.srcH-6}" rx="7"/>`;
+    s+=`<rect x="${x-m.srcW/2+2}" y="${m.srcY+m.srcH-19}" width="${m.srcW-4}" height="17" rx="3" fill="${bakCol}" opacity=".20"/>`;
+    s+=`<rect x="${x-m.srcW/2-1.5}" y="${m.srcY}" width="${m.srcW+3}" height="15" rx="6" fill="${bakCol}"/>`;
+    s+=`<text x="${x}" y="${m.srcY+11}" text-anchor="middle" font-family="${COL.mono}" font-size="9.5" font-weight="800" fill="#fff">${bakTxt}</text>`;
     // branch + valve
     s+=`<path class="pipe-base" d="M${x} 121V${cy}"/>`;
     s+=`<path class="pipe-flow" id="f-src${src.n}" d="M${x} 121V${cy}"/>`;
@@ -1492,18 +1891,18 @@ function buildMimic(){
     // vessel
     s+=vesselSVG(tk,cx,m.tankTop,m.tankW,m.tankH,null);
     s+=`<g class="bubbles" id="bub-${tk}" clip-path="url(#clip-${tk})">`+[0,1,2].map(i=>`<circle cx="${cx-8+i*8}" cy="${m.tankTop+m.tankH-8}" r="${(2.2-i*0.3).toFixed(1)}" fill="#fff" style="animation-delay:${(i*0.9).toFixed(1)}s"/>`).join('')+`</g>`;
-    s+=`<text x="${cx}" y="${m.tankTop+m.tankH+16}" text-anchor="middle" class="stank-lbl">Tussenbak ${L}</text>`;
-    s+=`<text x="${cx}" y="${m.tankTop-7}" text-anchor="middle" class="stank-pc" id="pc-${tk}">0%</text>`;
+    s+=`<text x="${cx}" y="${m.tankTop+m.tankH/2-4}" text-anchor="middle" class="sreadout" id="nm-${tk}" fill="#fff" font-size="13" font-weight="600">Tussenbak ${L}</text>`;
+    s+=`<text x="${cx}" y="${m.tankTop+m.tankH/2+16}" text-anchor="middle" class="stank-pc" id="pc-${tk}" fill="#fff">0%</text>`;
     // pump (mengpomp)
     s+=`<path class="pipe-base" d="M${cx} ${m.tankTop+m.tankH}V${m.pumpY}"/>`;
     s+=pumpSVG('pump-vp'+(L==='A'?'02':'03'),cx,m.pumpY,13,'vp'+(L==='A'?'02':'03'));
-    s+=`<text x="${cx+(L==='A'?-20:20)}" y="${m.pumpY+4}" text-anchor="${L==='A'?'end':'start'}" class="sreadout-lbl">VP 0${L==='A'?'2':'3'}</text>`;
+    s+=`<text x="${cx+(L==='A'?-32:32)}" y="${m.pumpY+3}" text-anchor="${L==='A'?'end':'start'}" class="sreadout-lbl">VP 0${L==='A'?'2':'3'}</text>`;
     // recirc loop
     const rd=`M${cx} ${m.pumpY+13}V${m.pumpY+30}H${rx}V316H${L==='A'?cx-m.tankW/2:cx+m.tankW/2}`;
     s+=`<path class="pipe-base" d="${rd}"/>`;
     s+=`<path class="pipe-flow" id="f-rec${L}" d="${rd}"/>`;
     s+=valveSVG('val-recirc-'+L,rx,400,'recirc-'+L);
-    s+=`<text x="${rx+(L==='A'?-2:2)}" y="395" text-anchor="${L==='A'?'end':'start'}" class="sreadout-lbl">meng</text>`;
+    s+=`<text x="${rx}" y="384" text-anchor="middle" class="sreadout-lbl">meng</text>`;
     // transfer to voorraad
     const td=`M${cx} ${m.pumpY+13}V${m.klManY}M${v1} ${m.klManY}H${v2}`;
     s+=`<path class="pipe-base" d="${td}"/>`;
@@ -1517,7 +1916,7 @@ function buildMimic(){
       const cap=L==='A'?1500:1000;
       s+=`<text x="${vx}" y="${m.vbTop+m.vbH+16}" text-anchor="middle" class="stank-lbl">${bk} · ${cap} L</text>`;
       s+=`<text x="${vx}" y="${m.vbTop+m.vbH/2-3}" text-anchor="middle" class="stank-pc" id="pc-${bk}" fill="#fff">0%</text>`;
-      s+=`<text x="${vx}" y="${m.vbTop+m.vbH/2+13}" text-anchor="middle" class="sreadout" id="lt-${bk}" fill="#fff" font-size="10">0 L</text>`;
+      s+=`<text x="${vx}" y="${m.vbTop+m.vbH/2+15}" text-anchor="middle" class="sreadout" id="lt-${bk}" fill="#fff" font-size="12">0 L</text>`;
     });
   });
   s+=`</svg>`;
@@ -1563,7 +1962,18 @@ function updateMimic(){
   $$('.pipe-flow').forEach(e=>e.setAttribute('class','pipe-flow'));
   const af=state.activeFlow;
   if(af){
-    if(af.feed){ setFlow('f-coll',1,af.col); setFlow('f-feed',1,af.col); setFlow('f-man',1,af.col); if(af.src)setFlow('f-src'+af.src,1,af.col); }
+    if(af.feed){
+      setFlow('f-feed',1,af.col);
+      // collector: alleen van de actieve bron naar het aftappunt (x=600)
+      let sx=600;
+      if(af.src){const idx=SOURCES.findIndex(s=>s.n===af.src);if(idx>=0)sx=Math.round(srcX(idx));setFlow('f-src'+af.src,1,af.col);}
+      const ce=$('#f-coll');if(ce)ce.setAttribute('d',`M${Math.min(sx,600)} ${MX.collY}H${Math.max(sx,600)}`);
+      setFlow('f-coll',1,af.col);
+      // manifold: alleen van het midden naar de actieve tussenbak
+      const tx=af.in==='A'?MX.tA:af.in==='B'?MX.tB:600;
+      const me=$('#f-man');if(me)me.setAttribute('d',`M${Math.min(600,tx)} ${MX.manY}H${Math.max(600,tx)}`);
+      setFlow('f-man',1,af.col);
+    }
     if(af.in){ setFlow('f-in'+af.in,1,af.col); }
     if(af.rec){ setFlow('f-rec'+af.rec,1,'fl-mix'); }
     if(af.tr){ const L=af.tr; setFlow('f-tr'+L,1,L==='A'?'fl-a':'fl-b'); setFlow('f-tr'+L+'-'+L+'1',1,L==='A'?'fl-a':'fl-b'); setFlow('f-tr'+L+'-'+L+'2',1,L==='A'?'fl-a':'fl-b'); }
@@ -1594,28 +2004,27 @@ function viewOverzicht(){
     <div class="card kpi"><div class="k">${ic('clock',15,2)} Volgende vulling</div><div class="v" id="kpi-next" style="font-size:20px;margin-top:9px">B2 — ingepland</div><div class="s">Onder minimumniveau</div></div>
   </div>
 
+  <div class="card mimic-card" style="margin-bottom:16px">
+    <div class="card-h"><h3>Procesmimic</h3><span class="sub" id="mimic-mode">— live —</span></div>
+    <div class="mimic-wrap" id="mimic-host"></div>
+    <div class="legend">
+      <span><span class="dot run"></span> Actieve stroom</span>
+      <span><span class="dot a"></span> A-zijde</span>
+      <span><span class="dot b"></span> B-zijde</span>
+      <span><span class="dot idle"></span> Klep dicht</span>
+      <span style="color:var(--alarm)">– – minimumniveau</span>
+    </div>
+  </div>
+
   <div class="split-2">
     <div class="card">
-      <div class="card-h"><h3>Procesmimic</h3><span class="sub" id="mimic-mode">— live —</span></div>
-      <div class="mimic-wrap" id="mimic-host"></div>
-      <div class="legend">
-        <span><span class="dot run"></span> Actieve stroom</span>
-        <span><span class="dot a"></span> A-zijde</span>
-        <span><span class="dot b"></span> B-zijde</span>
-        <span><span class="dot idle"></span> Klep dicht</span>
-        <span style="color:var(--alarm)">– – minimumniveau</span>
-      </div>
+      <div class="card-h"><h3>Voorraadbakken</h3><span class="sub">live niveau · 4–20 mA</span></div>
+      <div class="card-pad" style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px" id="ov-tanks"></div>
     </div>
-    <div class="grid" style="gap:16px">
-      <div class="card">
-        <div class="card-h"><h3>Voorraadbakken</h3><span class="sub">live niveau · 4–20 mA</span></div>
-        <div class="card-pad" style="display:flex;flex-direction:column;gap:18px" id="ov-tanks"></div>
-      </div>
-      <div class="card card-pad">
-        <div class="activity">
-          <div class="ring" id="ov-ring"></div>
-          <div class="stage"><div><div class="now" id="ov-now">Standby</div><div class="sub" id="ov-sub">Machine gereed</div></div></div>
-        </div>
+    <div class="card card-pad">
+      <div class="activity">
+        <div class="ring" id="ov-ring"></div>
+        <div class="stage"><div><div class="now" id="ov-now">Standby</div><div class="sub" id="ov-sub">Machine gereed</div></div></div>
       </div>
     </div>
   </div>`;
@@ -2431,58 +2840,143 @@ function qrSVG(){let r='<rect width="21" height="21" fill="#fff"/>';
 const ARRDOWN='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>';
 
 function buildCtrl(){
+  const c=hwCtrl();const sd=hwSd();const n=hwSlotCount();
   const L=['BF-C','BF-D','SF','BOOT','EXT'],R=['RUN','FAIL','DBG','D','E'];
   let leds='';for(let i=0;i<5;i++){const a=getLed(L[i]),b=getLed(R[i]);
     leds+=`<button class="hw-led-row" data-led="${L[i]}">${ledHTML(a.color,a.state,'xs')}<span class="lbl">${L[i]}</span></button>`;
     leds+=`<button class="hw-led-row" data-led="${R[i]}">${ledHTML(b.color,b.state,'xs')}<span class="lbl">${R[i]}</span></button>`;}
-  let dcl='';for(let i=0;i<6;i++){const st=hwSlotState(i);const led=st==='empty'?ledHTML('ok','off','xs'):st==='ok'?ledHTML('ok','on','xs'):st==='missing'?ledHTML('alarm','blink','xs'):ledHTML('alarm','on','xs');
+  let dcl='';for(let i=0;i<n;i++){const st=hwSlotState(i);const led=st==='empty'?ledHTML('ok','off','xs'):st==='ok'?ledHTML('ok','on','xs'):st==='missing'?ledHTML('alarm','blink','xs'):st==='warn'?ledHTML('warn','on','xs'):ledHTML('alarm','on','xs');
     dcl+=`<button class="hw-dled" data-slot="${i}">${led}<span class="dn">${i+1}</span></button>`;}
+  let eth='';for(let i=0;i<c.ports;i++){eth+=`<div class="hw-port${i===0?' up':''}"><div class="jack"><span class="lk"></span></div><span class="pn">X${i+1}</span></div>`;}
+  const sdInner=sd.id==='none'?`<div class="slot"></div>`:`<div class="slot has"><span class="sdsz">${sd.size}${sd.lic?' · LIC':''}</span></div>`;
+  const editCtrl=hwMode==='edit'?' hw-pick" data-pick="ctrl':'';
+  const editSd=hwMode==='edit'?' hw-pick" data-pick="sd':'';
   return `<div class="hw-ctrl">
-    <div class="hw-ctrl-side"><span>AXC F 2152</span></div>
+    <div class="hw-ctrl-side${editCtrl}"><span>${c.name}</span></div>
     <div class="hw-ctrl-col">
-      <div class="cz"><div class="hw-sd"><div class="l"><span>SD-CARD</span><span class="r">R ${ledHTML('alarm','off','xs')}</span></div><div class="slot"></div></div></div>
-      <div class="cz hw-ident"><div><b>Ord.No</b> ${state.hw.ctrlArt}</div><div><b>MAC</b> 00·A0·45·9D·13·BC</div><div>plcnext-community.net</div></div>
+      <div class="cz"><button class="hw-sd${editSd}" ${hwMode==='edit'?'':'disabled'}><div class="l"><span>SD-CARD</span><span class="r">R ${ledHTML('alarm','off','xs')}</span></div>${sdInner}</button></div>
+      <div class="cz hw-ident"><div><b>Ord.No</b> ${c.art}</div><div><b>MAC</b> 00·A0·45·9D·13·BC</div><div>plcnext-community.net</div></div>
       <div class="cz hw-brand"><span class="pcmark">PC</span><span class="pc">PLCnext Technology<small>Designed by PHOENIX CONTACT</small></span></div>
       <div class="cz hw-leds">${leds}</div>
       <div class="cz hw-busd"><span class="ttl">D</span><div class="hw-dgrid">${dcl}</div><span class="hw-up">UP ${ledHTML('ok','on','xs')}</span></div>
       <div class="cz hw-qr"><div class="q">${qrSVG()}</div><div class="cap">scan here for<br>easy start up</div></div>
-      <div class="hw-window"><span class="x3">X3</span></div>
+      <div class="hw-window"><span class="x3">SVC</span></div>
       <div class="cz hw-supply"><div class="ulrow">UL ${ledHTML('ok','on','xs')}<span style="margin-left:auto;font-weight:600;color:#5a635e">24 V</span></div><div class="hw-terms"><span class="hw-tm"><i class="rd"></i>a1</span><span class="hw-tm"><i class="bl"></i>b1</span><span class="hw-tm"><i class="gy"></i>U+</span><span class="hw-tm"><i class="rd"></i>a2</span><span class="hw-tm"><i class="bl"></i>b2</span><span class="hw-tm"><i class="gy"></i>U−</span></div></div>
-      <div class="cz hw-eth"><div class="hw-port up"><div class="jack"><span class="lk"></span></div><span class="pn">X1</span></div><div class="hw-port"><div class="jack"><span class="lk"></span></div><span class="pn">X2</span></div></div>
+      <div class="cz hw-eth">${eth}</div>
       <div class="hw-rel"><span class="lever"></span><span class="arr">${ARRDOWN}</span></div>
     </div></div>`;
+}
+/* links-aanbouwbare AXC F XT-uitbreidingen (links van de controller) */
+function buildLeftExt(){
+  const c=hwCtrl();const list=state.hw.leftExt||[];
+  let cards='';
+  list.forEach((id,i)=>{const xt=XT_MODULES[id];if(!xt)return;const flt=(state.hw.diag['xt.'+i]);
+    cards+=`<div class="hw-xt${flt?' flt':''}${hwMode==='edit'?' hw-pick':''}" data-xt="${i}">
+      <div class="hw-xt-tab"><span class="ic">${ic(xt.icon,13,2)}</span></div>
+      <div class="hw-xt-body"><div class="hw-xt-pc"><span class="pcmk">PC</span></div>
+        <div class="hw-xt-nm">${xt.name.replace('AXC F XT ','XT ')}</div>
+        <div class="hw-xt-if">${xt.iface}</div>
+        <div class="hw-xt-de">${ledHTML(flt?'alarm':'ok','on','xs')}<span>${flt?'EXT':'OK'}</span></div>
+        <div class="hw-xt-art">${xt.art}</div></div></div>`;});
+  const cap=xtCapacity();const canAdd=hwMode==='edit'&&c.leftExt&&list.length<cap;
+  const addBtn=canAdd?`<button class="hw-xt add" data-pick="xt"><span class="plus">+</span><span class="t">XT toevoegen</span></button>`:'';
+  if(!list.length&&!addBtn)return '';
+  return `<div class="hw-bsl"><div class="hw-bsl-spine"><span>AXC BS L 2 · 1064312</span></div><div class="hw-xt-row">${cards}${addBtn}</div></div>`;
 }
 function buildTypeSelect(slot){const cur=state.hw.slots[slot]?state.hw.slots[slot].type:null;
   let opts='<option value="">— leeg (slotafdekking) —</option>';
   ELEMENT_ORDER.forEach(id=>{opts+=`<option value="${id}"${cur===id?' selected':''}>${ELEMENTS[id].name}</option>`;});
   return `<select class="hw-sel-type" data-slot="${slot}">${opts}</select>`;}
-function buildElem(slot){
-  const conf=state.hw.slots[slot];const el=conf&&conf.type?ELEMENTS[conf.type]:null;
-  if(!el){const inner=hwMode==='edit'?buildTypeSelect(slot):'';
-    return `<div class="hw-elem empty" data-slot="${slot}"><div class="hw-tab" data-slot="${slot}"><span class="n">${slot+1}</span></div><div class="hw-ebody">${inner}<div class="cover">Slot ${slot+1}<br>vrij<br><span style="font-size:9px">slotafdekking</span></div></div></div>`;}
-  const fault=activeFaults().some(x=>x.slot===slot);
-  const eState=hwElemE(slot);const eLed=ledHTML('alarm',eState==='off'?'off':eState);
-  const tab=`<div class="hw-tab ${el.kind}" data-slot="${slot}"><span class="n">${slot+1}</span></div>`;
-  let chs='';
-  if(el.led){let cells='';for(let c=1;c<=el.ch;c++){const s=sigAt(slot,c);const flt=!!chFaultCode(slot,c);const hd=s&&handState(s)==='hand';
-      cells+=`<button class="hw-ch${s?'':' free'}${flt?' flt':''}${hd?' hand':''}" data-slot="${slot}" data-ch="${c}">${ledHTML('amber',chOn(s)?'on':'off')}<span class="cn">${String(c).padStart(2,'0')}</span><span class="ab">${s?abbrev(s):'—'}</span><span class="hbadge">H</span><span class="pin"></span></button>`;}
-    chs=`<div class="hw-chs">${cells}</div>`;
-  }else{let cells='';for(let c=1;c<=el.ch;c++){const s=sigAt(slot,c);const flt=!!chFaultCode(slot,c);
-      cells+=`<button class="hw-ch${s?'':' free'}${flt?' flt':''}" data-slot="${slot}" data-ch="${c}"><span class="cn">${String(c).padStart(2,'0')}</span><span class="ab">${s?abbrev(s):'—'}</span><span class="mA">${s?aiMA(s):''}</span><span class="pin"></span></button>`;}
-    let spare='';for(let i=0;i<12;i++)spare+='<i></i>';
-    chs=`<div class="hw-chs">${cells}<div class="hw-spare">${spare}</div></div>`;}
-  const typeRow=hwMode==='edit'?buildTypeSelect(slot):`<div class="hw-etype">${el.name}</div>`;
-  const footer=`<div class="hw-ef"><span class="t">E</span>${eLed}<span class="ty">${el.name.replace('AXL SE ','')}</span></div>`;
-  return `<div class="hw-elem ${el.kind}${fault?' flt':''}${hwMode==='edit'?' edit':''}" data-slot="${slot}">${tab}<div class="hw-ebody">${typeRow}${chs}${footer}</div></div>`;
+function elemGlyph(kind){
+  const a='<svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">';
+  if(kind==='DI')return a+'<path d="M2 8h7"/><path d="M6 5l3 3-3 3"/><path d="M13 3v10"/></svg>';
+  if(kind==='DO')return a+'<path d="M3 3v10"/><path d="M7 8h7"/><path d="M11 5l3 3-3 3"/></svg>';
+  if(kind==='AI')return a+'<path d="M1.5 8c1.3-3.4 2.6-3.4 3.9 0s2.6 3.4 3.9 0"/><path d="M13 3v10"/></svg>';
+  if(kind==='AO')return a+'<path d="M3 3v10"/><path d="M6.2 8c1.3-3.4 2.6-3.4 3.9 0s2.6 3.4 3.9 0"/></svg>';
+  return a+'</svg>';
 }
-function buildBp(){let cells='';for(let i=0;i<6;i++)cells+=buildElem(i);
-  return `<div class="hw-bp"><div class="hw-spine"><span>AXL F BP SE6 · ${state.hw.bpArt} · HW 00</span></div><div class="hw-grid">${cells}</div></div>`;}
-function buildRack(){return `<div class="hw-scroll"><div class="hw-rack">${buildCtrl()}${buildBp()}</div></div>`;}
+function buildElem(slot,ctx){ctx=ctx||state.hw;const isPlc=(ctx===state.hw);
+  const conf=ctx.slots[slot];const el=conf&&conf.type?ELEMENTS[conf.type]:null;
+  if(!el){const cover=hwMode==='edit'
+      ? `<button class="cover hw-pick add-slot" data-pickslot="${slot}"><span class="plus">+</span><span>Kies module</span><span class="sub">slot ${slot+1}</span></button>`
+      : `<div class="cover">Slot ${slot+1}<br>vrij<br><span style="font-size:9px">AXL SE slotafdekking</span></div>`;
+    return `<div class="hw-elem empty" data-slot="${slot}"><div class="hw-tab" data-slot="${slot}"><span class="n">${slot+1}</span></div><div class="hw-ebody">${cover}</div></div>`;}
+  const dg=ctx.diag||{};const chCode=c=>dg[slot+'.'+c]||null;
+  const fault=Object.keys(dg).some(k=>{const p=k.split('.');return /^\d+$/.test(p[0])&&+p[0]===slot;});
+  const eState=hwElemE(slot,ctx);const eLed=ledHTML('alarm',eState==='off'?'off':eState,'xs');
+  const tab=`<div class="hw-tab ${el.kind}" data-slot="${slot}"><span class="n">${slot+1}</span><span class="fn">${elemGlyph(el.kind)}</span></div>`;
+  const head=`<div class="hw-head"><div class="pcrow"><span class="pcmk">PC</span><span class="pcw">PHOENIX CONTACT</span></div><div class="nm">${el.name}</div><div class="art">Ord.No ${el.art}</div></div>`;
+  const headEdit=`<button class="hw-head hw-pick" data-pickslot="${slot}"><div class="pcrow"><span class="pcmk">PC</span><span class="pcw">PHOENIX CONTACT</span><span class="pick-chip">wijzig ▾</span></div><div class="nm">${el.name}</div><div class="art">Ord.No ${el.art}</div></button>`;
+  const deStrip=`<div class="hw-de"><span class="dd">${ledHTML('ok','on','xs')}D</span><span class="hw-ef">${eLed}E</span><span class="tylbl">${el.ch}× ${el.kind}</span></div>`;
+  const potStrip=`<div class="hw-pot"><span class="pl">UP · 24 V</span><span class="pt"></span><span class="pt"></span></div>`;
+  let chs='';
+  if(el.led){let cells='';for(let c=1;c<=el.ch;c++){const s=isPlc?sigAt(slot,c):null;const flt=!!chCode(c);const hd=s&&handState(s)==='hand';
+      cells+=`<button class="hw-ch${s?'':' free'}${flt?' flt':''}${hd?' hand':''}" data-slot="${slot}" data-ch="${c}">${ledHTML('amber',chOn(s)?'on':'off')}<span class="cn">${String(c).padStart(2,'0')}</span><span class="ab">${s?abbrev(s):'—'}</span><span class="hbadge">H</span><span class="pin"></span></button>`;
+      if(c===8&&el.ch>=16)cells+=potStrip;}
+    chs=`<div class="hw-chs">${cells}</div>`;
+  }else{let cells='';for(let c=1;c<=el.ch;c++){const s=isPlc?sigAt(slot,c):null;const flt=!!chCode(c);
+      cells+=`<button class="hw-ch${s?'':' free'}${flt?' flt':''}" data-slot="${slot}" data-ch="${c}">${ledHTML('ok',s?'on':'off')}<span class="cn">${String(c).padStart(2,'0')}</span><span class="ab">${s?abbrev(s):'—'}</span><span class="mA">${s?aiMA(s):''}</span><span class="pin"></span></button>`;}
+    let spare='';for(let i=0;i<8;i++)spare+='<i></i>';
+    chs=`<div class="hw-chs">${cells}${potStrip}<div class="hw-spare">${spare}</div></div>`;}
+  const typeRow=hwMode==='edit'?headEdit:head;
+  const footer=`<div class="hw-ef"><span class="ty2">${el.name.replace('AXL SE ','')}</span></div>`;
+  return `<div class="hw-elem ${el.kind}${fault?' flt':''}${hwMode==='edit'?' edit':''}" data-slot="${slot}">${tab}<div class="hw-ebody">${typeRow}${deStrip}${chs}${footer}</div></div>`;
+}
+function buildSeHolder(seg,ri,start,count,ctx){ctx=ctx||state.hw;
+  const bp=BACKPLANES[seg.bp]||BACKPLANES.SE6;let cells='';for(let i=0;i<count;i++)cells+=buildElem(start+i,ctx);
+  const cols=Math.max(1,Math.ceil(count/2));
+  const spineExtra=hwMode==='edit'?`<span class="seg-chip">wijzig</span>`:'';
+  return `<div class="hw-bp${hwMode==='edit'?' hw-pick':''}" ${hwMode==='edit'?`data-segedit="${ri}"`:''}><div class="hw-spine"><span>${bp.name} · ${bp.art} · HW 00</span>${spineExtra}</div><div class="hw-grid" style="grid-template-columns:repeat(${cols},162px)">${cells}</div></div>`;
+}
+function buildRailMod(ri,ctx){ctx=ctx||state.hw;
+  const seg=ctx.rail[ri];const m=AXLF_MODULES[seg.type];if(!m)return '';
+  const flt=!!(ctx.diag||{})['mod.'+seg.uid];
+  const isPwr=m.kind==='PWR',isAdapt=m.kind==='ADAPT';
+  const kindCls=isPwr?'PWR':isAdapt?'ADAPT':m.kind;
+  const glyph=isPwr?'<svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 1L3 9h4l-1 6 7-9H9z"/></svg>'
+    :isAdapt?'<svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h6v6H3zM9 8h4M13 6v4"/></svg>'
+    :elemGlyph(m.kind==='DIO'?'DO':m.kind);
+  const tab=`<div class="hw-tab ${kindCls}"><span class="fn">${glyph}</span></div>`;
+  const wijzig=hwMode==='edit'?'<span class="pick-chip">wijzig ▾</span>':'';
+  const head=`<div class="hw-head"><div class="pcrow"><span class="pcmk">PC</span><span class="pcw">PHOENIX CONTACT</span>${wijzig}</div><div class="nm">${m.name.replace('AXL F ','').replace('AXC F ','')}</div><div class="art">Ord.No ${m.art}</div></div>`;
+  const eLed=ledHTML('alarm',flt?'on':'off','xs');
+  const deStrip=`<div class="hw-de"><span class="dd">${ledHTML('ok','on','xs')}D</span><span class="hw-ef">${eLed}E</span><span class="tylbl">${m.ch?(m.ch+'× '+m.kind):'Axioline F'}</span></div>`;
+  const potStrip=`<div class="hw-pot"><span class="pl">UP · 24 V</span><span class="pt"></span><span class="pt"></span></div>`;
+  let body='';
+  if(isPwr){
+    body=`<div class="hw-chs hw-pwrbody"><div class="hw-pwr-row"><span class="led on ok"></span><span>UL 24 V</span></div><div class="hw-pwr-row"><span class="led on ok"></span><span>US 4 A</span></div>
+      <div class="hw-pwr-terms"><span class="t rd">1.1</span><span class="t bl">2.1</span><span class="t rd">1.2</span><span class="t bl">2.2</span><span class="t rd">1.3</span><span class="t bl">2.3</span><span class="t rd">1.4</span><span class="t bl">2.4</span></div>
+      <div class="hw-pwr-note">Voedt de UBus voor volgende modules</div></div>`;
+  }else if(isAdapt){
+    body=`<div class="hw-chs hw-adaptbody"><div class="hw-pwr-note" style="text-align:center;padding-top:8px">Overgang Axioline → Inline-klemmen</div><div class="hw-spare" style="opacity:.55">${Array.from({length:12}).map(()=>'<i></i>').join('')}</div></div>`;
+  }else{
+    const nCh=Math.min(m.ch||0,16);let cells='';
+    for(let c=1;c<=nCh;c++){const isAI=m.kind==='AI';
+      cells+=`<button class="hw-ch free" tabindex="-1">${ledHTML(isAI?'ok':'amber','off')}<span class="cn">${String(c).padStart(2,'0')}</span><span class="ab">—</span>${isAI?'<span class="mA"></span>':'<span class="hbadge">H</span>'}<span class="pin"></span></button>`;
+      if(c===8&&nCh>=16)cells+=potStrip;}
+    body=`<div class="hw-chs">${cells}</div>`;
+  }
+  const footer=`<div class="hw-ef"><span class="ty2">${m.name.replace('AXL F ','').replace('AXC F ','')}</span></div>`;
+  return `<div class="hw-elem axlf ${kindCls}${flt?' flt':''}${hwMode==='edit'?' hw-pick edit':''}" data-segedit="${ri}">${tab}<div class="hw-ebody">${head}${deStrip}${body}${footer}</div></div>`;
+}
+function buildRailSegments(ctx){ctx=ctx||state.hw;
+  const segs=seSegs(ctx);let html='';
+  (ctx.rail||[]).forEach((seg,ri)=>{
+    if(seg.kind==='se'){const sg=segs.find(s=>s.ri===ri);html+=buildSeHolder(seg,ri,sg.start,sg.count,ctx);}
+    else html+=buildRailMod(ri,ctx);
+  });
+  return html;
+}
+function buildRack(){
+  ensureSlots();
+  const addBtn=hwMode==='edit'?`<button class="hw-railadd" data-pick="rail"><span class="plus">+</span><span class="t">Op de rail…</span></button>`:'';
+  return `<div class="hw-scroll"><div class="hw-rack"><div class="hw-railrow">${buildLeftExt()}${buildCtrl()}${buildRailSegments()}${addBtn}</div></div></div>`;
+}
 
 function hwListRowHTML(s){const v=ioStatus(s);const flt=!!v.fault;const addr=hwAddr(s)||'—';const id=idu(s);
   return `<tr class="${flt?'flt':''}" data-uid="${uidOf(s)}"><td class="tag" style="white-space:nowrap">${addr}</td><td><span class="io-type ${s.type}">${s.type}</span></td><td>${s.nm}${flt?` <span class="pill alarm" style="font-size:10px;padding:2px 7px;margin-left:4px">${v.fault.code}hex</span>`:''}${handState(s)?' <span class="pill warn" style="font-size:10px;padding:2px 7px;margin-left:4px">HAND</span>':''}</td><td class="r val" id="hwru-${id}">${v.raw}</td><td class="r val" id="hwsc-${id}">${v.scaled}</td><td id="hwst-${id}"><span class="pill ${v.sev==='run'?'run':v.sev}" style="font-size:11px;padding:3px 8px">${ic(sevIcon(v.sev),12,2.2)} ${v.lbl}</span></td></tr>`;}
 function buildHwList(){let rows='';
-  for(let i=0;i<6;i++){const conf=state.hw.slots[i];if(!conf||!conf.type)continue;const el=ELEMENTS[conf.type];
+  for(let i=0;i<hwSlotCount();i++){const conf=state.hw.slots[i];if(!conf||!conf.type)continue;const el=ELEMENTS[conf.type];
     const sigs=[];for(let c=1;c<=el.ch;c++){const s=sigAt(i,c);if(s)sigs.push(s);}
     rows+=`<tr class="grp"><td colspan="6"><span class="smono">S${i+1}</span> · ${el.name} <span class="muted-2" style="font-weight:500">· ${el.desc} · ${el.art}</span></td></tr>`;
     if(sigs.length)sigs.forEach(s=>rows+=hwListRowHTML(s));else rows+=`<tr><td colspan="6" class="muted-2" style="font-size:12px;font-style:italic">geen signalen toegewezen</td></tr>`;}
@@ -2523,7 +3017,7 @@ function updateSys(){
 function viewHardware(){
   return `<div class="page-head"><div class="titles"><h1>Hardware — diagnose-tweeling</h1><p>Live spiegel van de PLCnext-besturing en Smart Elements · status-LED's, kanaal-diagnose en Axioline-foutcodes</p></div>
     <div class="seg" id="hw-mode"><button data-m="live" aria-pressed="${hwMode==='live'?'true':'false'}">Live</button><button data-m="edit" aria-pressed="${hwMode==='edit'?'true':'false'}">Samenstellen</button></div></div>
-    ${hwMode==='edit'?'<div class="hw-hint" style="margin:-10px 0 14px">Kies per slot het Smart Element en klik een kanaal om er een signaal aan te koppelen. Het beeld en de I/O-lijst blijven overal gelijk.</div>':''}
+    ${hwMode==='edit'?buildConfigBar():''}
     <div id="hw-rack-host">${buildRack()}</div>
     <div class="hw-bar" id="hw-bar"></div>
     <div class="hw-legend">
@@ -2533,6 +3027,7 @@ function viewHardware(){
       <span>${ledHTML('alarm','blink')} knippert — zie toelichting</span>
       <span>${ledHTML('ok','off')} uit / geen functie</span>
     </div>
+    <div id="hw-fb">${buildFieldbus()}</div>
     ${buildSysPanel()}
     <div class="card" style="margin-top:20px;overflow:hidden"><div style="padding:13px 16px;border-bottom:1px solid var(--c-line);display:flex;align-items:center;gap:8px"><span style="display:flex;color:var(--ink-2)">${ic('io',17,2)}</span><h3 style="font-size:14px">Aangesloten signalen <span class="muted-2" style="font-weight:500">· per Smart Element · ${SIGNALS.length} I/O</span></h3></div>
       <div style="overflow:auto">${buildHwList()}</div></div>`;
@@ -2541,11 +3036,32 @@ function mountHardware(){hwSel=null;wireHwRack();setHwBar();}
 function wireHwRack(){
   const host=$('#hw-rack-host');
   if(host)host.onclick=e=>{
+    const pslot=e.target.closest('[data-pickslot]');if(pslot){openSlotPicker(+pslot.dataset.pickslot);return;}
+    const xtc=e.target.closest('[data-xt]');if(xtc&&hwMode==='edit'){openXtEdit(+xtc.dataset.xt);return;}
+    const pk=e.target.closest('[data-pick]');if(pk){const w=pk.dataset.pick;if(w==='ctrl')openCtrlPicker();else if(w==='sd')openSdPicker();else if(w==='xt')openXtPicker();return;}
     const led=e.target.closest('.hw-led-row');if(led){selectLed(led.dataset.led);return;}
     const dled=e.target.closest('.hw-dled');if(dled){selectElem(+dled.dataset.slot);return;}
     const tab=e.target.closest('.hw-tab');if(tab){selectElem(+tab.dataset.slot);return;}
+    const segE=e.target.closest('[data-segedit]');if(segE&&hwMode==='edit'){openSegEdit(+segE.dataset.segedit);return;}
     const ch=e.target.closest('.hw-ch');if(ch){const sl=+ch.dataset.slot,c=+ch.dataset.ch;if(hwMode==='edit')openAssign(sl,c);else selectCh(sl,c);return;}
+    const amod=e.target.closest('.hw-axlf');if(amod&&hwMode==='live'){selectRailMod(+amod.dataset.segedit);return;}
     const elem=e.target.closest('.hw-elem');if(elem&&hwMode==='live'){if(elem.classList.contains('empty'))return;selectElem(+elem.dataset.slot);return;}
+  };
+  const cfg=$('#hw-config');
+  if(cfg)cfg.onclick=e=>{
+    const pk=e.target.closest('[data-pick]');if(pk){const w=pk.dataset.pick;if(w==='ctrl')openCtrlPicker();else if(w==='sd')openSdPicker();else if(w==='xt')openXtPicker();else if(w==='rail')openRailPicker();else if(w==='fb')openFieldbusPicker();return;}
+    const segE=e.target.closest('[data-segedit]');if(segE){openSegEdit(+segE.dataset.segedit);return;}
+  };
+  const fbHost=$('#hw-fb');
+  if(fbHost)fbHost.onclick=e=>{
+    const stEl=e.target.closest('[data-fbstation]');
+    if(stEl){const idx=+stEl.dataset.fbstation;const st=state.hw.fieldbus[idx];if(!st)return;
+      const add=e.target.closest('[data-fbadd]');if(add){openRailPicker(st);return;}
+      const ps=e.target.closest('[data-pickslot]');if(ps){openSlotPicker(+ps.dataset.pickslot,st);return;}
+      const se=e.target.closest('[data-segedit]');if(se){openSegEdit(+se.dataset.segedit,st);return;}
+      const fe=e.target.closest('[data-fbedit]');if(fe){openFieldbusEdit(idx);return;}
+      return;}
+    const pk=e.target.closest('[data-pick="fb"]');if(pk){openFieldbusPicker();return;}
   };
   $$('#hw-mode button').forEach(b=>b.onclick=()=>{hwMode=b.dataset.m;render();});
   $$('.hw-sel-type').forEach(sel=>sel.onchange=()=>changeSlotType(+sel.dataset.slot,sel.value));
@@ -2605,11 +3121,11 @@ function openHwFaceplate(slot,ch){
   body+=`<div class="hw-hint" style="margin-top:2px">Diagnose via Axioline PDI-object 0018hex · gemeld door de lokale-busmaster van de AXC F 2152.</div>`;
   openModal('Diagnose · '+addr, body);
 }
-function changeSlotType(slot,typeId){
+function changeSlotType(slot,typeId,ctx){ctx=ctx||state.hw;
   const newType=typeId||null;
-  Object.keys(state.hw.map).forEach(uid=>{if(state.hw.map[uid].slot===slot)delete state.hw.map[uid];});
-  Object.keys(state.hw.diag).forEach(key=>{if(+key.split('.')[0]===slot)delete state.hw.diag[key];});
-  state.hw.slots[slot]={type:newType};
+  Object.keys(ctx.map||{}).forEach(uid=>{if(ctx.map[uid].slot===slot)delete ctx.map[uid];});
+  Object.keys(ctx.diag||{}).forEach(key=>{if(+key.split('.')[0]===slot)delete ctx.diag[key];});
+  ctx.slots[slot]={type:newType};
   render();renderNav();updateBell();
   toast(newType?('Slot '+(slot+1)+': '+ELEMENTS[newType].name):('Slot '+(slot+1)+' leeggemaakt'),'chip');
 }
@@ -2617,24 +3133,243 @@ function openAssign(slot,ch){
   const conf=state.hw.slots[slot];const el=ELEMENTS[conf.type];
   const wantType=el.kind==='DI'?'DI':el.kind==='DO'?'DO':el.kind==='AO'?'AO':'AI';
   const cur=sigAt(slot,ch);const compatible=SIGNALS.filter(s=>s.type===wantType);
-  let rows=`<button class="pick-row clear" data-uid=""><span class="nm">— leeg laten —</span></button>`;
-  compatible.forEach(s=>{const p=state.hw.map[uidOf(s)];const where=p?`S${p.slot+1}·CH${String(p.ch).padStart(2,'0')}`:'vrij';const isCur=cur&&uidOf(cur)===uidOf(s);
-    rows+=`<button class="pick-row${isCur?' cur':''}" data-uid="${uidOf(s)}"><span class="nm">${s.nm}</span><span class="meta">${where}</span></button>`;});
-  openModal(`Kanaal S${slot+1}·CH${String(ch).padStart(2,'0')} koppelen <span class="muted-2" style="font-weight:500;font-size:13px">· ${el.name}</span>`,
-    `<div class="hw-hint" style="margin-bottom:12px">Kies welk ${wantType}-signaal op dit kanaal is aangesloten. Een signaal kan maar op één kanaal tegelijk zitten.</div><div class="pick-list">${rows}</div>`);
-  $$('#modal-body .pick-row').forEach(b=>b.onclick=()=>{assignCh(slot,ch,b.dataset.uid);closeModal();});
+  const items=[{id:'',name:'Leeg laten (geen signaal)',sub:'Kanaal niet gekoppeld',meta:'vrij',ic:ic('x',16,2),tone:'idle',cur:!cur,tags:'leeg vrij geen'}];
+  compatible.forEach(s=>{const p=state.hw.map[uidOf(s)];const where=p?`S${p.slot+1}·CH${String(p.ch).padStart(2,'0')}`:'vrij';
+    items.push({id:uidOf(s),name:s.nm,sub:s.comp+' · '+s.tag,meta:where,ic:`<b style="font-family:var(--mono);font-size:11px">${s.type}</b>`,tone:s.type,cur:cur&&uidOf(cur)===uidOf(s),tags:s.k+' '+s.comp+' '+s.tag});});
+  openPicker(`Kanaal S${slot+1}·CH${String(ch).padStart(2,'0')} koppelen — ${el.name}`,
+    `Kies welk ${wantType}-signaal op dit kanaal is aangesloten. Typ om te zoeken; een signaal kan maar op één kanaal tegelijk zitten.`,items,
+    uid=>{assignCh(slot,ch,uid);closeModal();});
 }
 function assignCh(slot,ch,uid){
   const cur=sigAt(slot,ch);if(cur)delete state.hw.map[uidOf(cur)];
   if(uid){delete state.hw.map[uid];state.hw.map[uid]={slot,ch};}
   render();renderNav();updateBell();
 }
+
+/* ============================================================ CONFIGURATOR: bouwbalk + typbare kiezers */
+function railSummary(){
+  return (state.hw.rail||[]).map(seg=>seg.kind==='se'?(BACKPLANES[seg.bp]||BACKPLANES.SE6).name.replace('AXL F BP ','')+' ('+(BACKPLANES[seg.bp]||BACKPLANES.SE6).slots+')':(AXLF_MODULES[seg.type]?AXLF_MODULES[seg.type].name.replace('AXL F ','').replace('AXC F ',''):'?')).join('  ›  ')||'leeg';
+}
+function buildConfigBar(){
+  const c=hwCtrl();const sd=hwSd();const list=state.hw.leftExt||[];
+  const nSe=seSegs().length;const nMod=(state.hw.rail||[]).filter(s=>s.kind==='mod').length;const nFb=(state.hw.fieldbus||[]).length;
+  const xtTxt=list.length?(list.length+'× XT-uitbreiding'):(c.leftExt?'Toevoegen…':'Niet ondersteund');
+  return `<div class="hw-config" id="hw-config">
+    <div class="cfg-grid">
+      <button class="cfg-card ${c.leftExt?'':'dis'}" data-pick="xt"><span class="k">${ic('network',14,2)} Links-uitbreiding</span><span class="v">${xtTxt}</span><span class="m">${c.leftExt?('AXC BS L 2 · max '+xtCapacity()):'alleen 2152/3152/1252'}</span></button>
+      <button class="cfg-card" data-pick="ctrl"><span class="k">${ic('chip',14,2)} Controller</span><span class="v">${c.name}</span><span class="m">Ord.No ${c.art} · ${c.klass}</span></button>
+      <button class="cfg-card" data-pick="sd"><span class="k">${ic('shield',14,2)} SD-kaart</span><span class="v">${sd.name}</span><span class="m">${sd.id==='none'?'geen kaart':sd.art+(sd.lic?' · licentie':'')}</span></button>
+      <button class="cfg-card grow" data-pick="rail"><span class="k">${ic('io',14,2)} Op de DIN-rail <span class="cfg-add">+ toevoegen</span></span><span class="v">${nSe} houder${nSe===1?'':'s'} · ${nMod} losse module${nMod===1?'':'s'}</span><span class="m rail-sum">${railSummary()}</span></button>
+      <button class="cfg-card" data-pick="fb"><span class="k">${ic('network',14,2)} Veldbus / decentraal <span class="cfg-add">+ toevoegen</span></span><span class="v">${nFb} station${nFb===1?'':'s'}</span><span class="m">los van de PLC · PROFINET/PROFIBUS…</span></button>
+    </div>
+    <div class="cfg-hint">${ic('info',14,2)} <span>Bouw het station op de <b>DIN-rail</b>: links-uitbreidingen → controller → een keten van <b>SE-houders</b> (alleen híer passen Smart Elements) en <b>losse Axioline F-modules direct op de rail</b> (zoals de voeding). <b>Veldbus-stations</b> staan los van de PLC. Tik “+ Op de rail…” of “+ Veldbus-station…”, of een houder/module/slot om te wijzigen.</span></div>
+  </div>`;
+}
+function openPicker(title,hint,items,onPick){
+  const rows=items.map(pickRowHTML).join('');
+  openModal(title,`<div class="pick-search">${ic('search',16,2)}<input id="pick-q" placeholder="Typ om te filteren — naam, type of artikelnr…" autocomplete="off" spellcheck="false"></div>
+    ${hint?`<div class="hw-hint" style="margin:9px 0 10px">${hint}</div>`:''}
+    <div class="pick-list" id="pick-list">${rows}</div>
+    <div class="pick-empty" id="pick-empty">Geen resultaat — pas je zoekterm aan.</div>`);
+  const q=$('#pick-q');
+  function filt(){const v=(q.value||'').trim().toLowerCase();let any=false;
+    $$('#pick-list .pick-row').forEach(r=>{const show=!v||r.dataset.search.indexOf(v)>=0;r.style.display=show?'':'none';if(show)any=true;});
+    const em=$('#pick-empty');if(em)em.style.display=any?'none':'block';}
+  if(q){q.oninput=filt;setTimeout(()=>{try{q.focus();}catch(e){}},60);}
+  $$('#pick-list .pick-row').forEach(b=>b.onclick=()=>{if(b.dataset.dis)return;onPick(b.dataset.id);});
+}
+function pickRowHTML(it){
+  const search=(it.name+' '+(it.meta||'')+' '+(it.sub||'')+' '+(it.tags||'')).toLowerCase().replace(/"/g,'');
+  return `<button class="pick-row${it.cur?' cur':''}${it.dis?' dis':''}" data-id="${it.id}" data-search="${search}" ${it.dis?'data-dis="1"':''}>
+    <span class="pr-l">${it.ic?`<span class="pr-ic ${it.tone||''}">${it.ic}</span>`:''}<span class="pr-txt"><span class="nm">${it.name}</span>${it.sub?`<span class="sub">${it.sub}</span>`:''}${it.dis&&it.why?`<span class="why">${ic('lock',11,2)} ${it.why}</span>`:''}</span></span>
+    <span class="meta">${it.meta||''}${it.cur?' <span class="curtag">huidig</span>':''}</span></button>`;
+}
+function openSlotPicker(slot,ctx){ctx=ctx||state.hw;
+  const cur=ctx.slots[slot]?ctx.slots[slot].type:null;
+  const items=[{id:'__clear',name:'Leeg laten (slotafdekking)',sub:'Verwijder de module uit dit slot',meta:'leeg',ic:ic('x',16,2),tone:'idle',cur:!cur,tags:'leeg verwijder weghalen afdekking'}];
+  ELEMENT_ORDER.forEach(id=>{const el=ELEMENTS[id];
+    items.push({id,name:el.name,sub:el.desc,meta:el.art,ic:`<b style="font-family:var(--mono);font-size:11px">${el.kind}</b>`,tone:el.kind,cur:cur===id,tags:el.kind+' '+el.ch+' '+el.desc});});
+  openPicker(`Slot ${slot+1} — kies Smart Element`,'Axioline Smart Elements passen in de AXL F BP SE-houder. Typ bijv. “DI”, “analoog” of “1088…”.',items,id=>{
+    changeSlotType(slot,id==='__clear'?'':id,ctx);closeModal();});
+}
+function openCtrlPicker(){
+  const items=CONTROLLER_ORDER.map(id=>{const c=CONTROLLERS[id];
+    return {id,name:c.name,sub:c.desc,meta:c.art,ic:ic('chip',16,2),cur:state.hw.ctrlId===id,tags:c.klass+' '+c.cpu+' '+(c.leftExt?'xt uitbreiding':'')};});
+  openPicker('Controller kiezen','Alle vier de AXC F-controllers zijn actief leverbaar. Alleen 2152/3152/1252 dragen links-aanbouwbare XT-uitbreidingen.',items,id=>{setController(id);closeModal();});
+}
+function openSdPicker(){
+  const items=SD_ORDER.map(id=>{const s=SD_CARDS[id];
+    return {id,name:s.name,sub:s.desc,meta:s.art,ic:ic('shield',16,2),cur:state.hw.sd===id,tags:s.size+(s.lic?' licentie lic':'')};});
+  openPicker('SD-geheugenkaart kiezen','De kaart zit in de SD-sleuf van de controller. “LIC”-kaarten hebben licentieopslag voor PLCnext Store-apps.',items,id=>{state.hw.sd=id;toast('SD-kaart: '+SD_CARDS[id].name,'shield');render();closeModal();});
+}
+function openXtPicker(){
+  const c=hwCtrl();
+  if(!c.leftExt){openModal('Links-uitbreiding',`<div class="hw-hint">${c.name} ondersteunt géén links-aanbouwbare AXC F XT-uitbreidingen. Kies een AXC F 2152, 3152 of 1252 om PROFIBUS, INTERBUS, safety, extra Ethernet of ML toe te voegen.</div>`);return;}
+  if((state.hw.leftExt||[]).length>=xtCapacity()){openModal('Links-uitbreiding',`<div class="hw-hint">Maximaal aantal XT-modules bereikt (${xtCapacity()}). Voeg een <b>AXC F XT EXP</b> toe om tot 4 uitbreidingen te dragen, of verwijder eerst een module.</div>`);return;}
+  const items=XT_ORDER.map(id=>{const xt=XT_MODULES[id];const comp=xtCompat(id);
+    return {id,name:xt.name,sub:xt.desc,meta:xt.art,ic:ic(xt.icon,16,2),dis:!comp.ok,why:comp.reason,cur:false,tags:xt.iface+' '+id};});
+  openPicker('XT-uitbreiding toevoegen','Zit links van de controller op de AXC BS L 2 bus-basismodule. Typ bijv. “profibus”, “safety” of “ethernet”.',items,id=>{addXt(id);closeModal();});
+}
+function openXtEdit(i){
+  const id=state.hw.leftExt[i];const xt=XT_MODULES[id];if(!xt)return;
+  openModal(`${xt.name} <span class="muted-2" style="font-weight:500;font-size:13px">· ${xt.art}</span>`,
+    `<div class="hw-hint" style="margin-bottom:12px">${xt.desc}</div>
+     <dl class="dg-grid"><dt>Interface</dt><dd>${xt.iface}</dd><dt>Positie</dt><dd>Links · plaats ${i+1}</dd><dt>Diagnose</dt><dd>EXT-LED op de controller — fout = oranje/rood.</dd></dl>
+     <div class="pick-list" style="margin-top:6px">
+       <button class="pick-row" id="xt-rm"><span class="pr-l"><span class="pr-ic alarm">${ic('x',16,2)}</span><span class="pr-txt"><span class="nm">Verwijderen</span><span class="sub">Haal deze uitbreiding weg</span></span></span></button>
+       <button class="pick-row" id="xt-swap"><span class="pr-l"><span class="pr-ic">${ic('wrench',16,2)}</span><span class="pr-txt"><span class="nm">Vervangen door andere XT…</span><span class="sub">Kies een ander type</span></span></span></button>
+     </div>`);
+  $('#xt-rm').onclick=()=>{removeXt(i);closeModal();};
+  $('#xt-swap').onclick=()=>{removeXt(i,true);openXtPicker();};
+}
+function setController(id){
+  if(!CONTROLLERS[id])return;state.hw.ctrlId=id;const c=CONTROLLERS[id];
+  state.hw.ctrl=c.name;state.hw.ctrlArt=c.art;
+  if(!c.leftExt&&state.hw.leftExt.length){state.hw.leftExt=[];toast(c.name+' draagt geen XT-uitbreidingen — links-aanbouw verwijderd','warn');}
+  else{const keep=state.hw.leftExt.filter(x=>xtCompat(x,id).ok);
+    if(keep.length!==state.hw.leftExt.length){state.hw.leftExt=keep;toast('Niet-ondersteunde XT-uitbreiding(en) verwijderd','warn');}
+    else toast('Controller: '+c.name,'chip');}
+  cleanXtDiag();render();renderNav();updateBell();
+}
+/* ---- rail-segmenten: toevoegen / verwijderen / wijzigen ---- */
+function shiftSlotKeys(fn,ctx){ctx=ctx||state.hw;
+  const nm={};Object.keys(ctx.map||{}).forEach(uid=>{const p=ctx.map[uid];const ns=fn(p.slot);if(ns!=null)nm[uid]={slot:ns,ch:p.ch};});ctx.map=nm;
+  const nd={};Object.keys(ctx.diag||{}).forEach(k=>{const parts=k.split('.');if(!/^\d+$/.test(parts[0])){nd[k]=ctx.diag[k];return;}const ns=fn(+parts[0]);if(ns!=null)nd[ns+'.'+parts[1]]=ctx.diag[k];});ctx.diag=nd;
+}
+function removeSlotsRange(start,n,ctx){ctx=ctx||state.hw;ctx.slots.splice(start,n);shiftSlotKeys(s=>s<start?s:(s<start+n?null:s-n),ctx);}
+function insertSlotsRange(start,n,ctx){ctx=ctx||state.hw;const add=[];for(let i=0;i<n;i++)add.push({type:null});ctx.slots.splice(start,0,...add);shiftSlotKeys(s=>s<start?s:s+n,ctx);}
+function addSeHolder(bp,ctx){ctx=ctx||state.hw;
+  ctx.rail.push({kind:'se',bp,uid:nextSegUid(ctx)});ensureSlots(ctx);
+  toast((BACKPLANES[bp]||BACKPLANES.SE6).name+(ctx===state.hw?' op de rail geplaatst':' aan station toegevoegd'),'io');render();renderNav();updateBell();
+}
+function addRailMod(type,ctx){ctx=ctx||state.hw;
+  const m=AXLF_MODULES[type];if(!m)return;ctx.rail.push({kind:'mod',type,uid:nextSegUid(ctx)});
+  toast(m.name+(ctx===state.hw?' direct op de rail geplaatst':' aan station toegevoegd'),m.kind==='PWR'?'bolt':'io');render();renderNav();updateBell();
+}
+function removeSegment(ri,ctx){ctx=ctx||state.hw;
+  const seg=ctx.rail[ri];if(!seg)return;
+  if(seg.kind==='se'){const sg=seSegs(ctx).find(s=>s.ri===ri);if(sg)removeSlotsRange(sg.start,sg.count,ctx);}
+  else if(ctx.diag)delete ctx.diag['mod.'+seg.uid];
+  ctx.rail.splice(ri,1);toast('Verwijderd','x');render();renderNav();updateBell();
+}
+function changeSegBp(ri,bp,ctx){ctx=ctx||state.hw;
+  const seg=ctx.rail[ri];if(!seg||seg.kind!=='se')return;if(seg.bp===bp)return;
+  const sg=seSegs(ctx).find(s=>s.ri===ri);const oldC=sg.count;const newC=(BACKPLANES[bp]||BACKPLANES.SE6).slots;
+  if(newC<oldC){const rmStart=sg.start+newC;let occ=0;for(let i=rmStart;i<sg.start+oldC;i++){if(ctx.slots[i]&&ctx.slots[i].type)occ++;}removeSlotsRange(rmStart,oldC-newC,ctx);if(occ)toast(occ+' module(s) verwijderd door kleinere houder','warn');}
+  else if(newC>oldC)insertSlotsRange(sg.start+oldC,newC-oldC,ctx);
+  seg.bp=bp;toast('Houder gewijzigd naar '+BACKPLANES[bp].name,'io');render();renderNav();updateBell();
+}
+function openRailPicker(ctx){ctx=ctx||state.hw;
+  const items=[
+    {id:'se:SE6',name:'AXL F BP SE6 — houder (6 sleuven)',sub:'Backplane voor 6 Axioline Smart Elements',meta:'1088136',ic:ic('io',16,2),tone:'',tags:'houder backplane smart element se6 6'},
+    {id:'se:SE4',name:'AXL F BP SE4 — houder (4 sleuven)',sub:'Backplane voor 4 Axioline Smart Elements',meta:'1088135',ic:ic('io',16,2),tone:'',tags:'houder backplane smart element se4 4'}
+  ];
+  AXLF_ORDER.forEach(id=>{const m=AXLF_MODULES[id];items.push({id:'mod:'+id,name:m.name,sub:m.desc,meta:m.art,ic:ic(m.icon,16,2),tone:m.kind==='PWR'?'DO':'',tags:'rail direct axioline f '+m.kind+' '+(m.kind==='PWR'?'voeding power':'')});});
+  openPicker(ctx===state.hw?'Op de DIN-rail toevoegen':'Aan station toevoegen','Kies een <b>SE-houder</b> (voor Smart Elements) óf een <b>Axioline F-module</b> die direct op de rail klikt (zoals de voeding). Typ bijv. “se6”, “voeding”, “DO”.',items,id=>{
+    const[k,v]=id.split(':');if(k==='se')addSeHolder(v,ctx);else addRailMod(v,ctx);closeModal();});
+}
+function openSegEdit(ri,ctx){ctx=ctx||state.hw;
+  const seg=ctx.rail[ri];if(!seg)return;
+  if(seg.kind==='se'){const bp=BACKPLANES[seg.bp];const sg=seSegs(ctx).find(s=>s.ri===ri);
+    let occ=0;for(let i=sg.start;i<sg.start+sg.count;i++){if(ctx.slots[i]&&ctx.slots[i].type)occ++;}
+    openModal(`${bp.name} <span class="muted-2" style="font-weight:500;font-size:13px">· ${bp.art}</span>`,
+      `<div class="hw-hint" style="margin-bottom:12px">Smart-Element-houder · ${bp.slots} sleuven · ${occ} bezet. Klik een slot in de tekening om er een Smart Element te kiezen.</div>
+       <div style="margin-bottom:6px;font-size:12px;color:var(--ink-3);font-weight:600">Houdergrootte</div>
+       <div class="seg sm" id="seg-bp" style="margin-bottom:14px"><button data-segbp="SE4" aria-pressed="${seg.bp==='SE4'}">SE4 · 4 sleuven</button><button data-segbp="SE6" aria-pressed="${seg.bp==='SE6'}">SE6 · 6 sleuven</button></div>
+       <div class="pick-list"><button class="pick-row" id="seg-rm"><span class="pr-l"><span class="pr-ic alarm">${ic('x',16,2)}</span><span class="pr-txt"><span class="nm">Houder verwijderen</span><span class="sub">${occ?occ+' geplaatste module(s) gaan mee weg':'Verwijder deze lege houder'}</span></span></span></button></div>`);
+    $$('#seg-bp button').forEach(b=>b.onclick=()=>{changeSegBp(ri,b.dataset.segbp,ctx);closeModal();});
+    $('#seg-rm').onclick=()=>{removeSegment(ri,ctx);closeModal();};
+  }else{const m=AXLF_MODULES[seg.type];const flt=!!(ctx.diag||{})['mod.'+seg.uid];
+    openModal(`${m.name} <span class="muted-2" style="font-weight:500;font-size:13px">· ${m.art}</span>`,
+      `<div class="hw-hint" style="margin-bottom:12px">${m.desc}</div>
+       <dl class="dg-grid"><dt>Montage</dt><dd>Direct op de rail (eigen bus-basismodule)</dd><dt>Type</dt><dd>Axioline F · ${m.kind}${m.ch?(' · '+m.ch+' kanalen'):''}</dd></dl>
+       <div class="pick-list" style="margin-top:6px">
+         <button class="pick-row" id="seg-swap"><span class="pr-l"><span class="pr-ic">${ic('wrench',16,2)}</span><span class="pr-txt"><span class="nm">Vervangen door andere module…</span></span></span></button>
+         <button class="pick-row" id="seg-rm"><span class="pr-l"><span class="pr-ic alarm">${ic('x',16,2)}</span><span class="pr-txt"><span class="nm">Verwijderen</span></span></span></button></div>`);
+    $('#seg-rm').onclick=()=>{removeSegment(ri,ctx);closeModal();};
+    $('#seg-swap').onclick=()=>{removeSegment(ri,ctx);openRailPicker(ctx);};
+  }
+}
+function selectRailMod(ri){const seg=state.hw.rail[ri];if(!seg||seg.kind!=='mod')return;const m=AXLF_MODULES[seg.type];const flt=!!state.hw.diag['mod.'+seg.uid];
+  clearSel();const bar=$('#hw-bar');if(bar){bar.className='hw-bar '+(flt?'flt':'ok');bar.innerHTML=`<span class="ic">${ic(flt?'alarm':'check',20,2.2)}</span><span class="tx"><b>${m.name}</b> <span class="sub">— direct op de DIN-rail · ${m.desc}</span></span>`;}
+}
+
+/* ---- decentrale veldbus-stations (los van de hoofd-PLC) ---- */
+function buildCoupler(i,fb,comp,bad){
+  const online=!bad;
+  const L=[['BF',bad?'on':'off','alarm'],['SF','off','alarm']];
+  const R=[['RDY',online?'on':'off','ok'],['D',online?'on':'off',online?'ok':'alarm'],['E','off','alarm']];
+  let ledHtml='';for(let r=0;r<3;r++){[L[r],R[r]].forEach(p=>{ledHtml+=p?`<div class="hw-led-row" style="cursor:default">${ledHTML(p[2],p[1],'xs')}<span class="lbl">${p[0]}</span></div>`:'<span></span>';});}
+  const port=(n,up)=>`<div class="cpl-port${up?' up':''}"><div class="cpl-la"><span>LNK</span><span>ACT</span></div><div class="cpl-jack"><i></i><i></i></div><span class="cpl-pn">X${n}</span></div>`;
+  const nm=fb.name.replace('AXL F ','').replace('AXC F ','');
+  return `<div class="hw-ctrl fb-cpl${bad?' bad':''}${hwMode==='edit'?' hw-pick':''}" data-fbedit="${i}">
+    <div class="hw-ctrl-side"><span>${nm}</span></div>
+    <div class="hw-ctrl-col">
+      <div class="cz cpl-eth">${port(1,online)}${port(2,false)}</div>
+      <div class="hw-window"><span class="x3">X4 · R</span></div>
+      <div class="cz hw-brand"><span class="pcmark">PC</span><span class="pc">${nm}<small>Ord.No ${fb.art}</small></span>${hwMode==='edit'?'<span class="pick-chip" style="margin-left:auto">wijzig</span>':''}</div>
+      <div class="cz hw-leds">${ledHtml}</div>
+      <div class="cz hw-busd"><span class="ttl">D</span><div class="hw-dgrid">${[1,2,3,4].map(n=>`<span class="hw-dled" style="cursor:default">${ledHTML('ok','off','xs')}<span class="dn">${n}</span></span>`).join('')}</div><span class="hw-up">UP ${ledHTML('ok','on','xs')}</span></div>
+      <div class="cz hw-supply"><div class="ulrow">UL ${ledHTML('ok','on','xs')}<span style="margin-left:auto;font-weight:600;color:#5a635e">24 V</span></div><div class="hw-terms cpl"><span class="hw-tm"><i class="rd"></i>a1</span><span class="hw-tm"><i class="bl"></i>b1</span><span class="hw-tm"><i class="rd"></i>a2</span><span class="hw-tm"><i class="bl"></i>b2</span></div></div>
+      <div class="cz fb-protoband${bad?' bad':''}">${fb.proto}</div>
+      <div class="cz fb-connline${bad?' bad':''}">${ic(bad?'warn':'network',12,2)} ${bad?comp.reason:comp.conn}</div>
+    </div></div>`;
+}
+function buildFieldbus(){
+  const list=state.hw.fieldbus||[];
+  if(!list.length&&hwMode!=='edit')return '';
+  let stations='';
+  list.forEach((st,i)=>{const fb=FIELDBUS[st.coupler];if(!fb)return;const comp=fieldbusCompat(st.coupler);const bad=!comp.ok;
+    if(!st.rail){st.rail=[{kind:'se',bp:'SE4',uid:1}];st.slots=[];st.map={};st.diag={};st._uid=2;}
+    ensureSlots(st);
+    const addBtn=hwMode==='edit'?`<button class="hw-railadd" data-fbadd="${i}"><span class="plus">+</span><span class="t">Op de rail…</span></button>`:'';
+    stations+=`<div class="fb-station" data-fbstation="${i}">
+      ${buildCoupler(i,fb,comp,bad)}
+      <div class="fb-io"><div class="hw-railrow">${buildRailSegments(st)}${addBtn}</div></div>
+    </div>`;});
+  const addStation=hwMode==='edit'?`<button class="fb-add" data-pick="fb"><span class="plus">+</span><span class="t">Veldbus-station toevoegen</span></button>`:'';
+  return `<div class="card fb-card"><div class="fb-cardhead"><span style="display:flex;color:var(--ink-2)">${ic('network',17,2)}</span><h3>Decentrale veldbus-stations <span class="muted-2" style="font-weight:500">· los van de hoofd-PLC · zelfde I/O-opbouw</span></h3></div>
+    <div class="fb-hint">${ic('info',14,2)} <span>Elk station is een eigen Axioline F-station op een eigen rail (buskoppelaar i.p.v. controller), verbonden met de PLC via netwerk/master. Bouw de I/O precies zoals bij de PLC: tik een slot voor een Smart Element, of “+ Op de rail…” voor een houder/module.</span></div>
+    <div class="fb-stations">${stations}${list.length?'':'<div class="fb-empty">Nog geen decentrale stations.</div>'}${addStation}</div></div>`;
+}
+function openFieldbusPicker(){
+  const items=FIELDBUS_ORDER.map(id=>{const fb=FIELDBUS[id];const comp=fieldbusCompat(id);
+    return {id,name:fb.name,sub:fb.desc,meta:fb.art,ic:ic('network',16,2),dis:!comp.ok,why:comp.reason,tags:fb.proto+' '+fb.via+' decentraal veldbus'};});
+  openPicker('Decentraal veldbus-station toevoegen','Een buskoppelaar vormt een eigen Axioline F-station, verbonden met de PLC via netwerk. PROFIBUS/INTERBUS vereisen de bijbehorende XT-master links op de controller. Typ bijv. “profinet”, “profibus”.',items,id=>{addFieldbus(id);closeModal();});
+}
+function addFieldbus(id){
+  const comp=fieldbusCompat(id);if(!comp.ok){toast(comp.reason,'lock');return;}
+  state.hw.fieldbus.push({coupler:id,uid:nextSegUid(),rail:[{kind:'se',bp:'SE4',uid:1}],slots:[],map:{},diag:{},_uid:2});
+  toast('Decentraal station toegevoegd: '+FIELDBUS[id].name,'check');render();renderNav();updateBell();
+}
+function openFieldbusEdit(i){
+  const st=state.hw.fieldbus[i];const fb=FIELDBUS[st.coupler];if(!fb)return;const comp=fieldbusCompat(st.coupler);
+  openModal(`${fb.name} <span class="muted-2" style="font-weight:500;font-size:13px">· ${fb.proto}</span>`,
+    `<div class="hw-hint" style="margin-bottom:12px">${fb.desc}</div>
+     <dl class="dg-grid"><dt>Protocol</dt><dd>${fb.proto}</dd><dt>Verbinding</dt><dd>${comp.ok?comp.conn:('<span style="color:var(--warn);font-weight:700">'+comp.reason+'</span>')}</dd><dt>Artikelnr.</dt><dd class="mono">${fb.art}</dd><dt>Plaats</dt><dd>Decentraal — eigen DIN-rail, los van de hoofd-PLC</dd></dl>
+     <div class="pick-list" style="margin-top:6px">
+       <button class="pick-row" id="fb-swap"><span class="pr-l"><span class="pr-ic">${ic('wrench',16,2)}</span><span class="pr-txt"><span class="nm">Vervangen door ander station…</span></span></span></button>
+       <button class="pick-row" id="fb-rm"><span class="pr-l"><span class="pr-ic alarm">${ic('x',16,2)}</span><span class="pr-txt"><span class="nm">Station verwijderen</span></span></span></button></div>`);
+  $('#fb-rm').onclick=()=>{removeFieldbus(i);closeModal();};
+  $('#fb-swap').onclick=()=>{removeFieldbus(i,true);openFieldbusPicker();};
+}
+function removeFieldbus(i,silent){state.hw.fieldbus.splice(i,1);if(!silent)toast('Decentraal station verwijderd','x');render();renderNav();updateBell();}
+function addXt(id){
+  const comp=xtCompat(id);if(!comp.ok){toast(comp.reason,'lock');return;}
+  if((state.hw.leftExt||[]).length>=xtCapacity()){toast('Maximaal aantal XT-modules bereikt','warn');return;}
+  state.hw.leftExt.push(id);toast('Toegevoegd: '+XT_MODULES[id].name,'check');cleanXtDiag();render();renderNav();updateBell();
+}
+function removeXt(i,silent){
+  state.hw.leftExt.splice(i,1);if(!silent)toast('Uitbreiding verwijderd','x');cleanXtDiag();render();renderNav();updateBell();
+}
+function cleanXtDiag(){Object.keys(state.hw.diag).forEach(k=>{if(k.indexOf('xt.')===0){const i=+k.split('.')[1];if(i>=state.hw.leftExt.length)delete state.hw.diag[k];}});}
+
 function updateHardware(){
   if(state.screen!=='hardware')return;
   hwCtrlLeds().forEach(l=>{const row=$(`.hw-led-row[data-led="${l.id}"]`);if(!row)return;const dot=row.querySelector('.led');if(dot)dot.className=ledClass(l.color,l.state)+' xs';});
-  for(let i=0;i<6;i++){const b=$(`.hw-dled[data-slot="${i}"]`);if(!b)continue;const dot=b.querySelector('.led');if(!dot)continue;const st=hwSlotState(i);
-    dot.className=(st==='empty'?ledClass('ok','off'):st==='ok'?ledClass('ok','on'):st==='missing'?ledClass('alarm','blink'):ledClass('alarm','on'))+' xs';}
-  for(let i=0;i<6;i++){const conf=state.hw.slots[i];const box=$(`.hw-elem[data-slot="${i}"]`);if(!box||!conf||!conf.type)continue;const el=ELEMENTS[conf.type];
+  for(let i=0;i<hwSlotCount();i++){const b=$(`.hw-dled[data-slot="${i}"]`);if(!b)continue;const dot=b.querySelector('.led');if(!dot)continue;const st=hwSlotState(i);
+    dot.className=(st==='empty'?ledClass('ok','off'):st==='ok'?ledClass('ok','on'):st==='missing'?ledClass('alarm','blink'):st==='warn'?ledClass('warn','on'):ledClass('alarm','on'))+' xs';}
+  for(let i=0;i<hwSlotCount();i++){const conf=state.hw.slots[i];const box=$(`.hw-elem[data-slot="${i}"]`);if(!box||!conf||!conf.type)continue;const el=ELEMENTS[conf.type];
     box.classList.toggle('flt',activeFaults().some(x=>x.slot===i));
     const ef=box.querySelector('.hw-ef .led');if(ef){const eState=hwElemE(i);ef.className=ledClass('alarm',eState==='off'?'off':eState);}
     box.querySelectorAll('.hw-ch').forEach(cell=>{const c=+cell.dataset.ch;const s=sigAt(i,c);cell.classList.toggle('flt',!!chFaultCode(i,c));cell.classList.toggle('hand',!!(s&&handState(s)==='hand'));
