@@ -4,10 +4,18 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Cogas AutoFill — Bedieningsdashboard</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- Lettertypen worden LOKAAL geladen (geen CDN → werkt offline op de controller). Zie @font-face hieronder + de map ./fonts/ -->
 <style>
+/* ===== LETTERTYPEN — lokaal/offline (geen CDN). local() pakt een geïnstalleerde
+   font; anders de woff2 uit ./fonts/; anders de systeem-stack (SF Pro op Apple). ===== */
+@font-face{font-family:"Inter";font-style:normal;font-weight:400;font-display:swap;src:local("Inter"),url("./fonts/Inter-Regular.woff2") format("woff2")}
+@font-face{font-family:"Inter";font-style:normal;font-weight:500;font-display:swap;src:local("Inter Medium"),url("./fonts/Inter-Medium.woff2") format("woff2")}
+@font-face{font-family:"Inter";font-style:normal;font-weight:600;font-display:swap;src:local("Inter SemiBold"),url("./fonts/Inter-SemiBold.woff2") format("woff2")}
+@font-face{font-family:"Inter";font-style:normal;font-weight:700;font-display:swap;src:local("Inter Bold"),url("./fonts/Inter-Bold.woff2") format("woff2")}
+@font-face{font-family:"IBM Plex Mono";font-style:normal;font-weight:400;font-display:swap;src:local("IBM Plex Mono"),url("./fonts/IBMPlexMono-Regular.woff2") format("woff2")}
+@font-face{font-family:"IBM Plex Mono";font-style:normal;font-weight:500;font-display:swap;src:local("IBM Plex Mono Medium"),url("./fonts/IBMPlexMono-Medium.woff2") format("woff2")}
+@font-face{font-family:"IBM Plex Mono";font-style:normal;font-weight:600;font-display:swap;src:local("IBM Plex Mono SemiBold"),url("./fonts/IBMPlexMono-SemiBold.woff2") format("woff2")}
+
 /* ============================================================
    COGAS AUTOFILL — DESIGN TOKENS
    Licht thema. Koel-getinte neutralen. Kleur = betekenis.
@@ -22,7 +30,7 @@
   --c-line-2:#C7D1C7;
   --ink:#19241D;
   --ink-2:#506159;
-  --ink-3:#86958B;
+  --ink-3:#67766C;
   --ink-inv:#FFFFFF;
 
   /* functioneel accent (blauw) */
@@ -32,8 +40,8 @@
   --acc-100:#CDE7D6;
   --acc-50:#E9F4ED;
 
-  /* merk (Cogas rood) — uitsluitend logo-accent */
-  --brand:#1F6B4A;
+  /* merk (Cogas) — solide = gelijk aan het accent (één groen); rood leeft alleen in het logo-artwork */
+  --brand:var(--acc);
   --brand-dark:#154833;
   --brand-mid:#2A6F50;
   --brand-light:#4D8E6E;
@@ -41,9 +49,9 @@
 
   /* status — altijd met icoon + label (kleurenblind-veilig) */
   --ok:#1C7A4D;      --ok-bg:#E9F4ED;   --ok-line:#BBE0C8;
-  --warn:#B26A00;    --warn-bg:#FBF0DC;  --warn-line:#F0D49A;
-  --alarm:#CE3A2C;   --alarm-bg:#FBE7E4; --alarm-line:#F2C0B9;
-  --info:#2E6E8E;    --info-bg:#E8F0F4;  --info-line:#C3DAE6;
+  --warn:#945800;    --warn-bg:#FBF0DC;  --warn-line:#F0D49A;
+  --alarm:#BE3226;   --alarm-bg:#FBE7E4; --alarm-line:#F2C0B9;
+  --info:#2563A8;    --info-bg:#E7EEF8;  --info-line:#C2D4ED;
   --idle:#94A3B4;    --idle-bg:#EEF2F6;
 
   /* proceskleuren A / B (rustig, onderscheidbaar, ≠ status) */
@@ -51,7 +59,7 @@
   --b:#6A5FB0;  --b-soft:#BDB4E2;  --b-bg:#EDEBF7;
 
   /* radii */
-  --r-sm:7px; --r-md:11px; --r-lg:16px; --r-xl:22px; --r-pill:999px;
+  --r-sm:6px; --r-md:10px; --r-lg:14px; --r-xl:20px; --r-pill:999px;
 
   /* schaduw (gelaagd, subtiel) */
   --sh-1:0 1px 2px rgba(18,38,26,.06);
@@ -70,9 +78,90 @@
   --rail-w:248px;
   --rail-w-collapsed:76px;
 
-  --font:"IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --mono:"IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --font:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI","Roboto","Helvetica Neue","Cantarell","Noto Sans",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,"Cascadia Code",Consolas,monospace;
 }
+
+/* ============================================================
+   DONKER THEMA — controlekamer / nachtdienst (24/7).
+   Eigen ontwerp (geen kleuromkering): koel charcoal, lichtere
+   semantische kleuren, donkere tekst op gevulde knoppen/badges.
+   Activeer via de topbar-toggle of de OS-voorkeur (zie init()).
+   Alle contrasten ≥ WCAG AA geverifieerd.
+   ============================================================ */
+:root[data-theme="dark"]{
+  --c-canvas:#14181A;
+  --c-surface:#1B2123;
+  --c-sunken:#161B1D;
+  --c-line:rgba(255,255,255,.09);
+  --c-line-2:rgba(255,255,255,.17);
+
+  --ink:#E6EBE8;
+  --ink-2:#9FB0A8;
+  --ink-3:#7E8E85;
+  --ink-inv:#0E1416;
+
+  --acc:#3E9E6E;
+  --acc-600:#4FB07E;
+  --acc-700:#8FD3AC;
+  --acc-100:#1F3A2C;
+  --acc-50:#172420;
+
+  --ok:#4FB67E;    --ok-bg:#15291F;   --ok-line:rgba(79,182,126,.32);
+  --warn:#E3A646;  --warn-bg:#2A2212;  --warn-line:rgba(227,166,70,.32);
+  --alarm:#F06A5C; --alarm-bg:#2E1714; --alarm-line:rgba(240,106,92,.34);
+  --info:#5B9BE0;  --info-bg:#15222E;  --info-line:rgba(91,155,224,.32);
+  --idle:#6E817A;  --idle-bg:#1E2426;
+
+  --a:#5AA0C0;  --a-soft:#3A6F86;  --a-bg:#16242B;
+  --b:#9A8FE0;  --b-soft:#5A4F90;  --b-bg:#1E1B2E;
+
+  --brand:var(--acc);
+  --brand-grad:linear-gradient(135deg,#1E523B 0%,#2F7A53 52%,#46A074 100%);
+
+  --sh-1:0 1px 2px rgba(0,0,0,.4);
+  --sh-2:0 1px 2px rgba(0,0,0,.45), 0 2px 6px rgba(0,0,0,.32);
+  --sh-3:0 2px 6px rgba(0,0,0,.5), 0 12px 28px rgba(0,0,0,.5);
+  --sh-4:0 10px 24px rgba(0,0,0,.55), 0 30px 60px rgba(0,0,0,.6);
+}
+:root[data-theme="dark"] .topbar{background:rgba(20,24,26,.82)}
+/* donkere tekst op gevulde (nu lichtere) knoppen & badges — anders onleesbaar */
+:root[data-theme="dark"] .btn.primary,
+:root[data-theme="dark"] .btn.danger,
+:root[data-theme="dark"] .step.active .knob,
+:root[data-theme="dark"] .step.done .knob,
+:root[data-theme="dark"] .step.fail .knob,
+:root[data-theme="dark"] .seg.sm button[aria-pressed="true"],
+:root[data-theme="dark"] .mode-badge.hand,
+:root[data-theme="dark"] .nav-badge,
+:root[data-theme="dark"] .subnav-badge,
+:root[data-theme="dark"] .tb-bell .cnt,
+:root[data-theme="dark"] .badge-fo,
+:root[data-theme="dark"] .tb-badge.alarm,
+:root[data-theme="dark"] .tb-badge.warn{color:#0E1416}
+/* knoppen met ink-achtergrond (worden licht) → donkere tekst */
+:root[data-theme="dark"] .seg button[aria-pressed="true"],
+:root[data-theme="dark"] .toast,
+:root[data-theme="dark"] .toast .ic-wrap{color:#14181A}
+/* SVG-procesmimic: hardgecodeerde lijn-/vlakkleuren in donker bijtrekken */
+:root[data-theme="dark"] .pipe-base{stroke:rgba(255,255,255,.13)}
+:root[data-theme="dark"] .fl-mix{stroke:#7E8E85}
+:root[data-theme="dark"] .svessel{stroke:rgba(255,255,255,.18)}
+:root[data-theme="dark"] .sval path{fill:#5E6E66}
+:root[data-theme="dark"] .spump circle{fill:#232B2E;stroke:rgba(255,255,255,.18)}
+:root[data-theme="dark"] .spump path{fill:#5E6E66}
+/* hardgecodeerde lichte achtergronden die anders fel oplichten in donker */
+:root[data-theme="dark"] body{background:#14181A}
+:root[data-theme="dark"] .banner .icb{background:rgba(255,255,255,.1)}
+:root[data-theme="dark"] .fp-note{color:var(--info)}
+:root[data-theme="dark"] .dg-h.flt .code{background:rgba(255,255,255,.08)}
+:root[data-theme="dark"] .io-type.DO{background:var(--ok-bg);color:var(--ok)}
+:root[data-theme="dark"] .io-type.DI,
+:root[data-theme="dark"] .pick-row .pr-ic.DO{background:var(--warn-bg);color:var(--warn)}
+:root[data-theme="dark"] .io-type.AI,
+:root[data-theme="dark"] .pick-row .pr-ic.DI{background:var(--a-bg);color:var(--a)}
+:root[data-theme="dark"] .pick-row .pr-ic.AI,
+:root[data-theme="dark"] .pick-row .pr-ic.AO{background:var(--b-bg);color:var(--b)}
 
 *{box-sizing:border-box}
 html,body{height:100%}
@@ -92,6 +181,10 @@ h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-.01em}
 button{font-family:inherit}
 ::selection{background:var(--acc-100)}
 
+/* toetsenbord-focus — zichtbare ring voor toetsenbordgebruikers (muis/touch ongemoeid) */
+button:focus-visible,summary:focus-visible,a:focus-visible,[role="button"]:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.btn.primary:focus-visible,.btn.danger:focus-visible{outline-color:var(--ink);outline-offset:3px}
+
 /* scrollbars */
 *{scrollbar-width:thin;scrollbar-color:var(--c-line-2) transparent}
 *::-webkit-scrollbar{width:10px;height:10px}
@@ -109,7 +202,7 @@ button{font-family:inherit}
 }
 .topbar.estop{box-shadow:inset 0 -3px 0 var(--alarm)}
 .tb-burger{
-  display:none; width:42px;height:42px;border:none;background:transparent;
+  display:flex; width:42px;height:42px;border:none;background:transparent;
   border-radius:var(--r-sm); color:var(--ink-2); cursor:pointer; align-items:center;justify-content:center;
 }
 .tb-burger:hover{background:var(--c-sunken)}
@@ -150,7 +243,7 @@ button{font-family:inherit}
   position:fixed;left:0;top:var(--topbar-h);bottom:0;width:var(--rail-w);z-index:40;
   background:var(--c-surface);border-right:1px solid var(--c-line);
   display:flex;flex-direction:column;padding:14px 12px;gap:3px;overflow-y:auto;
-  transition:transform .25s ease;
+  transition:transform .25s ease, width .22s var(--ease);
 }
 .rail-group-label{font-size:10.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);padding:14px 12px 6px}
 .nav-item{
@@ -177,6 +270,20 @@ button{font-family:inherit}
 
 .main{flex:1;margin-left:var(--rail-w);min-width:0;padding:24px 28px 64px;transition:margin .25s ease}
 .scrim{display:none;position:fixed;inset:var(--topbar-h) 0 0 0;background:rgba(16,33,46,.4);z-index:35}
+/* ingeklapte zijbalk (handmatig, via de topbar-knop) — alleen waar de rail vast staat (>720px).
+   Geeft op de HMI een smalle icoon-rail en dus een veel groter contentscherm. */
+@media (min-width:721px){
+  body.rail-collapsed{--rail-w:76px}
+  body.rail-collapsed .rail .nav-item .lbl,
+  body.rail-collapsed .rail .rail-group-label,
+  body.rail-collapsed .rail .rail-foot,
+  body.rail-collapsed .rail .nav-item .tag{display:none}
+  body.rail-collapsed .rail .nav-item{justify-content:center;padding:11px}
+  body.rail-collapsed .rail .nav-item .ic{flex:0 0 24px}
+  body.rail-collapsed .rail .nav-badge{position:absolute;top:5px;right:8px;margin:0;min-width:16px;height:16px;font-size:10px;padding:0 4px}
+  body.rail-collapsed .rail .nav-item[aria-current="page"]::before{top:6px;bottom:6px}
+  body.rail-collapsed .tb-burger{color:var(--acc)}
+}
 
 /* ============================================================ PAGE HEAD */
 .page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap}
@@ -267,12 +374,21 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 
 /* tabs */
 .tabs{display:inline-flex;gap:2px;background:var(--c-sunken);border:1px solid var(--c-line);border-radius:var(--r-md);padding:3px}
-.tabs button{border:none;background:transparent;padding:8px 14px;border-radius:8px;font-size:13px;font-weight:500;color:var(--ink-2);cursor:pointer;min-height:36px}
+.tabs button{border:none;background:transparent;padding:8px 14px;border-radius:8px;font-size:13px;font-weight:500;color:var(--ink-2);cursor:pointer;min-height:44px}
 .tabs button[aria-selected="true"]{background:var(--c-surface);color:var(--ink);box-shadow:var(--sh-1);font-weight:600}
+
+/* subnav — bestemmings-subtabs (Monitor/Service) boven de pagina */
+.subnav{display:inline-flex;gap:2px;background:var(--c-sunken);border:1px solid var(--c-line);border-radius:var(--r-md);padding:3px;margin-bottom:18px;max-width:100%;overflow-x:auto;scrollbar-width:none}
+.subnav::-webkit-scrollbar{display:none}
+.subnav button{border:none;background:transparent;padding:9px 16px;border-radius:8px;font-size:13px;font-weight:500;color:var(--ink-2);cursor:pointer;min-height:44px;display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+.subnav button[aria-selected="true"]{background:var(--c-surface);color:var(--ink);box-shadow:var(--sh-1);font-weight:600}
+.subnav button:not([aria-selected="true"]):hover{color:var(--ink)}
+.subnav-badge{min-width:18px;height:18px;padding:0 5px;border-radius:99px;font-size:10.5px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;background:var(--alarm);color:#fff}
+.subnav-badge.warn{background:var(--warn)}
 
 /* toggle (hand/auto etc) */
 .seg{display:inline-flex;border:1px solid var(--c-line-2);border-radius:var(--r-pill);overflow:hidden}
-.seg button{border:none;background:var(--c-surface);padding:7px 14px;font-size:12.5px;font-weight:600;color:var(--ink-2);cursor:pointer;min-height:36px}
+.seg button{border:none;background:var(--c-surface);padding:7px 14px;font-size:12.5px;font-weight:600;color:var(--ink-2);cursor:pointer;min-height:44px}
 .seg button+button{border-left:1px solid var(--c-line-2)}
 .seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
 .seg.amber button[aria-pressed="true"]{background:var(--warn)}
@@ -385,6 +501,14 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .activity .ring{width:46px;height:46px;flex:0 0 46px}
 .activity .now{font-weight:600;font-size:15px}
 .activity .sub{font-size:12.5px;color:var(--ink-2)}
+/* statushero (overzicht) — het twee-seconden-antwoord: ring + wat doet hij + is het goed */
+.hero{display:flex;align-items:center;gap:18px;padding:18px 22px;flex-wrap:wrap}
+.hero-ring{width:60px;height:60px;flex:0 0 60px;display:flex;align-items:center;justify-content:center}
+.hero-tx{flex:1;min-width:200px}
+.hero-now{font-size:23px;font-weight:600;letter-spacing:-.01em;line-height:1.15;color:var(--ink)}
+.hero-sub{font-size:13.5px;color:var(--ink-2);margin-top:3px}
+.hero-pills{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto}
+@media(max-width:560px){.hero{gap:14px}.hero-pills{margin-left:0;width:100%}.hero-now{font-size:21px}}
 
 /* mimic */
 .mimic-wrap{padding:18px 16px 8px}
@@ -457,7 +581,7 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px}
 .modal-h{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--c-line)}
 .modal-h h3{font-size:16px}
 .modal-b{padding:20px 22px}
-.x-btn{width:36px;height:36px;border:none;background:var(--c-sunken);border-radius:8px;cursor:pointer;color:var(--ink-2);display:flex;align-items:center;justify-content:center}
+.x-btn{width:44px;height:44px;border:none;background:var(--c-sunken);border-radius:8px;cursor:pointer;color:var(--ink-2);display:flex;align-items:center;justify-content:center}
 .x-btn:hover{background:var(--c-line);color:var(--ink)}
 
 .empty{padding:40px 20px;text-align:center;color:var(--ink-3)}
@@ -487,14 +611,21 @@ hr.sep{border:none;border-top:1px solid var(--c-line);margin:18px 0}
 .mb-col.a{border-top:3px solid var(--a)}
 .mb-col.b{border-top:3px solid var(--b)}
 .mb-h{font-weight:700;font-size:14px;display:flex;align-items:center;gap:8px;margin-bottom:10px}
-.vat-head{display:grid;grid-template-columns:1fr 132px 112px;gap:10px;font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-3);font-weight:600;padding:0 2px 6px;border-bottom:1px solid var(--c-line)}
-.vat-row{display:grid;grid-template-columns:1fr 132px 112px;gap:10px;align-items:center;padding:7px 2px;border-bottom:1px solid var(--c-line)}
+.vat-head{display:grid;grid-template-columns:1fr 116px 132px;gap:10px;font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-3);font-weight:600;padding:0 2px 6px;border-bottom:1px solid var(--c-line)}
+.vat-row{display:grid;grid-template-columns:1fr 116px 132px;gap:10px;align-items:center;padding:7px 2px;border-bottom:1px solid var(--c-line)}
 .vat-row:last-child{border-bottom:none}
 .vat-row .vn{font-size:13.5px;font-weight:500}
 .vi{display:flex;align-items:center;gap:7px}
 .vi input{text-align:right;font-family:var(--mono);padding:8px 10px;min-height:40px}
 .vi .u{font-size:12px;color:var(--ink-3);min-width:22px}
 .ccm{font-family:var(--mono);font-size:12px;color:var(--ink-2);text-align:right}
+.ccm-cell{display:flex;flex-direction:column;gap:3px;align-items:stretch;min-width:0}
+.ccm-in{width:100%;text-align:right;font-family:var(--mono);font-size:12.5px;color:var(--ink);background:var(--c-surface);border:1px solid var(--c-line-2);border-radius:8px;padding:7px 9px;min-height:36px;outline:none}
+.ccm-in:focus{border-color:var(--acc);box-shadow:0 0 0 3px var(--acc-50)}
+.ccm-fb-wrap{min-height:14px;text-align:right;line-height:1.2}
+.ccm-fb{display:inline-flex;align-items:center;gap:3px;justify-content:flex-end;font-size:10.5px;color:var(--ink-3)}
+.ccm-fb.ok{color:var(--ok)} .ccm-fb.bad{color:var(--warn)}
+.ccm-fb svg{flex:0 0 auto}
 .vat-sub{font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-3);font-weight:600;margin:11px 0 1px}
 .vat-empty{font-size:12.5px;color:var(--ink-3);padding:8px 2px}
 .sf-ph{padding:14px;margin-bottom:16px}
@@ -504,6 +635,9 @@ hr.sep{border:none;border-top:1px solid var(--c-line);margin:18px 0}
 .sf-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .batch-card{padding:16px}
 .batch-bar{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:12px}
+.bp-col{background:var(--c-sunken);border:1px solid var(--c-line);border-radius:var(--r-md);padding:11px 13px}
+.bp-col.a{border-left:3px solid var(--a)} .bp-col.b{border-left:3px solid var(--b)}
+.bp-col .mb-h{font-size:12.5px;margin-bottom:6px}
 .bp-row{display:flex;justify-content:space-between;gap:12px;padding:5px 2px;border-bottom:1px solid var(--c-line);font-size:13px}
 .bp-row:last-child{border-bottom:none}
 .bp-row.water{color:var(--ink-2)}
@@ -550,6 +684,38 @@ hr.sep{border:none;border-top:1px solid var(--c-line);margin:18px 0}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 .flag{font-size:11px;color:var(--ink-3);background:var(--c-sunken);border:1px dashed var(--c-line-2);border-radius:8px;padding:8px 12px;display:flex;gap:8px;align-items:flex-start}
+
+/* ===== Hardware Status: gezondheids-samenvatting (twee-seconden-antwoord) ===== */
+.hsum-card{margin-top:16px}
+.hsum-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--c-line);border-top:1px solid var(--c-line)}
+.hsum-cell{display:flex;align-items:center;gap:12px;padding:15px 18px;background:var(--c-surface);border:none;cursor:pointer;text-align:left;font:inherit;color:inherit;transition:background .12s;min-height:64px}
+.hsum-cell:hover{background:var(--c-sunken)}
+.hsum-ic{width:38px;height:38px;flex:0 0 38px;border-radius:10px;display:flex;align-items:center;justify-content:center}
+.hsum-ic.ok{background:var(--ok-bg);color:var(--ok)} .hsum-ic.warn{background:var(--warn-bg);color:var(--warn)} .hsum-ic.alarm{background:var(--alarm-bg);color:var(--alarm)}
+.hsum-tx{display:flex;flex-direction:column;gap:1px;min-width:0;flex:1}
+.hsum-l{font-size:12px;color:var(--ink-3);font-weight:500}
+.hsum-v{font-size:18px;font-weight:600;line-height:1.12;letter-spacing:-.01em;color:var(--ink)}
+.hsum-s{font-size:11px;color:var(--ink-3)}
+.hsum-state{font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px;white-space:nowrap;flex:0 0 auto}
+.hsum-state.ok{background:var(--ok-bg);color:var(--ok)} .hsum-state.warn{background:var(--warn-bg);color:var(--warn)} .hsum-state.alarm{background:var(--alarm-bg);color:var(--alarm)}
+@media(max-width:880px){.hsum-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.hsum-grid{grid-template-columns:1fr}}
+
+/* ===== Hardware Status: progressive disclosure (rack / conditie / systeem) ===== */
+.hw-disc{margin-top:16px;background:var(--c-surface);border:1px solid var(--c-line);border-radius:var(--r-lg);box-shadow:var(--sh-2);overflow:hidden}
+.hw-disc>summary{display:flex;align-items:center;gap:10px;padding:15px 18px;cursor:pointer;font-weight:600;font-size:14.5px;list-style:none;user-select:none;min-height:54px}
+.hw-disc>summary::-webkit-details-marker{display:none}
+.hw-disc>summary>span:first-child{display:flex;color:var(--ink-2)}
+.hw-disc>summary::after{content:"";margin-left:auto;width:8px;height:8px;border-right:2px solid var(--ink-3);border-bottom:2px solid var(--ink-3);transform:rotate(-45deg);transition:transform .2s var(--ease);flex:0 0 auto}
+.hw-disc[open]>summary::after{transform:rotate(45deg)}
+.hw-disc>summary:hover{background:var(--c-sunken)}
+.hw-disc-hint{font-weight:400;font-size:12px;color:var(--ink-3)}
+.hw-disc-body{padding:16px;border-top:1px solid var(--c-line)}
+.hw-disc-body>:first-child{margin-top:0}
+/* binnenkaarten in een disclosure plat maken (geen dubbele rand/schaduw) */
+.hw-disc-body .sys-card{border:none;box-shadow:none;border-radius:0;margin:0}
+.hw-disc-body .sys-card .sys-head{padding-top:0;padding-left:0;padding-right:0}
+@media(max-width:720px){.hw-disc-hint{display:none}}
 
 /* ============================================================ RESPONSIVE */
 @media (max-width:1180px){
@@ -742,15 +908,7 @@ body{background:linear-gradient(177deg,#F0F4F0 0%,#E7EDE8 100%);background-attac
 #boot .bstat{font-family:var(--mono);font-size:12px;color:var(--ink-2);display:flex;align-items:center;gap:7px;min-height:18px}
 #boot .bstat .dotg{width:7px;height:7px;border-radius:50%;background:var(--ok)}
 
-/* ============================================================ GREETING (personal band) */
-.greet{display:flex;align-items:center;gap:16px}
-.greet .gmark{width:46px;height:46px;border-radius:13px;background:var(--brand-grad);display:flex;align-items:center;justify-content:center;color:#fff;flex:0 0 46px;box-shadow:0 6px 16px rgba(21,72,51,.24)}
-.greet .gtx .gh{font-size:21px;font-weight:600;letter-spacing:-.01em;line-height:1.15}
-.greet .gtx .gp{font-size:13.5px;color:var(--ink-2);margin-top:2px}
 
-/* subtle inner sheen on brand-gradient surfaces */
-.gmark, .greet .gmark{position:relative;overflow:hidden}
-.gmark::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,0) 55%);pointer-events:none}
 
 /* ============================================================ REDUCED MOTION */
 /* ============================================================ HARDWARE-TWEELING */
@@ -843,7 +1001,7 @@ body{background:linear-gradient(177deg,#F0F4F0 0%,#E7EDE8 100%);background-attac
 .hw-tab.DO{background:linear-gradient(180deg,#D08828,#C2791F)}
 .hw-tab.AI{background:linear-gradient(180deg,#5C9A7B,#4E8A6B)}
 .hw-tab.AO{background:linear-gradient(180deg,#7A6FC0,#6A5FB0)}
-.hw-elem.flt .hw-tab{background:linear-gradient(180deg,#D9483A,#CE3A2C)}
+.hw-elem.flt .hw-tab{background:linear-gradient(180deg,#CC4032,#BE3226)}
 .hw-elem.empty .hw-tab{background:#9aa3a0}
 .hw-ebody{flex:1;display:flex;flex-direction:column;min-width:0}
 
@@ -1109,7 +1267,7 @@ body{background:linear-gradient(177deg,#F0F4F0 0%,#E7EDE8 100%);background-attac
 .pick-row.dis:hover{border-color:var(--c-line)}
 .pick-row .pr-l{display:flex;align-items:center;gap:10px;min-width:0;flex:1}
 .pick-row .pr-ic{flex:0 0 auto;width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;background:var(--c-sunken);color:var(--ink-2)}
-.pick-row .pr-ic.DI{background:#E7F0F4;color:#2E6E8E}.pick-row .pr-ic.DO{background:#FBF0DC;color:#B26A00}
+.pick-row .pr-ic.DI{background:#E7F0F4;color:#2E6E8E}.pick-row .pr-ic.DO{background:#FBF0DC;color:#945800}
 .pick-row .pr-ic.AI,.pick-row .pr-ic.AO{background:#EDEBF7;color:#6A5FB0}
 .pick-row .pr-ic.alarm{background:var(--alarm-bg);color:var(--alarm)}.pick-row .pr-ic.idle{background:var(--idle-bg);color:var(--ink-3)}
 .pick-row .pr-txt{display:flex;flex-direction:column;gap:1px;min-width:0}
@@ -1185,12 +1343,153 @@ body{background:linear-gradient(177deg,#F0F4F0 0%,#E7EDE8 100%);background-attac
 .dcat-row .dc-nm{font-size:12.5px;color:var(--ink);min-width:0}
 #diag-panel .pick-search{margin:6px 16px 10px}
 
+/* ---- systeemgezondheid / conditiemonitoring ---- */
+.h-chips{display:flex;flex-wrap:wrap;gap:8px;padding:12px 16px}
+.h-chip{display:flex;align-items:center;gap:7px;padding:7px 11px;border:1px solid var(--c-line);border-radius:var(--r-md);background:var(--c-surface);font-size:12.5px;min-width:0}
+.h-chip .ci{display:flex;color:var(--ink-3)}
+.h-chip .ck{font-weight:600;color:var(--ink-2)}
+.h-chip .cv{display:flex;align-items:center;gap:5px;margin-left:6px;color:var(--ink-3);white-space:nowrap}
+.h-chip.warn{border-color:var(--warn);background:var(--warn-bg,rgba(214,158,46,.07))}
+.h-chip.alarm{border-color:var(--alarm);background:var(--alarm-bg)}
+.h-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--c-line)}
+@media (max-width:820px){.h-grid{grid-template-columns:1fr}}
+.h-cell{background:var(--c-surface);padding:14px 16px;min-width:0}
+.h-cell-h{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.h-cell-h .ci{display:flex;color:var(--ink-2)}
+.h-cell-h b{font-size:13px;color:var(--ink)}
+.h-state{margin-left:auto;font-size:11px;font-weight:700;padding:2px 9px;border-radius:99px;letter-spacing:.02em}
+.h-state.ok{background:var(--ok-bg,rgba(56,142,60,.12));color:var(--ok)}
+.h-state.warn{background:var(--warn-bg,rgba(214,158,46,.14));color:var(--warn)}
+.h-state.alarm{background:var(--alarm-bg);color:var(--alarm)}
+.h-rail{display:flex;align-items:flex-end;gap:12px;justify-content:space-between}
+.h-rail-l{display:flex;flex-direction:column;gap:1px;min-width:0}
+.h-rail-l .lbl{font-size:11px;color:var(--ink-3);font-weight:600}
+.h-rail-l .big{font-size:19px;font-weight:700;color:var(--ink)}
+.h-spark{flex:0 0 auto;line-height:0}
+.h-spark .spark{display:block;border-radius:3px}
+.h-vbar{position:relative;height:7px;border-radius:4px;background:var(--c-sunken);overflow:hidden;margin-top:6px}
+.h-vbar span{position:absolute;left:0;top:0;bottom:0;background:var(--acc);border-radius:4px;transition:width var(--dur),background var(--dur)}
+.h-vbar span.ok{background:var(--ok)}.h-vbar span.warn{background:var(--warn)}.h-vbar span.alarm{background:var(--alarm)}
+.h-vbar i{position:absolute;top:-2px;bottom:-2px;width:2px;opacity:.6}
+.h-vbar i.warn{background:var(--warn)}.h-vbar i.alarm{background:var(--alarm)}
+.h-minrow{font-size:12px;color:var(--ink-3);margin-top:9px}
+.h-minrow b{color:var(--ink-2)}
+.h-thr{font-size:11px;color:var(--ink-3);margin-top:10px;display:flex;align-items:center;gap:5px;line-height:1.45}
+.h-thr svg{flex:0 0 auto}
+.h-dips-h{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-2);margin:12px 0 4px}
+.h-dips{border-top:1px solid var(--c-line)}
+.h-dip{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--c-line);font-size:12px}
+.h-dip .mono{font-family:var(--mono);font-weight:700;color:var(--ink);min-width:54px}
+.h-dip .r{color:var(--ink-2);font-family:var(--mono);font-size:11px}
+.h-dip .t{margin-left:auto;color:var(--ink-3);font-size:11px}
+.h-sub{padding:7px 0;border-bottom:1px solid var(--c-line)}
+.h-sub .k{font-size:10.5px;color:var(--ink-3);font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+.h-sub .v{font-size:14px;color:var(--ink);font-weight:600;margin-top:2px;display:flex;align-items:center;gap:6px}
+.h-sub .sub{font-size:11px;color:var(--ink-3);margin-top:1px}
+.h-vars{margin:2px 0 10px}
+.h-vars .k{font-size:10.5px;color:var(--ink-3);font-weight:600;text-transform:uppercase;letter-spacing:.03em;margin-bottom:5px}
+.h-var{display:inline-block;font-family:var(--mono);font-size:10.5px;color:var(--acc-700);background:var(--c-sunken);border:1px solid var(--c-line);border-radius:5px;padding:2px 7px;margin:0 5px 5px 0}
+.h-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:2px}
+.h-btn{display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;padding:8px 13px;border-radius:var(--r-md);border:1px solid var(--acc);background:var(--acc);color:#fff}
+.h-btn svg{flex:0 0 auto}
+.h-btn.ghost{background:var(--c-surface);color:var(--ink-2);border-color:var(--c-line-2)}
+.h-btn.warn{background:var(--c-surface);color:var(--warn);border-color:var(--warn)}
+.h-btn:hover{filter:brightness(.97)}
+.h-map{display:flex;align-items:baseline;gap:10px;padding:4px 0;border-bottom:1px solid var(--c-line);flex-wrap:wrap}
+.h-map .hm-g{font-family:var(--mono);font-size:11px;color:var(--acc-700);word-break:break-all}
+.h-map .hm-t{font-family:var(--mono);font-size:10px;color:#fff;background:var(--ink-3);border-radius:4px;padding:1px 6px;flex:0 0 auto}
+.h-map .hm-s{font-size:11.5px;color:var(--ink-3)}
+
+/* ---- databron (simulatie / live) ---- */
+.db-body{padding:14px 16px}
+.db-modes{display:inline-flex;gap:0;border:1px solid var(--c-line-2);border-radius:var(--r-md);overflow:hidden;margin-bottom:12px}
+.db-mode{display:inline-flex;align-items:center;gap:7px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;padding:9px 16px;border:0;background:var(--c-surface);color:var(--ink-2)}
+.db-mode+.db-mode{border-left:1px solid var(--c-line-2)}
+.db-mode.on{background:var(--acc);color:#fff}
+.db-url{display:block;margin-bottom:11px}
+.db-url span{display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-3);margin-bottom:5px}
+.db-url input{width:100%;box-sizing:border-box;font:inherit;font-family:var(--mono);font-size:13px;padding:9px 12px;border:1px solid var(--c-line-2);border-radius:var(--r-md);background:var(--c-sunken);color:var(--ink)}
+.db-url input:focus{outline:none;border-color:var(--acc)}
+.db-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.db-status{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--ink-2);flex:1;min-width:180px}
+.h-thr code{font-family:var(--mono);font-size:10.5px;background:var(--c-sunken);border:1px solid var(--c-line);border-radius:4px;padding:1px 5px;color:var(--acc-700)}
+
+/* ---- triage-balk + sub-tabs ---- */
+.triage{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin:4px 0 14px;padding:14px 18px;border-radius:12px;border:1px solid var(--c-line);background:var(--c-surface);position:relative;overflow:hidden}
+.triage::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px}
+.triage.tone-ok::before{background:var(--ok)}
+.triage.tone-warn::before{background:var(--warn)}
+.triage.tone-alarm::before{background:var(--alarm)}
+.triage.tone-ok{background:linear-gradient(90deg,var(--ok-bg,rgba(56,142,60,.08)),transparent 42%)}
+.triage.tone-warn{background:linear-gradient(90deg,var(--warn-bg,rgba(214,158,46,.10)),transparent 46%)}
+.triage.tone-alarm{background:linear-gradient(90deg,var(--alarm-bg),transparent 46%)}
+.tg-main{display:flex;align-items:center;gap:13px;min-width:0}
+.tg-ic{display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;flex:0 0 auto}
+.triage.tone-ok .tg-ic{background:var(--ok-bg,rgba(56,142,60,.14));color:var(--ok)}
+.triage.tone-warn .tg-ic{background:var(--warn-bg,rgba(214,158,46,.16));color:var(--warn)}
+.triage.tone-alarm .tg-ic{background:var(--alarm-bg);color:var(--alarm)}
+.tg-txt{display:flex;flex-direction:column;min-width:0}
+.tg-status{font-size:17px;font-weight:700;color:var(--ink);line-height:1.15}
+.tg-sub{font-size:12.5px;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:46ch}
+.tg-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.tg-src{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--ink-3);white-space:nowrap}
+.tg-src.ok{color:var(--ok)}
+.tg-src.alarm{color:var(--alarm)}
+.hw-tabs{margin-bottom:16px}
+.tb-badge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:9px;font-size:11px;font-weight:700;color:#fff;background:var(--warn);margin-left:3px;vertical-align:middle}
+.tb-badge.alarm{background:var(--alarm)}
+.tb-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ink-3);margin-left:5px;vertical-align:middle}
+.tb-dot.ok{background:var(--ok)}
+@media (max-width:760px){.tg-right{margin-left:0;width:100%;justify-content:space-between}.tg-sub{white-space:normal;max-width:none}}
+
+/* ---- actie-eerst storingskaarten ---- */
+.flt-wrap{margin-top:0;overflow:hidden}
+.flt-h{display:flex;align-items:center;gap:8px;padding:13px 16px;border-bottom:1px solid var(--c-line)}
+.flt-h h3{font-size:14px;margin:0}
+.flt-h .flt-report{margin-left:auto}
+.flt-list{padding:8px 12px 12px}
+.flt-card{border:1px solid var(--c-line);border-left-width:4px;border-radius:10px;padding:11px 13px;margin-top:8px;background:var(--c-surface)}
+.flt-card.tone-alarm{border-left-color:var(--alarm)}
+.flt-card.tone-warn{border-left-color:var(--warn)}
+.flt-card.tone-ok{border-left-color:var(--ok)}
+.flt-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.flt-sev{font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px;letter-spacing:.02em;white-space:nowrap}
+.flt-sev.alarm{background:var(--alarm-bg);color:var(--alarm)}
+.flt-sev.warn{background:var(--warn-bg,rgba(214,158,46,.14));color:var(--warn)}
+.flt-sev.ok{background:var(--ok-bg,rgba(56,142,60,.12));color:var(--ok)}
+.flt-what{font-size:14px;color:var(--ink);flex:1;min-width:150px;font-weight:600}
+.flt-where{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--ink-2);font-family:var(--mono)}
+.flt-go{margin-left:auto;white-space:nowrap}
+.flt-now{display:flex;align-items:flex-start;gap:8px;margin-top:9px;font-size:13px;color:var(--ink-2);background:var(--c-sunken);border-radius:8px;padding:9px 11px;line-height:1.5}
+.flt-now svg{flex:0 0 auto;margin-top:1px;color:var(--ink-3)}
+.flt-now b{color:var(--ink)}
+.flt-tech{margin-top:9px}
+.flt-tech summary{cursor:pointer;font-size:12px;font-weight:600;color:var(--ink-3);user-select:none;padding:3px 0;list-style:none}
+.flt-tech summary::-webkit-details-marker{display:none}
+.flt-tech summary::before{content:"▸ ";color:var(--ink-3)}
+.flt-tech[open] summary::before{content:"▾ "}
+.flt-tech .dg-grid{margin-top:8px}
+.flt-empty{display:flex;align-items:center;gap:10px;padding:18px 14px;color:var(--ink-2);font-size:13.5px}
+.flt-empty svg{color:var(--ok);flex:0 0 auto}
+
+/* ---- leesbaarheid op locatie (telefoon/tablet bij de kast) ---- */
+@media (max-width:760px){
+  .h-btn,.btn.sm,.db-mode,.flt-go{min-height:42px}
+  .tabs button,.hw-tabs button{min-height:42px}
+  .flt-card{padding:13px 14px}
+  .flt-what{font-size:15px}
+  .tg-status{font-size:19px}
+  .flt-tech summary,.diag-det summary{padding:8px 0}
+  .diag-det summary{padding-left:13px;padding-right:13px}
+}
+
 .hw-tbl tr.grp td{background:var(--c-sunken);font-size:11px;font-weight:700;letter-spacing:.02em;color:var(--ink-2);text-transform:none;padding:8px 14px}
 .hw-tbl tr.grp td .smono{font-family:var(--mono);color:var(--acc-700);font-size:11.5px}
 .tbl tr.flt td{background:var(--alarm-bg)}
 .tbl tr.flt:hover td{background:var(--alarm-bg)}
 .tbl tr.flt td.tag{color:var(--alarm);font-weight:600}
 @media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto!important}
   .led.blink{animation:none!important;opacity:1!important}
   *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
   #main.reveal>*{animation:none!important}
@@ -1204,7 +1503,7 @@ body{background:linear-gradient(177deg,#F0F4F0 0%,#E7EDE8 100%);background-attac
 <div id="boot" aria-hidden="true"><div class="blogo"><svg width="205" height="55" viewBox="0 0 205 55" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_8201_686b)"><path d="M199.235 50.432c-.314 2.513-2.625 4.567-5.137 4.567H4.031C1.52 55-.279 52.945.036 50.432l5.73-45.864C6.08 2.055 8.391 0 10.902 0H200.97c2.51 0 4.308 2.055 3.994 4.568l-5.729 45.864Z" fill="url(#paint0_linear_8201_686b)"/><path d="m128.893 29.602-5.004-1.732c-3.696-1.278-5.288-3.77-4.776-7.478.27-2.095 1.185-3.63 2.747-4.604 1.563-.972 4.13-1.459 7.707-1.459 4.326.061 7.946.394 10.861 1.004l-.722 4.97a610.843 610.843 0 0 0-8.653-.093c-1.71 0-2.823.047-3.334.136-.512.092-.796.32-.857.685-.031.364.114.653.429.867.316.212.939.47 1.87.774l5.183 1.687c3.694 1.216 5.333 3.556 4.911 7.02-.33 2.708-1.367 4.507-3.107 5.403-1.744.897-4.433 1.346-8.068 1.346-3.546 0-7.121-.304-10.724-.912l.674-4.97c.36 0 1.441.009 3.245.024 1.802.013 3.17.02 4.101.02 2.432 0 4.034-.075 4.799-.225.766-.154 1.18-.44 1.239-.869.031-.333-.105-.592-.404-.773-.301-.183-1.008-.456-2.117-.821ZM52.327 14.33c4.386 0 7.45.949 9.194 2.848 1.742 1.9 2.298 5.053 1.668 9.46-.602 4.255-1.888 7.24-3.854 8.958-1.97 1.717-5.086 2.576-9.35 2.576-4.357 0-7.43-.942-9.216-2.827-1.789-1.885-2.367-4.999-1.735-9.346.6-4.316 1.877-7.34 3.83-9.072 1.953-1.733 5.108-2.598 9.463-2.598Zm-.135 5.834c-1.502 0-2.553.419-3.154 1.255-.602.835-1.096 2.575-1.487 5.22-.332 2.341-.324 3.883.022 4.628.346.743 1.239 1.117 2.682 1.117 1.412 0 2.418-.426 3.02-1.277.6-.851 1.08-2.554 1.44-5.107.361-2.37.377-3.936.045-4.695-.33-.76-1.186-1.14-2.568-1.14ZM113.975 37.626h-6.354V33.34c-2.104 3.038-5.079 4.65-8.922 4.833-2.975.15-4.943-.805-5.904-2.872-.962-2.067-1.127-5.243-.496-9.53.33-2.096.795-3.859 1.397-5.288.6-1.428 1.254-2.545 1.96-3.35.707-.803 1.653-1.42 2.84-1.846 1.186-.426 2.312-.692 3.379-.798 1.064-.106 2.456-.16 4.168-.16 1.562 0 3.515.152 5.858.456 2.344.304 4.057.623 5.139.957l-3.065 21.884Zm-5.679-17.599-2.658-.046c-1.593 0-2.742.342-3.448 1.028-.706.683-1.224 2.226-1.554 4.626-.39 2.615-.512 4.286-.36 5.016.151.729.689 1.078 1.623 1.048 1.621-.092 3.393-1.414 5.316-3.965l1.082-7.706h-.001ZM36.375 30.512l.314 6.294c-2.913.91-6.383 1.366-10.409 1.366-5.046 0-8.479-1.262-10.297-3.785-1.818-2.522-2.306-6.792-1.464-12.811.84-6.168 2.358-10.371 4.551-12.604 2.193-2.234 5.814-3.352 10.86-3.352 3.756 0 7.015.396 9.78 1.187l-.992 6.245a315.762 315.762 0 0 0-9.193-.136c-1.352 0-2.38.212-3.087.637-.706.425-1.307 1.3-1.802 2.622-.496 1.32-.925 3.334-1.286 6.041-.51 3.464-.563 5.774-.157 6.927.406 1.157 1.555 1.733 3.447 1.733 3.966 0 7.211-.12 9.734-.365v.001Z" fill="#fff"/><path d="M134.075 40.99c-1.93.39-3.827.732-5.689 1.03C72.599 61.475 41.97 36.566.338 47.935l-.075.594C49.267 37.256 71.69 66.703 134.075 40.99Z" fill="url(#paint1_linear_8201_686b)"/><path d="m.514 46.515-.176 1.42c41.632-11.37 72.26 13.538 128.048-5.915 2.11-.736 4.253-1.528 6.437-2.395C76.081 51.465 50.479 20.397.514 46.515Z" fill="#C30D26"/><path d="M90.767 15.742 88.153 34.48c-.301 2.492-.864 4.579-1.69 6.266-.827 1.687-1.9 2.97-3.221 3.854-1.323.88-2.705 1.495-4.147 1.845-1.442.351-3.125.524-5.049.524-3.994 0-7.073-.471-9.237-1.414l.452-4.65c.96.032 2.958.047 5.992.047 4.688 0 7.586-1.156 8.699-3.463.24-.488.524-1.293.856-2.416.33-1.125.66-1.98.991-2.556-2.223 3.406-5.393 5.181-9.509 5.334-2.913.122-4.867-.825-5.859-2.847-.99-2.02-1.17-5.1-.54-9.233.391-2.613.926-4.71 1.602-6.29.675-1.579 1.56-2.736 2.657-3.465 1.098-.729 2.17-1.192 3.222-1.391 1.05-.197 2.479-.296 4.282-.296 5.228 0 9.599.471 13.114 1.413Zm-8.743 4.284-2.793-.045c-1.774 0-2.96.351-3.56 1.05-.602.7-1.082 2.234-1.443 4.604-.39 2.584-.489 4.27-.293 5.06s.744 1.125 1.645 1.004c1.773-.214 3.56-1.535 5.364-3.966l1.08-7.707ZM150.817 26.43l.064 1.239c-.644.195-1.432.293-2.363.293-1.145 0-1.923-.305-2.335-.918-.412-.611-.521-1.62-.327-3.025.2-1.449.558-2.446 1.073-2.993.515-.547 1.346-.82 2.492-.82.823 0 1.56.087 2.212.26l-.215 1.228a33.929 33.929 0 0 0-2.062-.055c-.379 0-.676.062-.891.185-.214.124-.395.364-.542.723-.147.358-.267.893-.36 1.602-.129.934-.125 1.565.011 1.89.136.326.469.49.998.49a18.74 18.74 0 0 0 2.245-.099ZM154.608 20.336l-.784 5.595c-.021.188.002.328.07.418.068.09.205.136.413.136h2.535l-.032 1.27c-.702.073-1.74.11-3.115.11-.53 0-.934-.155-1.214-.462-.279-.308-.379-.73-.301-1.266l.785-5.801h1.643ZM159.386 27.832h-1.643l1.042-7.496h1.643l-1.042 7.496ZM167.923 20.336h1.579c.2 0 .35.058.451.173.1.116.14.272.118.468l-.665 6.854h-1.547l.645-6.203h-.183l-1.751 4.671c-.107.334-.34.5-.697.5h-1.074c-.373 0-.577-.184-.613-.554l-.526-4.617h-.182l-1.064 6.203h-1.546l1.235-6.909c.035-.203.103-.351.204-.445.1-.094.247-.141.44-.141h1.536c.35 0 .544.188.58.565l.418 3.737c.035.297.054.652.054 1.065h.15c.1-.334.214-.678.344-1.032l1.396-3.824c.107-.333.34-.503.698-.51v-.001ZM175.215 25.876h-2.556l-.795 1.956h-1.708l3.115-7.094c.1-.268.297-.402.59-.402h1.547a.53.53 0 0 1 .36.136c.103.09.159.201.166.331l1.16 7.029h-1.632l-.247-1.956Zm-.173-1.314-.289-2.27a8.478 8.478 0 0 1-.054-.728h-.312c-.128.369-.214.608-.257.716l-.934 2.282h1.847-.001ZM183.633 21.683h-2.211l-.849 6.149h-1.643l.86-6.15h-2.202l.182-1.346h6.046l-.183 1.347ZM189.561 21.64h-2.77c-.208 0-.357.042-.446.125-.09.083-.148.237-.177.461l-.161 1.13h2.921l-.15 1.174h-2.932l-.193 1.444c-.029.203-.005.346.07.43.076.083.213.124.414.124h2.738l-.043 1.228c-.63.072-1.7.109-3.211.109-.601 0-1.042-.161-1.32-.484-.28-.322-.384-.762-.312-1.32l.591-4.28c.065-.463.248-.825.553-1.086.304-.261.71-.391 1.219-.391 1.56 0 2.698.04 3.415.12l-.204 1.216h-.002ZM149.657 36.218l.065 1.238c-.645.195-1.432.293-2.363.293-1.145 0-1.924-.305-2.335-.918-.413-.611-.522-1.62-.328-3.025.2-1.449.559-2.446 1.074-2.993.515-.547 1.346-.82 2.491-.82.823 0 1.561.087 2.212.26l-.214 1.228a33.929 33.929 0 0 0-2.062-.055c-.38 0-.677.062-.891.185-.215.124-.396.364-.543.723-.146.358-.266.893-.36 1.602-.128.935-.124 1.565.012 1.89.136.326.468.49.998.49.852.007 1.6-.026 2.244-.099ZM151.928 30.813c.527-.554 1.359-.83 2.498-.83 1.139 0 1.925.294 2.362.885.436.59.555 1.613.354 3.069-.193 1.462-.552 2.466-1.079 3.009-.526.543-1.355.815-2.486.815-1.159 0-1.954-.29-2.384-.87-.429-.578-.548-1.607-.354-3.084.2-1.441.564-2.44 1.089-2.994Zm2.443.505c-.572 0-.98.176-1.224.527-.243.352-.44 1.049-.59 2.092-.136.977-.133 1.636.011 1.977.143.34.49.51 1.041.51.566 0 .974-.18 1.224-.538.251-.358.451-1.052.602-2.08.143-.992.141-1.654-.006-1.988-.147-.333-.499-.5-1.058-.5ZM165.12 30.124l-.966 6.93c-.05.377-.254.565-.612.565h-.913c-.165 0-.288-.04-.37-.12a1.24 1.24 0 0 1-.242-.401l-1.471-3.998a7.33 7.33 0 0 1-.322-1.13h-.107a13.02 13.02 0 0 1-.086 1.174l-.612 4.475h-1.557l.966-6.93c.05-.377.258-.565.623-.565h.902c.158 0 .28.042.366.124.085.083.164.215.236.396l1.427 3.868c.165.441.294.847.387 1.217h.129c0-.428.025-.83.076-1.206l.59-4.4h1.557-.001ZM171.886 31.47h-2.212l-.848 6.15h-1.644l.86-6.15h-2.202l.182-1.346h6.046l-.182 1.347ZM171.94 37.619l1.042-7.496c.659-.065 1.571-.098 2.738-.098.924 0 1.599.173 2.024.516.426.345.582.933.468 1.765-.072.53-.235.944-.489 1.245-.254.3-.646.483-1.176.548l-.011.065c.494.116.791.5.891 1.152l.387 2.303h-1.675l-.344-2.325c-.029-.231-.09-.389-.183-.472-.093-.083-.24-.125-.44-.125l-1.224-.01-.408 2.932h-1.6Zm2.19-4.204h1.16c.43 0 .735-.08.918-.239.182-.159.306-.456.37-.89.057-.377.022-.636-.107-.777-.129-.142-.391-.212-.784-.212l-1.267.01-.29 2.108ZM180.17 30.813c.526-.554 1.359-.83 2.497-.83 1.139 0 1.926.294 2.363.885.436.59.555 1.613.354 3.069-.193 1.462-.553 2.466-1.079 3.009-.526.543-1.355.815-2.486.815-1.16 0-1.955-.29-2.384-.87-.43-.578-.548-1.607-.354-3.084.2-1.441.564-2.44 1.089-2.994Zm2.443.505c-.572 0-.98.176-1.224.527-.243.352-.44 1.049-.59 2.092-.136.977-.133 1.636.01 1.977.144.34.491.51 1.042.51.565 0 .973-.18 1.224-.538.25-.358.451-1.052.601-2.08.143-.992.142-1.654-.006-1.988-.146-.333-.499-.5-1.057-.5ZM188.756 30.124l-.784 5.595c-.021.188.002.328.07.418.068.09.205.136.413.136h2.535l-.032 1.27c-.702.073-1.74.11-3.115.11-.53 0-.934-.155-1.214-.462-.279-.308-.379-.73-.301-1.266l.785-5.801h1.643Z" fill="#fff"/></g><defs><linearGradient id="paint0_linear_8201_686b" x1="36.843" y1="-18.646" x2="176.813" y2="77.484" gradientUnits="userSpaceOnUse"><stop stop-color="#19523B"/><stop offset=".513" stop-color="#4D8E6E"/><stop offset=".629" stop-color="#488969"/><stop offset=".768" stop-color="#3C7A5D"/><stop offset=".916" stop-color="#276249"/><stop offset="1" stop-color="#19523B"/></linearGradient><linearGradient id="paint1_linear_8201_686b" x1="44.48" y1="46.431" x2="293.622" y2="46.431" gradientUnits="userSpaceOnUse"><stop stop-color="#154833"/><stop offset=".513" stop-color="#4D8E6E"/><stop offset=".619" stop-color="#498969"/><stop offset=".746" stop-color="#3D7A5D"/><stop offset=".882" stop-color="#2A6249"/><stop offset="1" stop-color="#154833"/></linearGradient><clipPath id="clip0_8201_686b"><path fill="#fff" d="M0 0h205v55H0z"/></clipPath></defs></svg></div><div class="btag">Meststof-vulinstallatie</div><div class="btrack"><i></i></div><div class="bstat" id="bstat"><span>Verbinden met PLC&hellip;</span></div></div>
 <!-- ===================== TOPBAR ===================== -->
 <header class="topbar" id="topbar">
-  <button class="tb-burger" id="burger" aria-label="Menu">
+  <button class="tb-burger" id="burger" aria-label="Menu" title="Zijbalk in- of uitklappen">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
   </button>
   <div class="brand">
@@ -1220,6 +1519,7 @@ body{background:linear-gradient(177deg,#F0F4F0 0%,#E7EDE8 100%);background-attac
     <div class="tb-conn" id="conn"><span class="pulse"></span><span class="lbl">PLC verbonden</span></div>
     <div class="tb-clock"><div class="t" id="clk-t">--:--</div><div class="d" id="clk-d">—</div></div>
     <button class="tb-bell none" id="bell" title="Alarmen" aria-label="Alarmen"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="cnt" id="bell-cnt">0</span></button>
+    <button class="tb-bell" id="theme-toggle" title="Donker of licht thema" aria-label="Thema wisselen"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg></button>
     <div class="roles" id="roles" role="group" aria-label="Toegangsrol"></div>
   </div>
 </header>
@@ -1251,6 +1551,7 @@ const $ = (s,r=document)=>r.querySelector(s);
 const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
 const fix = (n,d=0)=>Number(n).toLocaleString('nl-NL',{minimumFractionDigits:d,maximumFractionDigits:d});
 function greeting(){const hh=new Date().getHours();return hh<6?'Goedenacht':hh<12?'Goedemorgen':hh<18?'Goedemiddag':'Goedenavond';}
+
 
 /* ---------- ICONS (inline, stroke, currentColor) ---------- */
 const I = {
@@ -1284,16 +1585,19 @@ const I = {
   leaf:'<path d="M5 21c0-7 5-13 14-15 -1 9 -6 14 -14 15z"/><path d="M5 21C8 16 12 13 17 11"/>',
   chip:'<rect x="7" y="7" width="10" height="10" rx="1.5"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/>',
   network:'<rect x="3" y="3" width="6.5" height="5" rx="1"/><rect x="14.5" y="3" width="6.5" height="5" rx="1"/><rect x="8.5" y="16" width="7" height="5" rx="1"/><path d="M6.25 8v3h11.5V8M12 11v5"/>',
-  cpu:'<rect x="6" y="6" width="12" height="12" rx="1.5"/><rect x="9.5" y="9.5" width="5" height="5"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/>'
+  cpu:'<rect x="6" y="6" width="12" height="12" rx="1.5"/><rect x="9.5" y="9.5" width="5" height="5"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/>',
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  moon:'<path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/>',
+  history:'<path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/><path d="M12 7.5V12l3.5 2"/>'
 };
 const svg=(p,sz=22,sw=2)=>`<svg width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
 const ic=(name,sz=22,sw=2)=>svg(I[name]||'',sz,sw);
 
 /* ---------- BRONNEN (meststoffen + water) ---------- */
 const SOURCES=[
- {n:1,name:'Nitrokal',sub:'Viton',bak:'AB'},
+ {n:1,name:'Nitrakal',sub:'Viton',bak:'AB'},
  {n:2,name:'Amnitra',bak:'B'},
- {n:3,name:'Calcal',bak:'A'},
+ {n:3,name:'Calsal',bak:'A'},
  {n:4,name:'IJzer',bak:'A'},
  {n:5,name:'Baskal',bak:'B'},
  {n:6,name:'BFK',bak:'B'},
@@ -1309,13 +1613,13 @@ const srcByName=(nm)=>SOURCES.find(s=>s.name===nm);
 /* ---------- RECEPTEN (samenstelling + volgorde + hoeveelheid) ---------- */
 const RECIPES=[
  {id:'std-b',name:'Standaard B',bak:'B',batch:800,ec:2.4,ph:5.5,note:'Basis B-bak — dagelijkse productie.',
-   steps:[['Water',600],['Amnitra',80],['Baskal',70],['BFK',40],['SuperFK',35],['Zwakal',30],['Magnitra',25],['Nitrokal',90]]},
+   steps:[['Water',600],['Amnitra',80],['Baskal',70],['BFK',40],['SuperFK',35],['Zwakal',30],['Magnitra',25],['Nitrakal',90]]},
  {id:'std-a',name:'Standaard A',bak:'A',batch:800,ec:2.4,ph:5.5,note:'Basis A-bak — dagelijkse productie.',
-   steps:[['Water',610],['Calcal',95],['IJzer',28],['Sporen 1',9],['Sporen 2',8],['Nitrokal',110]]},
+   steps:[['Water',610],['Calsal',95],['IJzer',28],['Sporen 1',9],['Sporen 2',8],['Nitrakal',110]]},
  {id:'tom-veg-b',name:'Tomaat — vegetatief (B)',bak:'B',batch:800,ec:2.6,ph:5.6,note:'Hogere stikstof, vegetatieve sturing.',
-   steps:[['Water',590],['Amnitra',95],['Baskal',70],['BFK',45],['SuperFK',30],['Zwakal',30],['Magnitra',20],['Nitrokal',85]]},
+   steps:[['Water',590],['Amnitra',95],['Baskal',70],['BFK',45],['SuperFK',30],['Zwakal',30],['Magnitra',20],['Nitrakal',85]]},
  {id:'tom-gen-a',name:'Tomaat — generatief (A)',bak:'A',batch:800,ec:2.8,ph:5.4,note:'Hogere calcium/kali, generatieve sturing.',
-   steps:[['Water',595],['Calcal',110],['IJzer',26],['Sporen 1',9],['Sporen 2',8],['Nitrokal',105]]}
+   steps:[['Water',595],['Calsal',110],['IJzer',26],['Sporen 1',9],['Sporen 2',8],['Nitrakal',105]]}
 ];
 
 /* ---------- SIGNAALLIJST (uit 5725AZ; tags te hermappen) ---------- */
@@ -1791,6 +2095,13 @@ function codeStatus(code){
 }
 /* leid het Axioline-diagnosestatusregister + parameterregisters af uit de actieve storingen */
 function deriveAxioStatus(){
+  if(state.live&&state.live.enabled&&state.live.axio){
+    const set={};AXIO_STATUS_BITS.forEach(b=>set[b.name]=false);
+    const s=state.live.axio.status||{};Object.keys(s).forEach(k=>{set[k]=!!s[k];});
+    let top=null;const code=state.live.axio.paramReg1;const slot=state.live.axio.paramReg2;
+    if(code&&String(code)!=='0000')top={code:String(code),slot:(slot||1)-1,ch:null,status:codeStatus(String(code))};
+    return {set,top,nFault:liveActiveAlarms().length};
+  }
   const f=activeFaults();const set={};AXIO_STATUS_BITS.forEach(b=>set[b.name]=false);
   set.F_RUN=true;set.F_ACTIVE=true;set.F_READY=true;
   let busErr=false,bd=false,pf=false;
@@ -1841,7 +2152,7 @@ function buildSequence(rcp){
   ];
   // Na ELKE doseerklep een dichtheidstest: alles dicht, pomp aan, FC 01 = 0 verwacht.
   rcp.steps.forEach(([src,amt])=>{
-    steps.push({nm:src+' doseren — '+amt+' L',meta:'Doseren op flow · volgorde geborgd',dur:4,dose:src,amt});
+    steps.push({nm:src+' doseren — '+amt+' L',meta:'Doseren op debiet · volgorde geborgd',dur:4,dose:src,amt});
     steps.push({nm:'Lektest — '+src+' dicht?',meta:'Alle kleppen dicht · pomp aan · FC 01 moet 0 melden',dur:3,leaktest:true,after:src});
   });
   steps.push({nm:'Mengen (recirculatie VP 0'+(rcp.bak==='A'?'2':'3')+')',meta:'Rondpompen tot homogeen',dur:6,recirc:true});
@@ -1854,9 +2165,9 @@ function buildSequence(rcp){
 
 /* ---------- VATEN (per installatie te labelen door service) + voedingsschema's ---------- */
 const VATS_BASE=[
- {n:1,name:'Nitrokal',sub:'Viton',bak:'AB',unit:'kg',kind:'macro',sf:1,grp:'AB'},
+ {n:1,name:'Nitrakal',sub:'Viton',bak:'AB',unit:'kg',kind:'macro',sf:1,grp:'AB'},
  {n:2,name:'Amnitra',sub:'',bak:'B',unit:'kg',kind:'macro',sf:1,grp:'B'},
- {n:3,name:'Calcal',sub:'',bak:'A',unit:'kg',kind:'macro',sf:1,grp:'A'},
+ {n:3,name:'Calsal',sub:'',bak:'A',unit:'kg',kind:'macro',sf:1,grp:'A'},
  {n:4,name:'IJzer',sub:'Fe-DTPA',bak:'A',unit:'ml',kind:'micro',sf:1,grp:'A'},
  {n:5,name:'Baskal',sub:'',bak:'B',unit:'kg',kind:'macro',sf:1,grp:'B'},
  {n:6,name:'BFK',sub:'',bak:'B',unit:'kg',kind:'macro',sf:1,grp:'B'},
@@ -1867,15 +2178,18 @@ const VATS_BASE=[
  {n:11,name:'Sporen 2',sub:'Zwart',bak:'A',unit:'ml',kind:'micro',sf:1,grp:'A'},
  {n:12,name:'Water',sub:'',bak:'-',unit:'l',kind:'water',sf:1,grp:'-'}
 ];
-const SCHEMA_EXAMPLE={id:'sch-paprika',naam:'Paprika — Standaard',gewas:'Paprika',stadium:'Standard',substraat:'Steenwol',ec:'1,90',tankL:1000,conc:100,verval:'',
+const SCHEMA_EXAMPLE={id:'sch-paprika',naam:'Paprika — Standaard',omschrijving:'SUBSTRAFEED A1 · voorbeeld',gewas:'Paprika',stadium:'Standard',substraat:'Steenwol',ec:'1,90',tankL:1000,conc:100,verval:'',
   A:{3:'84,7',4:'5101',10:'200',11:'150'},
   B:{1:'41,8',5:'27,1',6:'30,0',8:'59,0',9:'30,9'},
+  Accm:{3:'847',4:'51007'},
+  Bccm:{1:'418',5:'271',6:'300',8:'590',9:'309'},
   phKg:'0,34',phL:'0,26'};
 
 /* ---------- STATE ---------- */
 const state={
   role:'klant',
   screen:'overzicht',
+  theme:'light', railCollapsed:false,
   rcp:RECIPES[0],
   seq:[], seqIdx:0, stepT:0,
   leak:null, leakArm:false,
@@ -1891,6 +2205,9 @@ const state={
   lvl:{tA:3,tB:6,A1:81,A2:72,B1:64,B2:18},
   hw:buildHwState(),
   hwAck:{}, hwAt:{},
+  hAck:{}, hAt:{},
+  liveAlarms:[],
+  live:{enabled:false,url:'http://localhost:8080',status:'offline',lastOk:null,lastErr:null,model:null,axio:null,profinet:null,inflight:false},
   sys:{mode:'RUN',fw:'2024.0.5 LTS',proj:'CogasAutoFill_v3',crc:'A7F3',dl:Date.now()-1000*60*60*24*12,bootAt:Date.now()-1000*60*60*36-1000*60*14,temp:42.5,tempWarn:60,tempMax:70,cpu:18,ram:34,sd:71,ip1:'192.168.0.10',ip2:'—',link1:true,link2:false,ntp:true},
   wear:{},
   fhist:{'AI:lvl-tB':{n:3,last:Date.now()-1000*60*60*24*9},'DO:dose-3':{n:1,last:Date.now()-1000*60*60*24*2},'DO:dose-1':{n:2,last:Date.now()-1000*60*60*24*40,resolved:true},'AI:B2':{n:1,last:Date.now()-1000*60*60*24*70,resolved:true},'DO:vp02':{n:1,last:Date.now()-1000*60*60*24*120,resolved:true}},
@@ -1941,10 +2258,42 @@ function seedAlarms(){
    {sev:'info',code:'I-050',time:t-1000*60*60*2,ti:'Batch gereed — B · Standaard B (798 L)'},
    {sev:'warn',code:'W-301',time:t-1000*60*55,ti:'Luchtdruk hersteld'},
    {sev:'info',code:'I-050',time:t-1000*60*60*3,ti:'Batch gereed — A · Standaard A (801 L)'},
-   {sev:'alarm',code:'E-204',time:t-1000*60*60*26,ti:'Lektest gefaald — restflow na dosering Calcal (opgelost)'}
+   {sev:'alarm',code:'E-204',time:t-1000*60*60*26,ti:'Lektest gefaald — restflow na dosering Calsal (opgelost)'}
  ];
 }
-function allAlarms(){return hwAlarms().concat(state.alarms);}
+function allAlarms(){if(state.live&&state.live.enabled)return liveActiveAlarms();return healthAlarms().concat(hwAlarms()).concat(state.alarms);}
+/* Conditiemonitoring → echte alarmen, met dezelfde recordstructuur als de overige alarmen.
+   Verschijnen automatisch in de bel, de alarmlijst en de nav-badge zodra een drempel wordt overschreden. */
+function healthAlarms(){
+  state.hAck=state.hAck||{};state.hAt=state.hAt||{};
+  const H=ensureHealth();const sy=state.sys;const out=[];
+  const mk=(id,sev,ti,loc,cause,check,code)=>{if(!state.hAt[id])state.hAt[id]=Date.now();
+    out.push({id,sev,code:code||('H-'+id.slice(2).toUpperCase()),time:state.hAt[id],ack:!!state.hAck[id],ti,loc,cause,check,health:true});};
+  const pc=pwrCond();
+  if(pc!=='ok'){const lo=Math.min(H.ulMin,H.upMin);const d=H.dips[H.dips.length-1];
+    mk('h-pwr',pc==='alarm'?'alarm':'warn',
+      (pc==='alarm'?'Voedingsspanning te laag — dip tot ':'Voedingsspanning marginaal — dip tot ')+fix(lo,1)+' V',
+      'Besturing · 24 V-rail (U_L/U_P)',
+      'De 24 V-voeding zakte tot '+fix(lo,1)+' V'+(d?(' (laatste dip '+clockStr(d.t)+' op '+d.rail+')'):'')+'. Onder 19,2 V kan de Axioline-bus wegvallen en kunnen uitgangen resetten — vaak de oorzaak van niet-reproduceerbare storingen.',
+      'Controleer PSU-capaciteit, klemmen en gedeelde belastingen. Nulstellen na herstel via “Capture nulstellen”.','H-PWR');}
+  else delete state.hAt['h-pwr'];
+  const tc=tempCond();
+  if(tc!=='ok'){mk('h-temp',tc==='alarm'?'alarm':'warn',
+      'Boardtemperatuur '+(tc==='alarm'?'te hoog':'verhoogd')+' — '+fix(sy.temp,1)+' °C',
+      'Besturing · boardtemperatuur',
+      'De boardtemperatuur is '+fix(sy.temp,1)+' °C (waarschuwing vanaf '+fix(sy.tempWarn,0)+' °C). Aanhoudende hitte verkort de levensduur en kan tot uitval leiden.',
+      'Controleer kastventilatie/koeling en omgevingstemperatuur; reinig of plaats de ventilatormodule (AXC F 3152).','H-TEMP');}
+  else delete state.hAt['h-temp'];
+  const sc=sdCond();
+  if(sc!=='ok'){const free=100-sy.sd;const none=hwSd().id==='none';
+    mk('h-sd',sc==='alarm'?'alarm':'warn',
+      none?'Geen SD-kaart — logging alleen in RAM':'SD-kaart '+(sc==='alarm'?'kritiek':'aandacht')+' — '+free+'% vrij · slijtage '+H.sdWear+'%',
+      'Besturing · SD-kaart & opslag',
+      none?'Zonder SD-kaart logt de DataLogger alleen in een RAM-ringbuffer; data gaat verloren bij herstart.':'Vrije ruimte '+free+'% en geschatte slijtage '+H.sdWear+'%. Een volle of versleten kaart stopt de DataLogger stil — juist de diagnostiek die je dan nodig hebt.',
+      'Archiveer/wis oude logs of vervang de SD-kaart; bewaak vrije ruimte én slijtage.','H-SD');}
+  else delete state.hAt['h-sd'];
+  return out;
+}
 const activeAlarms=()=>allAlarms().filter(a=>a.sev!=='info'||!a.ack);
 const worstSev=()=>{const a=allAlarms();if(a.some(x=>x.sev==='alarm'))return'alarm';if(a.some(x=>x.sev==='warn'))return'warn';return'ok';};
 
@@ -1964,9 +2313,14 @@ function updateBell(){
   b.classList.toggle('none',n===0);
   b.classList.toggle('q',!act.some(a=>a.sev==='alarm'));
   const tb=$('#topbar');if(tb)tb.classList.toggle('estop',state.estop);
+  paintTriage();paintActiveFaults();
 }
 
-/* ============================================================ NAV */
+/* ============================================================ NAV
+   Service: 7 losse schermen → 3 taakgerichte bestemmingen.
+   Routing-sleutels blijven granulair (alarmen/io/hardware/...) zodat alle
+   deeplinks (go('alarmen'), selectCh, ...) blijven werken; alleen de
+   navigatie-presentatie wijzigt. */
 const NAV=[
  {grp:'Bediening',items:[
    ['overzicht','Overzicht','overview'],
@@ -1974,25 +2328,33 @@ const NAV=[
    ['verbruik','Verbruik','usage'],
    ['logboek','Logboek','history']]},
  {grp:'Service',svc:true,items:[
-   ['alarmen','Alarmen','alarm'],
-   ['sequentie','Sequentie','steps'],
-   ['io','Live I/O','io'],
-   ['hardware','Hardware','chip'],
-   ['handauto','Hand / Auto','hand'],
-   ['kalibratie','Kalibratie','cal'],
-   ['onderhoud','Onderhoud','wrench']]}
+   ['monitor','Monitor','alarm'],
+   ['machine','Machine','chip'],
+   ['service','Service','wrench']]}
 ];
+/* bestemming → granulaire schermen (eerste = standaard bij aanklikken) */
+const DESTS={
+  monitor:{label:'Monitor',def:'alarmen',screens:['alarmen','sequentie','io']},
+  machine:{label:'Machine',def:'hardware',screens:['hardware']},
+  service:{label:'Service',def:'handauto',screens:['handauto','kalibratie','onderhoud']}
+};
+const DEST_KEYS=['monitor','machine','service'];
+const SCREEN_LABELS={alarmen:'Alarmen',sequentie:'Sequentie',io:'Live I/O',hardware:'Machine',handauto:'Hand / Auto',kalibratie:'Kalibratie',onderhoud:'Onderhoud'};
+const destOf=(s)=>DEST_KEYS.find(k=>DESTS[k].screens.includes(s))||null;
 function renderNav(){
   const svc=state.role!=='klant';
   let html='';
   NAV.forEach(g=>{
-    html+=`<div class="rail-group-label">${g.grp}${g.svc&&!svc?' · vergrendeld':''}</div>`;
+    if(g.svc&&!svc)return; // servicegroep verbergen voor de klant — de rail toont alleen waar je bij kan
+    html+=`<div class="rail-group-label">${g.grp}</div>`;
     g.items.forEach(([k,l,i])=>{
-      const locked=g.svc&&!svc;
-      const badge=k==='alarmen'?navBadge():'';
-      html+=`<button class="nav-item${locked?' locked':''}" data-screen="${k}" ${locked?'data-locked="1"':''} ${state.screen===k?'aria-current="page"':''}>
+      const isDest=!!DESTS[k];
+      const target=isDest?DESTS[k].def:k;
+      const current=isDest?(destOf(state.screen)===k):(state.screen===k);
+      const badge=(k==='monitor')?navBadge():'';
+      html+=`<button class="nav-item" data-screen="${target}" ${current?'aria-current="page"':''} title="${l}">
         <span class="ic">${ic(i,22,2)}</span><span class="lbl">${l}</span>
-        ${locked?`<span class="lock">${ic('lock',16,2)}</span>`:badge}
+        ${badge}
       </button>`;
     });
   });
@@ -2000,6 +2362,13 @@ function renderNav(){
      <div class="row"><span>PLCnext AXC F 2152</span><span class="mono">v0.9</span></div>
      <div class="row"><span>OPC UA · IEC 62443</span><span style="color:var(--ok)">●</span></div>
    </div>`;
+}
+/* subnav — zusters binnen een bestemming (alleen als er >1 is) */
+function subnavBadge(){const n=activeAlarms().length;if(!n)return'';return ` <span class="subnav-badge ${activeAlarms().some(a=>a.sev==='alarm')?'':'warn'}">${n}</span>`;}
+function subnav(){
+  const d=destOf(state.screen);if(!d)return'';
+  const scr=DESTS[d].screens;if(scr.length<2)return'';
+  return `<div class="subnav" id="subnav">`+scr.map(s=>`<button data-sub="${s}" aria-selected="${state.screen===s?'true':'false'}">${SCREEN_LABELS[s]||s}${s==='alarmen'?subnavBadge():''}</button>`).join('')+`</div>`;
 }
 function navBadge(){
   const act=activeAlarms();if(!act.length)return'';
@@ -2028,7 +2397,25 @@ function scaled(k){const c=state.cal[k];const s=SIGNALS.find(x=>x.k===k&&x.type=
 function lvlPct(bak){const max={A1:1500,A2:1500,B1:1000,B2:1000}[bak];return Math.round(state.lvl[bak]);}
 /* ============================================================ SVG PROCESMIMIC */
 /* hex-kleuren (var() werkt niet betrouwbaar in SVG-attributen) */
-const COL={a:'#2E6E8E',aSoft:'#9CC1D1',aBg:'#E7F0F4',b:'#6A5FB0',bSoft:'#BDB4E2',bBg:'#EDEBF7',acc:'#1C6E45',ink:'#19241D',ink2:'#506159',alarm:'#CE3A2C',line:'#C6CFC6',idle:'#9AA89E',water:'#3E8AA0',mono:"'IBM Plex Mono', ui-monospace, monospace"};
+function makeCOL(){
+  const dark=state.theme==='dark';
+  return dark
+    ? {a:'#5AA0C0',aSoft:'#3A6F86',aBg:'#16242B',b:'#9A8FE0',bSoft:'#5A4F90',bBg:'#1E1B2E',acc:'#3E9E6E',ink:'#E6EBE8',ink2:'#9FB0A8',alarm:'#F06A5C',line:'rgba(255,255,255,.18)',idle:'#6E817A',water:'#5AA7BC',glassBg:'#161B1D',glassStroke:'rgba(255,255,255,.18)',vessel:'#1B2123',ringTrack:'rgba(255,255,255,.12)',mono:"'IBM Plex Mono', ui-monospace, monospace"}
+    : {a:'#2E6E8E',aSoft:'#9CC1D1',aBg:'#E7F0F4',b:'#6A5FB0',bSoft:'#BDB4E2',bBg:'#EDEBF7',acc:'#1C6E45',ink:'#19241D',ink2:'#506159',alarm:'#BE3226',line:'#C6CFC6',idle:'#9AA89E',water:'#3E8AA0',glassBg:'#F1F6F1',glassStroke:'#C6CFC6',vessel:'#FFFFFF',ringTrack:'#E2E8F0',mono:"'IBM Plex Mono', ui-monospace, monospace"};
+}
+let COL=makeCOL();
+/* thema toepassen: <html data-theme>, SVG-palet (COL) herberekenen, mimic opnieuw tekenen */
+function applyTheme(t){
+  state.theme=(t==='dark')?'dark':'light';
+  document.documentElement.setAttribute('data-theme',state.theme);
+  COL=makeCOL();
+  const tt=document.getElementById('theme-toggle');
+  if(tt){tt.innerHTML=ic(state.theme==='dark'?'sun':'moon',20,2);tt.title=state.theme==='dark'?'Schakel naar licht thema':'Schakel naar donker thema';}
+  // token-gebaseerde delen passen zich direct aan via data-theme; alleen schermen met COL-SVG hertekenen.
+  // Hardware overslaan zodat open uitklap-lagen en scrollpositie behouden blijven.
+  if(typeof render==='function'&&document.getElementById('main')&&state.screen!=='hardware')render();
+}
+function toggleTheme(){state.themeUserSet=true;applyTheme(state.theme==='dark'?'light':'dark');}
 const MX={ /* coordinaten */
   srcY:58,srcH:54,srcW:34,collY:150,
   fcY:196,fcsY:238,manY:276,
@@ -2063,14 +2450,14 @@ function vesselSVG(key,cx,top,w,h,minPc){
     +`<rect class="glass-sheen" x="${x}" y="${top}" width="${+(w*0.5).toFixed(1)}" height="${h}" rx="10" fill="url(#sheen)"/>`
   +`</g>`;
   if(minPc!=null){const my=+(top+h-(minPc/100*h)).toFixed(1);s+=`<line x1="${x}" y1="${my}" x2="${x+w}" y2="${my}" stroke="${COL.alarm}" stroke-width="1.5" stroke-dasharray="3 3" opacity=".5"/>`;}
-  s+=`<rect x="${x}" y="${top}" width="${w}" height="${h}" rx="10" fill="none" stroke="#C6CFC6" stroke-width="1.5"/>`;
+  s+=`<rect x="${x}" y="${top}" width="${w}" height="${h}" rx="10" fill="none" stroke="${COL.glassStroke}" stroke-width="1.5"/>`;
   return s;
 }
 function pipe(id,d,cls){return `<path class="pipe-base" d="${d}"/><path class="pipe-flow" id="${id}" data-d="${cls}" d="${d}"/>`;}
 
 function buildMimic(){
   const m=MX;const cy=m.collY;
-  let s=`<svg class="mimic" viewBox="0 0 1200 620" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Procesmimic Cogas AutoFill">`;
+  let s=`<svg class="mimic" viewBox="0 0 1200 620" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Live installatie van de Cogas AutoFill">`;
   // defs gradients
   s+=`<defs>
      <linearGradient id="grad-a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${COL.aSoft}"/><stop offset="1" stop-color="${COL.a}"/></linearGradient>
@@ -2105,9 +2492,9 @@ function buildMimic(){
   s+=`<path class="pipe-base" d="M600 ${cy}V${m.manY}"/>`;
   s+=`<path class="pipe-flow" id="f-feed" d="M600 ${cy}V${m.manY}"/>`;
   // FC01
-  s+=`<circle cx="600" cy="${m.fcY}" r="15" fill="#fff" stroke="#C6CFC6" stroke-width="1.5"/>`;
+  s+=`<circle cx="600" cy="${m.fcY}" r="15" fill="${COL.vessel}" stroke="${COL.glassStroke}" stroke-width="1.5"/>`;
   s+=`<g stroke="${COL.acc}" stroke-width="1.8" fill="none" stroke-linecap="round"><path d="M593 ${m.fcY}c2 -4 5 -4 7 0s5 4 7 0"/></g>`;
-  s+=`<text x="622" y="${m.fcY-4}" class="sreadout-lbl">FC 01 · flow</text>`;
+  s+=`<text x="622" y="${m.fcY-4}" class="sreadout-lbl">FC 01 · debiet</text>`;
   s+=`<text x="622" y="${m.fcY+11}" class="sreadout" id="ro-flow">0 L/min</text>`;
   // FCS1 pump
   s+=pumpSVG('pump-fcs',600,m.fcsY,16,'fcs');
@@ -2227,41 +2614,32 @@ function viewOverzicht(){
     </div>
   </div>
 
-  <div class="card card-pad greet" style="margin-bottom:16px;flex-wrap:wrap">
-    <div class="gmark">${ic('leaf',24,2)}</div>
-    <div class="gtx"><div class="gh" id="ov-greet">${greeting()}</div><div class="gp" id="ov-sum">Systeem operationeel.</div></div>
-    <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap" id="ov-status"></div>
+  <div class="card hero" id="ov-hero" style="margin-bottom:16px">
+    <div class="hero-ring" id="ov-ring"></div>
+    <div class="hero-tx"><div class="hero-now" id="ov-now">Standby</div><div class="hero-sub" id="ov-sub">Machine gereed</div></div>
+    <div class="hero-pills" id="ov-status"></div>
   </div>
 
-  <div class="grid cols-4" style="margin-bottom:16px">
-    <div class="card kpi"><div class="k">${ic('drop',15,2)} Actuele flow</div><div class="v"><span id="kpi-flow-n" class="num">0</span><small> L/min</small></div><svg class="spark" id="kpi-spark" viewBox="0 0 120 26" preserveAspectRatio="none"><path class="ar" id="kpi-spark-a"/><path class="ln" id="kpi-spark-l"/></svg><div class="s" id="kpi-flow-s">Hoofdpomp standby</div></div>
-    <div class="card kpi"><div class="k">${ic('beaker',15,2)} Bezig met</div><div class="v" id="kpi-mode" style="font-size:20px;line-height:1.15;margin-top:9px">Standby</div><div class="s" id="kpi-mode-s">Wacht op opdracht</div></div>
+  <div class="grid cols-3" style="margin-bottom:16px">
+    <div class="card kpi"><div class="k">${ic('drop',15,2)} Debiet</div><div class="v"><span id="kpi-flow-n" class="num">0</span><small> L/min</small></div><svg class="spark" id="kpi-spark" viewBox="0 0 120 26" preserveAspectRatio="none"><path class="ar" id="kpi-spark-a"/><path class="ln" id="kpi-spark-l"/></svg><div class="s" id="kpi-flow-s">Hoofdpomp standby</div></div>
     <div class="card kpi" id="kpi-batch-card"><div class="k">${ic('check',15,2)} Batches vandaag</div><div class="v"><span id="kpi-batch" class="num">${state.batchesToday}</span></div><div class="s" id="kpi-batch-s">Laatste: ${state.lastBatch}</div></div>
-    <div class="card kpi"><div class="k">${ic('clock',15,2)} Volgende vulling</div><div class="v" id="kpi-next" style="font-size:20px;margin-top:9px">B2 — ingepland</div><div class="s">Onder minimumniveau</div></div>
+    <div class="card kpi"><div class="k">${ic('clock',15,2)} Volgende vulling</div><div class="v" id="kpi-next" style="font-size:20px;margin-top:9px">Bak B2</div><div class="s" id="kpi-next-s">onder minimum · vulling gepland</div></div>
   </div>
 
-  <div class="card mimic-card" style="margin-bottom:16px">
-    <div class="card-h"><h3>Procesmimic</h3><span class="sub" id="mimic-mode">— live —</span></div>
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-h"><h3>Voorraadbakken</h3><span class="sub">live niveau · 4–20 mA</span></div>
+    <div class="card-pad" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px" id="ov-tanks"></div>
+  </div>
+
+  <div class="card mimic-card">
+    <div class="card-h"><h3>Installatie</h3><span class="sub">live</span></div>
     <div class="mimic-wrap" id="mimic-host"></div>
     <div class="legend">
-      <span><span class="dot run"></span> Actieve stroom</span>
+      <span><span class="dot run"></span> Doorstroming</span>
       <span><span class="dot a"></span> A-zijde</span>
       <span><span class="dot b"></span> B-zijde</span>
       <span><span class="dot idle"></span> Klep dicht</span>
       <span style="color:var(--alarm)">– – minimumniveau</span>
-    </div>
-  </div>
-
-  <div class="split-2">
-    <div class="card">
-      <div class="card-h"><h3>Voorraadbakken</h3><span class="sub">live niveau · 4–20 mA</span></div>
-      <div class="card-pad" style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px" id="ov-tanks"></div>
-    </div>
-    <div class="card card-pad">
-      <div class="activity">
-        <div class="ring" id="ov-ring"></div>
-        <div class="stage"><div><div class="now" id="ov-now">Standby</div><div class="sub" id="ov-sub">Machine gereed</div></div></div>
-      </div>
     </div>
   </div>`;
 }
@@ -2273,12 +2651,12 @@ function miniTankSVG(bak,pc){
   return `<svg class="mtank" width="56" height="86" viewBox="0 0 56 86" aria-hidden="true">`
     +`<defs><linearGradient id="mg-${bak}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient>`
     +`<clipPath id="mc-${bak}"><rect x="${x}" y="${top}" width="${w}" height="${h}" rx="9"/></clipPath></defs>`
-    +`<rect x="${x}" y="${top}" width="${w}" height="${h}" rx="9" fill="#F1F6F1" stroke="#C6CFC6" stroke-width="1.4"/>`
+    +`<rect x="${x}" y="${top}" width="${w}" height="${h}" rx="9" fill="${COL.glassBg}" stroke="${COL.glassStroke}" stroke-width="1.4"/>`
     +`<g clip-path="url(#mc-${bak})"><g class="liqlvl" id="mliqg-${bak}" style="transform:translateY(${ty}px)">`
       +`<g class="liq-wave" style="--wl:${wl}px"><path fill="url(#mg-${bak})" d="${wd}"/></g>`
       +`<g class="liq-wave2" style="--wl:${wl}px"><path fill="url(#mg-${bak})" fill-opacity=".45" d="${wd}"/></g>`
     +`</g></g>`
-    +`<rect x="${x}" y="${top}" width="${w}" height="${h}" rx="9" fill="none" stroke="#C6CFC6" stroke-width="1.4"/>`
+    +`<rect x="${x}" y="${top}" width="${w}" height="${h}" rx="9" fill="none" stroke="${COL.glassStroke}" stroke-width="1.4"/>`
   +`</svg>`;
 }
 function setMiniLiquid(bak,pc){const g=$('#mliqg-'+bak);if(g){const cl=Math.max(0,Math.min(100,pc));g.style.transform='translateY('+((1-cl/100)*74).toFixed(1)+'px)';}}
@@ -2303,9 +2681,9 @@ function tankTile(bak,cap){
     </div>
   </div>`;
 }
-function ringSVG(pct,color){
-  const r=18,c=2*Math.PI*r,off=c*(1-pct/100);
-  return `<svg width="46" height="46" viewBox="0 0 46 46"><circle cx="23" cy="23" r="${r}" fill="none" stroke="#E2E8F0" stroke-width="4"/><circle cx="23" cy="23" r="${r}" fill="none" stroke="${color}" stroke-width="4" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${off}" transform="rotate(-90 23 23)" style="transition:stroke-dashoffset .6s"/></svg>`;
+function ringSVG(pct,color,size){size=size||46;const sw=size>=54?5:4;const r=(size-sw*2-2)/2;const cx=(size/2).toFixed(1);
+  const c=2*Math.PI*r,off=c*(1-pct/100);
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"><circle cx="${cx}" cy="${cx}" r="${r}" fill="none" stroke="${COL.ringTrack}" stroke-width="${sw}"/><circle cx="${cx}" cy="${cx}" r="${r}" fill="none" stroke="${color}" stroke-width="${sw}" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${off}" transform="rotate(-90 ${cx} ${cx})" style="transition:stroke-dashoffset .6s"/></svg>`;
 }
 function mountOverzicht(){
   $('#mimic-host').innerHTML=buildMimic();
@@ -2317,40 +2695,33 @@ function mountOverzicht(){
 }
 function refreshOverzicht(){
   if(state.screen!=='overzicht')return;
-  // mimic
   updateMimic();
-  // tanks
+  // voorraadbakken
   ['A1','A2','B1','B2'].forEach(b=>{const cap=b[0]==='A'?1500:1000;const pc=state.lvl[b];
     const t=$('#tile-'+b);if(t){setMiniLiquid(b,pc);tweenNum($('#tpc-'+b),Math.round(pc),500);tweenNum($('#tlt-'+b),Math.round(pc/100*cap),600);}});
-  // kpis
+  // kpi's (3)
   const st=curStep();
   tweenNum($('#kpi-flow-n'),state.flow,350);
   updateSpark();
   tweenNum($('#kpi-batch'),state.batchesToday,700);
   $('#kpi-batch-s') && ($('#kpi-batch-s').textContent='Laatste: '+state.lastBatch);
   $('#kpi-flow-s') && ($('#kpi-flow-s').textContent=state.fcsRun?(state.hz+' Hz · '+(state.fcsHi?'hoog toeren':'normaal')):'Hoofdpomp standby');
-  $('#kpi-mode') && ($('#kpi-mode').textContent=modeLabel());
-  $('#kpi-mode-s') && ($('#kpi-mode-s').textContent=st?st.meta:'Wacht op opdracht');
-  $('#kpi-next') && ($('#kpi-next').textContent=(state.lvl.B2<22?'B2 — ingepland':'—'));
-  // greeting + summary + status
+  const low=state.lvl.B2<22;
+  $('#kpi-next') && ($('#kpi-next').textContent=low?'Bak B2':'—');
+  $('#kpi-next-s') && ($('#kpi-next-s').textContent=low?'onder minimum · vulling gepland':'geen vulling gepland');
+  // statushero — het ene antwoord: wat doet hij, hoe ver, en is het goed
   const sev=worstSev();
-  $('#ov-greet') && ($('#ov-greet').textContent=greeting());
-  const N=state.batchesToday,inHand=devsInHand().length;
-  let sum;
-  if(sev==='alarm')sum=((activeAlarms().find(a=>a.sev==='alarm')||{}).ti||'Storing actief')+' — controleer Alarmen.';
-  else if(sev==='warn')sum=((activeAlarms().find(a=>a.sev==='warn')||{}).ti||'Aandachtspunt')+' — verder draait alles normaal.';
-  else if(state.role==='klant')sum='Alles draait rustig. '+N+' batches vandaag · watergift loopt.';
-  else sum='Systeem operationeel. '+N+' batches vandaag'+(inHand?' · '+inHand+' in handbediening':'')+'.';
-  $('#ov-sum') && ($('#ov-sum').textContent=sum);
-  const sEl=$('#ov-status');
-  if(sEl){const sp=sev==='alarm'?pill('alarm','Storing'):sev==='warn'?pill('warn','Aandacht'):pill('ok','Alles in bedrijf');
-    sEl.innerHTML=sp+pill(running()?'run':'idle',running()?'Productie loopt':'Standby');}
-  // activity
-  $('#mimic-mode') && ($('#mimic-mode').textContent=modeLabel());
   $('#ov-now') && ($('#ov-now').textContent=modeLabel());
-  $('#ov-sub') && ($('#ov-sub').textContent=st?st.meta:'Machine gereed');
+  let sub;
+  if(sev==='alarm')sub=((activeAlarms().find(a=>a.sev==='alarm')||{}).ti||'Storing actief')+' — controleer Alarmen';
+  else if(sev==='warn')sub=((activeAlarms().find(a=>a.sev==='warn')||{}).ti||'Aandachtspunt')+' — verder draait alles normaal';
+  else sub=st?st.meta:'Machine gereed';
+  $('#ov-sub') && ($('#ov-sub').textContent=sub);
+  const sEl=$('#ov-status');
+  if(sEl){const sp=sev==='alarm'?pill('alarm','Storing'):sev==='warn'?pill('warn','Aandacht'):pill('ok','Alles in orde');
+    sEl.innerHTML=sp+pill(running()?'run':'idle',running()?'Productie loopt':'Standby');}
   const prog=state.seq.length?Math.round((state.seqIdx)/(state.seq.length-1)*100):0;
-  $('#ov-ring') && ($('#ov-ring').innerHTML=ringSVG(running()?prog:0, running()?COL.acc:COL.idle));
+  $('#ov-ring') && ($('#ov-ring').innerHTML=ringSVG(running()?prog:0, running()?COL.acc:COL.idle, 60));
 }
 /* ============================================================ PROCES-HELPERS */
 function curStep(){return state.seq[state.seqIdx]||null;}
@@ -2412,11 +2783,38 @@ function rcpDetailHTML(){const r=RECIPES.find(x=>x.id===selRcp);const L=r.bak.to
 }
 
 /* ---- voedingsschema (spiegelt het adviesblad) ---- */
-function numNL(s){const n=parseFloat(String(s).replace(',','.'));return isFinite(n)?n:0;}
+function numNL(s){
+  if(typeof s==='number')return isFinite(s)?s:0;
+  let t=String(s).trim().replace(/\s/g,'');
+  if(t.indexOf(',')>-1&&t.indexOf('.')>-1){
+    // beide aanwezig: het laatste teken is de decimaal, de rest zijn duizendtallen
+    t=(t.lastIndexOf(',')>t.lastIndexOf('.'))?t.replace(/\./g,'').replace(',','.'):t.replace(/,/g,'');
+  }else t=t.replace(',','.');
+  const n=parseFloat(t);return isFinite(n)?n:0;
+}
 function ccm3(amount){const t=numNL(state.draft.tankL)||1000,c=numNL(state.draft.conc)||100;return Math.round(numNL(amount)*1e6/(t*c));}
+/* cc/m³-bladcontrole: wat de ingevoerde hoeveelheid oplevert vs. de cc/m³ die op het blad staat */
+function ccmMap(tank){return (tank==='A'?state.draft.Accm:state.draft.Bccm)||{};}
+function ccmCheck(tank,n){
+  const amt=state.draft[tank][n];const sheet=ccmMap(tank)[n];
+  const hasA=amt!==undefined&&amt!=='';const hasS=sheet!==undefined&&sheet!=='';
+  const comp=hasA?ccm3(amt):null;
+  if(!hasA&&!hasS)return{state:'none',comp:null};
+  if(hasA&&!hasS)return{state:'info',comp};
+  if(!hasA&&hasS)return{state:'need',comp:null};
+  const sv=numNL(sheet),tol=Math.max(1,sv*0.01);
+  return{state:Math.abs(comp-sv)<=tol?'ok':'bad',comp,sheet:sv};
+}
+function ccmFb(tank,n){const c=ccmCheck(tank,n);
+  if(c.state==='none')return'';
+  if(c.state==='info')return'<span class="ccm-fb">= '+fix(c.comp)+'</span>';
+  if(c.state==='need')return'<span class="ccm-fb">↑ hoeveelheid?</span>';
+  if(c.state==='ok')return'<span class="ccm-fb ok">'+ic('check',11,2.6)+' klopt</span>';
+  return'<span class="ccm-fb bad">'+ic('warn',11,2.4)+' ≠ '+fix(c.comp)+'</span>';
+}
 function vatsTank(tank,kind){return state.vats.filter(v=>v.kind===kind&&(v.bak===tank||v.bak==='AB'));}
-function blankDraft(){return {id:null,naam:'',gewas:'',stadium:'Standard',substraat:'Steenwol',ec:'',tankL:1000,conc:100,verval:'',A:{},B:{},phKg:'',phL:''};}
-function loadDraft(id){const s=id?state.schemas.find(x=>x.id===id):null;state.draft=s?JSON.parse(JSON.stringify(s)):blankDraft();schemaSel=s?s.id:null;}
+function blankDraft(){return {id:null,naam:'',omschrijving:'',gewas:'',stadium:'Standard',substraat:'Steenwol',ec:'',tankL:1000,conc:100,datum:'',verval:'',A:{},B:{},Accm:{},Bccm:{},phKg:'',phL:''};}
+function loadDraft(id){const s=id?state.schemas.find(x=>x.id===id):null;state.draft=s?JSON.parse(JSON.stringify(s)):blankDraft();const d=state.draft;if(d.Accm==null)d.Accm={};if(d.Bccm==null)d.Bccm={};if(d.omschrijving==null)d.omschrijving='';if(d.datum==null)d.datum='';schemaSel=s?s.id:null;}
 function saveDraft(){const d=state.draft;if(!d.naam||!d.naam.trim()){toast('Geef het recept eerst een naam','info');return;}
   if(d.id){const i=state.schemas.findIndex(s=>s.id===d.id);if(i>=0)state.schemas[i]=JSON.parse(JSON.stringify(d));}
   else{d.id='sch-'+Date.now();state.schemas.push(JSON.parse(JSON.stringify(d)));schemaSel=d.id;}
@@ -2437,7 +2835,8 @@ function schemaToRecipe(schema,tank,bl){const k=bl/(numNL(schema.tankL)||1000);
   if(!dose.length)return null;
   const sumF=dose.reduce((s,[,l])=>s+l,0);const water=Math.max(0,Math.round((bl-sumF)*10)/10);
   const steps=water>0?[['Water',water],...dose]:dose;
-  return {id:'live-'+tank+'-'+Date.now(),name:(schema.naam||'Voedingsschema')+' — Bak '+tank,bak:tank,batch:Math.round(bl),ec:numNL(schema.ec)||2.4,ph:5.5,note:'Live uit het voedingsschema (geschaald ×'+fix(k,2)+').',steps};}
+  const omg=(schema.omschrijving||'').trim();
+  return {id:'live-'+tank+'-'+Date.now(),name:(schema.naam||'Voedingsschema')+' — Bak '+tank,bak:tank,batch:Math.round(bl),ec:numNL(schema.ec)||2.4,ph:5.5,note:(omg?omg+' · ':'')+'Live uit het voedingsschema (geschaald ×'+fix(k,2)+').',steps};}
 function startFillFromSchema(tank){
   if(!(batchL>0)){toast('Vul eerst een batchgrootte in','info');return;}
   const rcp=schemaToRecipe(state.draft,tank,batchL);
@@ -2450,7 +2849,7 @@ function batchPreviewHTML(){const d=state.draft,k=batchL/(numNL(d.tankL)||1000);
     let sum=0;const rows=[];
     vats.forEach(v=>{const a=numNL(d[tank][v.n]);if(a>0){const L=doseLiters(v,d[tank][v.n],k);sum+=L;rows.push(`<div class="bp-row"><span>${v.name}</span><span class="mono">${fix(Math.round(L*10)/10,1)} l</span></div>`);}});
     const water=Math.max(0,batchL-sum);const tot=sum+water;
-    return `<div class="mb-col ${cls}">
+    return `<div class="bp-col ${cls}">
       <div class="mb-h"><span class="chip ${cls}">${tank}</span> Bak ${tank}</div>
       ${rows.length?rows.join(''):'<div class="vat-empty">niets ingevuld voor deze bak</div>'}
       ${rows.length?`<div class="bp-row water"><span>Schoon water (aanvulling)</span><span class="mono">${fix(Math.round(water*10)/10,1)} l</span></div><div class="bp-row tot"><span>Totaal batch</span><span class="mono">${fix(Math.round(tot))} l</span></div>`:''}
@@ -2465,13 +2864,16 @@ function validateFill(schema,tank,bl){const errors=[],warnings=[];
   if(!used.length)errors.push('Geen meststoffen ingevuld voor bak '+tank+'.');
   used.forEach(v=>{if(v.grp&&v.grp!=='-'&&v.grp!=='AB'&&v.grp!==tank){
     errors.push(v.name+' is '+v.grp+'-chemie maar wordt in bak '+tank+' gedoseerd — risico op neerslag (A/B-scheiding).');}});
+  const mism=used.filter(v=>ccmCheck(tank,v.n).state==='bad');
+  if(mism.length)warnings.push('cc/m³ wijkt af van het blad bij '+(mism.length===1?mism[0].name:(mism.length+' meststoffen'))+' — controleer of de ingevoerde hoeveelheid klopt.');
+  const cap=numNL(schema.tankL)||1000;
   if(!(bl>0))errors.push('Vul een batchgrootte in.');
-  else if(bl>1500)errors.push('Batchgrootte '+fix(bl)+' l is groter dan de mestbakgrootte.');
-  else if(bl>1000)warnings.push('Batch > 1000 l — advies is "nooit 1000 l aanmaken, circa 800".');
+  else if(bl>cap)errors.push('Batchgrootte '+fix(bl)+' l is groter dan de mestbakgrootte ('+fix(cap)+' l).');
+  else if(bl>cap*0.9)warnings.push('Batch is '+fix(bl)+' l van max. '+fix(cap)+' l — advies: vul de mestbak niet helemaal (circa '+fix(Math.round(cap*0.8))+' l).');
   if(state.estop)errors.push('Noodstop ingedrukt — vrijgave geblokkeerd.');
   if(!state.air)errors.push('Luchtdruk te laag — pneumatische kleppen niet vrijgegeven.');
   if(vervalText(schema).cls==='exp')warnings.push('Recept is verlopen — controleer of het advies nog geldt.');
-  if(!numNL(schema.phKg)&&!numNL(schema.phL))warnings.push('Geen pH-correctie (Nitrokal) ingevuld.');
+  if(!numNL(schema.phKg)&&!numNL(schema.phL))warnings.push('Geen pH-correctie ingevuld.');
   if(state.leak)warnings.push('Er stond een lektest-melding open — die wordt gewist bij opnieuw starten.');
   return {errors,warnings};}
 function checkBannerHTML(kind,tank,v){
@@ -2493,25 +2895,27 @@ function schemaFormHTML(){
   const d=state.draft;
   const field=(f,label,ph,wide)=>`<label class="sf-field${wide?' wide':''}"><span>${label}</span><input data-f="${f}" value="${esc(d[f])}" placeholder="${ph||''}"></label>`;
   const colHTML=(tank)=>{const cls=tank==='A'?'a':'b';const macros=vatsTank(tank,'macro'),micros=vatsTank(tank,'micro');
-    const row=(v)=>{const amt=(d[tank][v.n]??'');return `<div class="vat-row"><div class="vn">${v.name}${v.sub?`<span class="muted-2"> · ${v.sub}</span>`:''}</div>
+    const row=(v)=>{const amt=(d[tank][v.n]??'');const sheet=(ccmMap(tank)[v.n]??'');return `<div class="vat-row"><div class="vn">${v.name}${v.sub?`<span class="muted-2"> · ${v.sub}</span>`:''}</div>
         <div class="vi"><input inputmode="decimal" data-tank="${tank}" data-vat="${v.n}" value="${esc(amt)}" placeholder="0"><span class="u">${v.unit}</span></div>
-        <div class="ccm" id="ccm-${tank}-${v.n}">${amt!==''?(fix(ccm3(amt))+' cc/m³'):'—'}</div></div>`;};
+        <div class="ccm-cell"><input class="ccm-in" inputmode="decimal" data-tank="${tank}" data-ccm="${v.n}" value="${esc(sheet)}" placeholder="cc/m³" aria-label="cc/m³ volgens het blad voor ${esc(v.name)}"><div class="ccm-fb-wrap" id="ccmfb-${tank}-${v.n}">${ccmFb(tank,v.n)}</div></div></div>`;};
     return `<div class="mb-col ${cls}">
       <div class="mb-h"><span class="chip ${cls}">${tank}</span> Mestbak ${tank}</div>
-      <div class="vat-head"><span>Meststof</span><span>hoeveelheid</span><span>cc/m³ <span class="muted-2" style="font-weight:400">↔ blad</span></span></div>
+      <div class="vat-head"><span>Meststof</span><span>hoeveelheid</span><span>cc/m³ blad <span class="muted-2" style="font-weight:400">controle</span></span></div>
       ${macros.length?macros.map(row).join(''):'<div class="vat-empty">geen macro-vat voor deze bak</div>'}
-      ${micros.length?`<div class="vat-sub">Spoorelementen</div>${micros.map(row).join('')}`:''}
+      ${micros.length?`<div class="vat-sub">Spoorelementen <span class="muted-2" style="font-weight:400;text-transform:none;letter-spacing:0">· voer de ml-waarde van het blad in (volume), niet de gram</span></div>${micros.map(row).join('')}`:''}
     </div>`;};
   const vv=vervalText(d);
   return `<div class="card sf-head">
       <div class="sf-grid">
         ${field('naam','Receptnaam','bv. Tomaat — vegetatief',true)}
+        ${field('omschrijving','Omschrijving / pakket','bv. SUBSTRAFEED E2 · Silo 202',true)}
         ${field('gewas','Gewas','Tomaat')}
-        ${field('stadium','Gewasstadium','Standard')}
         ${field('substraat','Substraat','Steenwol')}
-        ${field('ec','EC-doel (mS/cm)','2,4')}
+        ${field('stadium','Gewasstadium','Standard')}
+        ${field('ec','EC water + mest (mS/cm)','1,90')}
         ${field('tankL','Mestbakgrootte (l)','1000')}
         ${field('conc','Concentratie (×)','100')}
+        <label class="sf-field"><span>Adviesdatum</span><input type="date" data-f="datum" value="${esc(d.datum)}"></label>
         <label class="sf-field"><span>Vervaldatum</span><input type="date" data-f="verval" value="${esc(d.verval)}"></label>
       </div>
       <div class="sf-meta"><span id="sf-verval" class="${vv.cls}">${vv.txt}</span>
@@ -2519,11 +2923,12 @@ function schemaFormHTML(){
     </div>
     <div class="schema-grid">${colHTML('A')}${colHTML('B')}</div>
     <div class="card sf-ph">
-      <div class="mb-h">pH-correctie <span class="muted-2" style="font-weight:400">· Nitrokal (los op het adviesblad)</span></div>
+      <div class="mb-h">pH-correctie <span class="muted-2" style="font-weight:400">· zuur (bv. Nitrakal) — aparte pH-regeling, gaat niet in de batch</span></div>
       <div class="ph-row">
         <label class="sf-field"><span>kg</span><input inputmode="decimal" data-ph="kg" value="${esc(d.phKg)}" placeholder="0"></label>
         <label class="sf-field"><span>liter</span><input inputmode="decimal" data-ph="l" value="${esc(d.phL)}" placeholder="0"></label>
       </div>
+      <div class="muted-2" style="font-size:12px;margin-top:8px">Vul kg óf liter — één volstaat (zelfde hoeveelheid, twee eenheden op het blad).</div>
     </div>
     <div class="card batch-card">
       <div class="mb-h">${ic('drop',16,2)} Batch aanmaken <span class="muted-2" style="font-weight:400">· het advies omgerekend naar liters per batch</span></div>
@@ -2566,7 +2971,7 @@ function vatEditorHTML(){
 }
 
 function refreshSchemaDerived(){
-  state.vats.forEach(v=>['A','B'].forEach(t=>{const el=document.getElementById('ccm-'+t+'-'+v.n);if(el){const a=state.draft[t][v.n];el.textContent=(a!==undefined&&a!=='')?(fix(ccm3(a))+' cc/m³'):'—';}}));
+  state.vats.forEach(v=>['A','B'].forEach(t=>{const fb=document.getElementById('ccmfb-'+t+'-'+v.n);if(fb)fb.innerHTML=ccmFb(t,v.n);}));
   const sv=document.getElementById('sf-verval');if(sv){const vv=vervalText(state.draft);sv.className=vv.cls;sv.textContent=vv.txt;}
   const bp=document.getElementById('batch-preview');if(bp)bp.innerHTML=batchPreviewHTML();
   const bk=document.getElementById('batch-k');if(bk)bk.textContent=fix(batchL/(numNL(state.draft.tankL)||1000),2);
@@ -2605,6 +3010,7 @@ function mountSchema(){
   }
   $$('#schema-main [data-f]').forEach(inp=>inp.oninput=()=>{state.draft[inp.dataset.f]=inp.value;refreshSchemaDerived();});
   $$('#schema-main [data-tank][data-vat]').forEach(inp=>inp.oninput=()=>{state.draft[inp.dataset.tank][+inp.dataset.vat]=inp.value;refreshSchemaDerived();});
+  $$('#schema-main [data-ccm]').forEach(inp=>inp.oninput=()=>{const t=inp.dataset.tank;(t==='A'?state.draft.Accm:state.draft.Bccm)[+inp.dataset.ccm]=inp.value;refreshSchemaDerived();});
   $$('#schema-main [data-ph]').forEach(inp=>inp.oninput=()=>{state.draft[inp.dataset.ph==='kg'?'phKg':'phL']=inp.value;});
   const bl=$('#batch-l');if(bl)bl.oninput=()=>{batchL=numNL(bl.value);refreshSchemaDerived();};
   $$('#schema-main [data-fill]').forEach(b=>b.onclick=()=>attemptFill(b.dataset.fill));
@@ -2613,9 +3019,9 @@ function mountSchema(){
 
 /* ============================================================ SCHERM: VERBRUIK */
 const VERBRUIK={batches:142,water:9820,ec:2.4,
-  items:[['Nitrokal',1850],['Amnitra',1320],['Baskal',1150],['Calcal',980],['BFK',690],['SuperFK',540],['Zwakal',520],['Magnitra',430],['IJzer',410],['Sporen 1',145],['Sporen 2',130]]};
+  items:[['Nitrakal',1850],['Amnitra',1320],['Baskal',1150],['Calsal',980],['BFK',690],['SuperFK',540],['Zwakal',520],['Magnitra',430],['IJzer',410],['Sporen 1',145],['Sporen 2',130]]};
 let vbPeriod='maand';
-const VB={maand:{f:1,lbl:'mei 2026',cap:'Deze maand'},week:{f:0.23,lbl:'week 22',cap:'Deze week'},jaar:{f:12.4,lbl:'2026 (YTD)',cap:'Dit jaar'}};
+const VB={maand:{f:1,lbl:'juni 2026',cap:'Deze maand'},week:{f:0.23,lbl:'week 23',cap:'Deze week'},jaar:{f:12.4,lbl:'2026 (YTD)',cap:'Dit jaar'}};
 function viewVerbruik(){
   const f=VB[vbPeriod].f, lbl=VB[vbPeriod].lbl;
   const tot=Math.round(VERBRUIK.items.reduce((s,[,a])=>s+a,0)*f);
@@ -2673,7 +3079,7 @@ function mountAlarmen(){
    act.map(a=>{
      const open=alOpen===a.id&&svc;const isFo=a.id===foId;
      const badges=[isFo?'<span class="badge-fo">eerste melding</span>':'',a.suppressed?'<span class="badge-sup">opvolgmelding</span>':'',a.ack?'<span class="badge-ack">bevestigd</span>':''].join('');
-     const jump=(a.leak&&a.suspect)?`<button class="btn sm" data-hw="${a.suspect.slot}.${a.suspect.ch}">${ic('chip',15,2)} Naar verdachte klep</button>`:a.hw?`<button class="btn sm" data-hw="${a.slot}.${a.ch==null?'M':a.ch}">${ic('chip',15,2)} Naar hardware</button>`:`<button class="btn sm" data-io="1">${ic('io',15,2)} Naar I/O</button>`;
+     const jump=(a.leak&&a.suspect)?`<button class="btn sm" data-hw="${a.suspect.slot}.${a.suspect.ch}">${ic('chip',15,2)} Naar verdachte klep</button>`:a.hw?`<button class="btn sm" data-hw="${a.slot}.${a.ch==null?'M':a.ch}">${ic('chip',15,2)} Naar hardware</button>`:(a.health||a.live)?`<button class="btn sm" data-health="1">${ic('gauge',15,2)} Naar ${a.live?'diagnose':'gezondheid'}</button>`:`<button class="btn sm" data-io="1">${ic('io',15,2)} Naar I/O</button>`;
      return `<div class="al-row ${open?'open':''}" data-a="${a.id}" ${svc?'':'style=cursor:default'}>
        <div class="al-ic ${a.sev}">${ic(a.sev==='alarm'?'alarm':a.sev==='warn'?'warn':'info',16,2.2)}</div>
        <div></div>
@@ -2694,10 +3100,15 @@ function mountAlarmen(){
   if(svc)$$('#al-card .al-row').forEach(r=>r.onclick=e=>{if(e.target.closest('[data-ack]')||e.target.closest('[data-io]')||e.target.closest('[data-hw]'))return;const id=r.dataset.a;alOpen=alOpen===id?null:id;mountAlarmen();});
   $$('#al-card [data-ack]').forEach(b=>b.onclick=()=>{const id=b.dataset.ack;const al=allAlarms().find(x=>x.id===id);
     if(al&&al.leak){resolveLeak();updateBell();renderNav();mountAlarmen();return;}
-    if(id.indexOf('hw-')===0)state.hwAck[id]=true;else{const a=state.alarms.find(x=>x.id===id);if(a)a.ack=true;}
+    if(id.indexOf('hw-')===0)state.hwAck[id]=true;
+    else if(id.indexOf('live-')===0){state.live.ack=state.live.ack||{};state.live.ack[id]=true;const la=(state.liveAlarms||[]).find(x=>x.id===id);if(la)la.ack=true;
+      try{const base=(state.live.url||'').replace(/\/+$/,'');fetch(base+'/ack',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:id.replace(/^live-/,'')})}).catch(()=>{});}catch(e){}}
+    else if(id.indexOf('h-')===0){state.hAck=state.hAck||{};state.hAck[id]=true;}
+    else{const a=state.alarms.find(x=>x.id===id);if(a)a.ack=true;}
     toast('Melding '+(al?al.code:'')+' bevestigd','check');updateBell();renderNav();mountAlarmen();});
   $$('#al-card [data-io]').forEach(b=>b.onclick=()=>go('io'));
-  $$('#al-card [data-hw]').forEach(b=>b.onclick=()=>{const parts=b.dataset.hw.split('.');go('hardware');if(parts[1]!=='M')selectCh(+parts[0],+parts[1]);else selectElem(+parts[0]);});
+  $$('#al-card [data-health]').forEach(b=>b.onclick=()=>{hwTab='status';go('hardware');setTimeout(()=>openDisc('hw-disc-cond'),120);});
+  $$('#al-card [data-hw]').forEach(b=>b.onclick=()=>{const parts=b.dataset.hw.split('.');hwTab='status';go('hardware');setTimeout(()=>{const rd=document.getElementById('hw-disc-rack');if(rd)rd.open=true;if(parts[1]!=='M')selectCh(+parts[0],+parts[1]);else selectElem(+parts[0]);const rk=document.getElementById('hw-rack-host');if(rk)rk.scrollIntoView({behavior:'smooth',block:'center'});},120);});
 }
 
 /* ============================================================ SCHERM: SEQUENTIE */
@@ -3046,6 +3457,7 @@ function updateOnd(){}
 /* ============================================================ ROUTER */
 /* ============================================================ HARDWARE-TWEELING: rendering + diagnose */
 let hwMode='live';
+let hwTab='status';   // sub-tab: status | config | diag | databron
 let hwSel=null;
 function idu(s){return uidOf(s).replace(':','_');}
 function sevIcon(sev){return sev==='ok'?'check':sev==='warn'?'warn':sev==='alarm'?'alarm':sev==='run'?'play':'clock';}
@@ -3062,7 +3474,7 @@ function abbrev(s){const k=s.k;
   if(k==='lvl-tA')return 'Niveau tk A';if(k==='lvl-tB')return 'Niveau tk B';
   if(k==='A1'||k==='A2'||k==='B1'||k==='B2')return 'Bak '+k;
   return s.nm;}
-function aiMA(s){const f=sigFault(s);if(f){if(f.code==='8002')return '‹ 3,6 mA';if(f.code==='8001')return '› 21 mA';}const c=state.cal[s.k];if(!c)return '—';return fix(c.raw,1)+' mA';}
+function aiMA(s){const f=sigFault(s);if(f){if(f.code==='7710'||f.code==='8002')return '‹ 3,6 mA';if(f.code==='8910'||f.code==='8001')return '› 21 mA';}const c=state.cal[s.k];if(!c)return '—';return fix(c.raw,1)+' mA';}
 function ioStatus(s){const v=ioVals(s);const f=sigFault(s);if(f){return {raw:s.type==='AI'?'—':v.raw,scaled:s.type==='AI'?aiMA(s):v.scaled,sev:'alarm',lbl:f.cond.nm,fault:f};}return {raw:v.raw,scaled:v.scaled,sev:v.sev,lbl:v.lbl,fault:null};}
 
 function ledClass(color,st){let c='led';if(st==='on')c+=' on '+color;else if(st==='blink'||st==='blink05'||st==='blink4')c+=' on '+color+' blink'+(st==='blink05'?' f05':st==='blink4'?' f4':'');return c;}
@@ -3240,6 +3652,427 @@ function buildSysPanel(){
     <div class="hw-hint" style="padding:10px 14px 12px">Systeemwaarden via PLCnext-systeemvariabelen (DEVICE_STATE, RTC, USER_PARTITION) — informatief; procesbewaking loopt via de alarmen.</div>
   </div>`;
 }
+/* ============================================================
+   SYSTEEMGEZONDHEID — conditiemonitoring + DataLogger
+   Voeding (U_L/U_P met dip-detectie), boardtemperatuur-trend + ventilator,
+   SD-kaart-slijtage/opslag. Loggen vanaf de PLC via de PLCnext DataLogger
+   (RSC IDataLoggerService2 → SQLite-datasink op SD, exporteerbaar naar CSV).
+   ============================================================ */
+const V_ALARM=19.2;   // ondergrens AXC F-voeding (19,2–30 V DC)
+const V_WARN=21.0;    // marge-drempel: hieronder = marginaal
+const HHIST=48;       // sparkline-historielengte
+/* Gestructureerde bronvariabelen voor de health-monitoring — single source of truth.
+   Hiermee koppel je de twin straks 1-op-1 aan de echte PLC (GDS-variabele + datatype + bron). */
+const HEALTH_POINTS=[
+  {key:'U_L',    label:'Voedingsspanning U_L', unit:'V',   type:'REAL', gds:'Health.U_L',     src:'AI-kanaal 24 V-meting / QUINT-PSU-signaal'},
+  {key:'U_P',    label:'Voedingsspanning U_P', unit:'V',   type:'REAL', gds:'Health.U_P',     src:'AI-kanaal 24 V-meting'},
+  {key:'T_BOARD',label:'Boardtemperatuur',     unit:'°C',  type:'REAL', gds:'Arp.Plc.Eclr/DEVICE_STATE.BOARD_TEMPERATURE', src:'PLCnext-systeemvariabele'},
+  {key:'CPU',    label:'CPU-belasting',        unit:'%',   type:'UINT', gds:'Arp.Plc.Eclr/DEVICE_STATE.CPU_LOAD_ALL_CORES', src:'PLCnext-systeemvariabele'},
+  {key:'I_UBUS', label:'UBus-stroom',          unit:'mA',  type:'UINT', gds:'Health.I_UBus',  src:'Afgeleid / AXL F PWR-module'},
+  {key:'FAN',    label:'Ventilatortoerental',  unit:'rpm', type:'UINT', gds:'Health.FanRpm',  src:'Ventilatormodule (3152) / tacho'},
+  {key:'SD_FREE',label:'SD vrije ruimte',      unit:'%',   type:'UINT', gds:'Health.SdFreePct',src:'Partitie-info / functieblok'},
+  {key:'SD_WEAR',label:'SD-slijtage',          unit:'%',   type:'UINT', gds:'Health.SdWearPct',src:'SMART/levensduur-functieblok'}
+];
+function ensureHealth(){
+  if(state.health)return state.health;
+  const t=state.sys.temp,cpu=state.sys.cpu;
+  const mk=(base,sp,n)=>Array.from({length:n},()=>+(base+(Math.random()*sp-sp/2)).toFixed(2));
+  state.health={
+    ul:24.10,up:24.00,ulMin:23.82,upMin:23.71,
+    ulHist:mk(24.05,0.16,HHIST),upHist:mk(23.98,0.18,HHIST),
+    tHist:mk(t,1.2,HHIST),tMin:+(t-1.6).toFixed(1),tMax:+(t+1.3).toFixed(1),
+    cpuHist:mk(cpu,6,HHIST),
+    dips:[],
+    fanRpm:4180,fanOn:t>=46,
+    sdWear:18,sdWrites:412000,
+    resetAt:Date.now()-1000*60*60*8,
+    log:{on:true,intervalMs:1000,sink:'SD',rows:288433,sinceReset:Date.now()-1000*60*60*8,retentionDays:90,
+      vars:HEALTH_POINTS.map(p=>p.label+' ('+p.unit+')')}
+  };
+  return state.health;
+}
+/* conditie-oordeel per subsysteem */
+function pwrCond(){const H=ensureHealth();const lo=Math.min(H.ulMin,H.upMin,H.ul,H.up);
+  return lo<V_ALARM?'alarm':lo<V_WARN?'warn':'ok';}
+function tempCond(){const sy=state.sys;return sy.temp>=sy.tempWarn?'alarm':sy.temp>=sy.tempWarn-12?'warn':'ok';}
+function sdCond(){const H=ensureHealth();const free=100-state.sys.sd;
+  if(hwSd().id==='none')return 'warn';
+  return (free<8||H.sdWear>=85)?'alarm':(free<18||H.sdWear>=70)?'warn':'ok';}
+const condTone=c=>c==='alarm'?'alarm':c==='warn'?'warn':'ok';
+const condTxt=c=>c==='alarm'?'Alarm':c==='warn'?'Marginaal':'OK';
+/* ---- twee-seconden-antwoord: compacte gezondheids-samenvatting (4 pijlers) ---- */
+function openDisc(id){const d=document.getElementById(id);if(d){d.open=true;d.scrollIntoView({behavior:'smooth',block:'start'});}}
+function healthSummaryItems(){const sy=state.sys;const H=ensureHealth();
+  return [
+    ['pwr','bolt','Voeding',pwrCond(),fix(H.ul,1)+' V','U_L · U_P 24 V'],
+    ['temp','gauge','Temperatuur',tempCond(),fix(sy.temp,1)+' °C','board'],
+    ['sd','shield','SD / opslag',sdCond(),(100-sy.sd)+'% vrij','slijtage '+H.sdWear+'%'],
+    ['bus','network','Axioline-bus',busCond(),busCond()==='ok'?'Actief':'Aandacht',hwCtrl().name]
+  ];}
+function buildHealthSummary(){
+  const cells=healthSummaryItems().map(([k,icn,l,c,v,s])=>`<button class="hsum-cell" data-hsum="${k}">
+    <span class="hsum-ic ${condTone(c)}" id="hsum-ic-${k}">${ic(icn,17,2)}</span>
+    <span class="hsum-tx"><span class="hsum-l">${l}</span><span class="hsum-v mono" id="hsum-v-${k}">${v}</span><span class="hsum-s">${s}</span></span>
+    <span class="hsum-state ${condTone(c)}" id="hsum-st-${k}">${condTxt(c)}</span>
+  </button>`).join('');
+  const upd=(state.live&&state.live.enabled&&state.live.lastOk)?state.live.lastOk:Date.now();
+  return `<div class="card hsum-card" id="hw-hsum">
+    <div class="sys-head"><span style="display:flex;color:var(--ink-2)">${ic('gauge',17,2)}</span><h3>Systeemgezondheid</h3>
+      <span class="muted-2" id="hsum-upd" style="margin-left:auto;font-size:12px">bijgewerkt ${clockStr(upd)}</span></div>
+    <div class="hsum-grid">${cells}</div>
+  </div>`;
+}
+function paintHealthSummary(){
+  if(state.screen!=='hardware')return;
+  const upd=(state.live&&state.live.enabled&&state.live.lastOk)?state.live.lastOk:Date.now();
+  healthSummaryItems().forEach(([k,icn,l,c,v])=>{
+    const ve=document.getElementById('hsum-v-'+k);if(ve)ve.textContent=v;
+    const st=document.getElementById('hsum-st-'+k);if(st){st.textContent=condTxt(c);st.className='hsum-state '+condTone(c);}
+    const ie=document.getElementById('hsum-ic-'+k);if(ie)ie.className='hsum-ic '+condTone(c);
+  });
+  const u=document.getElementById('hsum-upd');if(u)u.textContent='bijgewerkt '+clockStr(upd);
+}
+/* mini-sparkline (SVG) */
+function spark(vals,opt){opt=opt||{};const w=opt.w||128,h=opt.h||30,pad=2.5;
+  if(!vals||vals.length<2)return `<svg width="${w}" height="${h}"></svg>`;
+  const mn=opt.min!=null?opt.min:Math.min.apply(null,vals),mx=opt.max!=null?opt.max:Math.max.apply(null,vals);
+  const rng=(mx-mn)||1,n=vals.length,col=opt.color||'var(--acc)';
+  const X=i=>pad+(w-2*pad)*i/(n-1),Y=v=>h-pad-(h-2*pad)*((Math.max(mn,Math.min(mx,v))-mn)/rng);
+  const pts=vals.map((v,i)=>X(i).toFixed(1)+','+Y(v).toFixed(1)).join(' ');
+  const lx=X(n-1),ly=Y(vals[n-1]);
+  let thr='';if(opt.thr!=null&&opt.thr>mn&&opt.thr<mx){const ty=Y(opt.thr);thr=`<line x1="${pad}" y1="${ty.toFixed(1)}" x2="${(w-pad).toFixed(1)}" y2="${ty.toFixed(1)}" stroke="var(--alarm)" stroke-width="1" stroke-dasharray="3 3" opacity=".55"/>`;}
+  const area=`${X(0).toFixed(1)},${(h-pad).toFixed(1)} ${pts} ${lx.toFixed(1)},${(h-pad).toFixed(1)}`;
+  return `<svg class="spark" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">${thr}<polyline points="${area}" fill="${col}" opacity=".10" stroke="none"/><polyline points="${pts}" fill="none" stroke="${col}" stroke-width="1.6"/><circle cx="${lx.toFixed(1)}" cy="${ly.toFixed(1)}" r="2.1" fill="${col}"/></svg>`;
+}
+function dipRows(){const H=ensureHealth();if(!H.dips.length)return '<div class="muted-2" style="font-size:12px;padding:4px 0">Geen dips geregistreerd sinds nulstellen.</div>';
+  return H.dips.slice(-6).reverse().map(d=>{const sev=d.v<V_ALARM?'alarm':'warn';
+    return `<div class="h-dip"><span class="led on ${sev}"></span><span class="mono">${fix(d.v,1)} V</span><span class="r">${d.rail}</span><span class="t">${clockStr(d.t)} · ${dateStr(d.t)}</span></div>`;}).join('');
+}
+function durStr(ms){let m=Math.floor(ms/60000);const d=Math.floor(m/1440);m-=d*1440;const h=Math.floor(m/60);m-=h*60;return (d?d+'d ':'')+h+'u '+m+'m';}
+function vBar(v,id){const pct=Math.max(0,Math.min(100,(v-18)/(26-18)*100));const sev=v<V_ALARM?'alarm':v<V_WARN?'warn':'ok';
+  const wPct=(V_WARN-18)/(26-18)*100,aPct=(V_ALARM-18)/(26-18)*100;
+  return `<div class="h-vbar"><span id="${id}" class="${sev}" style="width:${pct.toFixed(1)}%"></span><i class="warn" style="left:${wPct.toFixed(1)}%"></i><i class="alarm" style="left:${aPct.toFixed(1)}%"></i></div>`;}
+function buildHealthPanel(){
+  const H=ensureHealth();const sy=state.sys;const c=hwCtrl();const is3152=c.id==='F3152';
+  const chips=[
+    {k:'Voeding',c:pwrCond(),ic:'bolt'},
+    {k:'Temperatuur',c:tempCond(),ic:'gauge'},
+    {k:'SD / opslag',c:sdCond(),ic:'shield'}
+  ];
+  if(is3152)chips.push({k:'Ventilator',c:H.fanOn?'ok':'warn',ic:'cpu'});
+  const chipHtml=chips.map(x=>`<div class="h-chip ${condTone(x.c)}"><span class="ci">${ic(x.ic,14,2)}</span><span class="ck">${x.k}</span><span class="cv">${ledHTML(condTone(x.c),'on','xs')} ${condTxt(x.c)}</span></div>`).join('');
+  const trend=(()=>{const a=H.tHist[H.tHist.length-1],b=H.tHist[Math.max(0,H.tHist.length-8)];const d=a-b;return d>0.4?'▲ stijgend':d<-0.4?'▼ dalend':'▬ stabiel';})();
+  const free=100-sy.sd;
+  const fanTile=is3152
+    ? `<div class="h-sub"><div class="k">Ventilator (insteekmodule)</div><div class="v"><span id="hv-fan">${H.fanOn?ledHTML('ok','on'):ledHTML('info','off')} ${H.fanOn?fix(H.fanRpm,0)+' rpm':'uit (koel)'}</span></div><div class="sub">Schakelt in bij hogere boardtemperatuur</div></div>`
+    : `<div class="h-sub"><div class="k">Koeling</div><div class="v">${ledHTML('ok','on')} Passief (convectie)</div><div class="sub">${c.name} heeft geen ventilatormodule</div></div>`;
+  return `<div class="card sys-card h-card" id="health-panel">
+    <div class="sys-head"><span style="display:flex;color:var(--ink-2)">${ic('gauge',17,2)}</span><h3>Systeemgezondheid — conditiemonitoring</h3><span class="muted-2" style="margin-left:auto;font-family:var(--mono);font-size:12px">${c.name} · voorspellend</span></div>
+    <div class="h-chips">${chipHtml}</div>
+    <div class="h-grid">
+      <!-- VOEDING -->
+      <div class="h-cell">
+        <div class="h-cell-h"><span class="ci">${ic('bolt',15,2)}</span><b>Voeding 24 V</b><span class="h-state ${condTone(pwrCond())}" id="hv-pwr">${condTxt(pwrCond())}</span></div>
+        <div class="h-rail">
+          <div class="h-rail-l"><span class="lbl">U_L (logica/bus)</span><span class="big mono" id="hv-ul">${fix(H.ul,2)} V</span></div>
+          <div class="h-spark" id="hv-ulspark">${spark(H.ulHist,{color:'var(--acc)',min:18,max:26,thr:V_ALARM})}</div>
+        </div>
+        ${vBar(H.ul,'hv-ulbar')}
+        <div class="h-rail" style="margin-top:9px">
+          <div class="h-rail-l"><span class="lbl">U_P (I/O)</span><span class="big mono" id="hv-up">${fix(H.up,2)} V</span></div>
+          <div class="h-spark" id="hv-upspark">${spark(H.upHist,{color:'var(--acc-700)',min:18,max:26,thr:V_ALARM})}</div>
+        </div>
+        ${vBar(H.up,'hv-upbar')}
+        <div class="h-minrow">
+          <span>Laagste sinds nulstellen: <b class="mono" id="hv-ulmin">${fix(H.ulMin,1)} V</b> (U_L) · <b class="mono" id="hv-upmin">${fix(H.upMin,1)} V</b> (U_P)</span>
+        </div>
+        <div class="h-thr">${ic('info',12,2)} Drempels: alarm &lt; ${fix(V_ALARM,1)} V · marginaal &lt; ${fix(V_WARN,1)} V · spec 19,2–30 V DC</div>
+        <div class="h-dips-h">Dip-/brownout-log</div>
+        <div class="h-dips" id="hv-dips">${dipRows()}</div>
+      </div>
+      <!-- TEMPERATUUR + VENTILATOR -->
+      <div class="h-cell">
+        <div class="h-cell-h"><span class="ci">${ic('gauge',15,2)}</span><b>Boardtemperatuur</b><span class="h-state ${condTone(tempCond())}" id="ht-state">${condTxt(tempCond())}</span></div>
+        <div class="h-rail">
+          <div class="h-rail-l"><span class="lbl">Actueel · <span id="ht-trend">${trend}</span></span><span class="big mono" id="ht-val">${fix(sy.temp,1)} °C</span></div>
+          <div class="h-spark" id="ht-spark">${spark(H.tHist,{color:'var(--warn)',min:30,max:sy.tempMax,thr:sy.tempWarn})}</div>
+        </div>
+        <div class="h-vbar"><span id="ht-bar" class="${tempCond()==='ok'?'ok':'warn'}" style="width:${Math.min(100,Math.round(sy.temp/sy.tempMax*100))}%"></span><i class="warn" style="left:${Math.round(sy.tempWarn/sy.tempMax*100)}%"></i></div>
+        <div class="h-minrow"><span>Min/Max sinds nulstellen: <b class="mono" id="ht-min">${fix(H.tMin,1)}</b> / <b class="mono" id="ht-max">${fix(H.tMax,1)}</b> °C · waarschuwing ${fix(sy.tempWarn,0)} °C</span></div>
+        ${fanTile}
+        <div class="h-thr">${ic('info',12,2)} Uitgebreid bereik −25…+60 °C; thermische trend voorspelt degradatie vóór uitval.</div>
+      </div>
+      <!-- SD / OPSLAG -->
+      <div class="h-cell">
+        <div class="h-cell-h"><span class="ci">${ic('shield',15,2)}</span><b>SD-kaart &amp; opslag</b><span class="h-state ${condTone(sdCond())}" id="hs-state">${condTxt(sdCond())}</span></div>
+        <div class="h-sub"><div class="k">Kaart</div><div class="v" style="font-size:13px">${hwSd().name} <span class="muted-2 mono">${hwSd().id==='none'?'':hwSd().art}</span></div></div>
+        <div class="h-sub"><div class="k">Vrije ruimte</div><div class="v mono" id="hs-free">${free}% vrij</div><div class="h-vbar"><span class="${free<18?'warn':'ok'}" id="hs-freebar" style="width:${100-free}%"></span></div></div>
+        <div class="h-sub"><div class="k">Slijtage (geschat verbruik levensduur)</div><div class="v mono" id="hs-wear">${H.sdWear}%</div><div class="h-vbar"><span class="${H.sdWear>=70?'warn':'ok'}" id="hs-wearbar" style="width:${H.sdWear}%"></span></div></div>
+        <div class="h-sub"><div class="k">Schrijfcycli (teller)</div><div class="v mono" id="hs-writes">${fix(H.sdWrites,0)}</div></div>
+        <div class="h-thr">${ic('info',12,2)} ${hwSd().id==='none'?'Zonder SD-kaart logt de DataLogger alleen in een RAM-ringbuffer (verloren bij herstart).':'Een volle of versleten kaart stopt de DataLogger stil — bewaak vrije ruimte én slijtage.'}</div>
+      </div>
+      <!-- DATALOGGER -->
+      <div class="h-cell">
+        <div class="h-cell-h"><span class="ci">${ic('usage',15,2)}</span><b>DataLogger — loggen vanaf de PLC</b><span class="h-state ok" id="hl-state">${H.log.on?'Actief':'Uit'}</span></div>
+        <dl class="dg-grid" style="margin:6px 0 8px">
+          <dt>Service</dt><dd>RSC IDataLoggerService2</dd>
+          <dt>Datasink</dt><dd>${hwSd().id==='none'?'RAM-ringbuffer (geen SD)':'SQLite op SD-kaart'}</dd>
+          <dt>Bemonstering</dt><dd class="mono">${H.log.intervalMs} ms · tasksynchroon</dd>
+          <dt>Retentie</dt><dd>${H.log.retentionDays} dagen (ringbuffer)</dd>
+          <dt>Records</dt><dd class="mono"><span id="hl-rows">${fix(H.log.rows,0)}</span> <span class="muted-2">· sinds <span id="hl-since">${durStr(Date.now()-H.log.sinceReset)}</span></span></dd>
+        </dl>
+        <div class="h-vars"><div class="k">Gelogde variabelen (GDS)</div>${H.log.vars.map(v=>`<span class="h-var">${v}</span>`).join('')}</div>
+        <details class="diag-det" style="margin:0 0 10px"><summary>PLC-koppeling — bronvariabelen (voor latere koppeling aan de echte PLC)</summary>
+          <div style="padding:8px 0 2px">${HEALTH_POINTS.map(p=>`<div class="h-map"><code class="hm-g">${p.gds}</code><span class="hm-t">${p.type}</span><span class="hm-s">${p.label} · ${p.src}</span></div>`).join('')}</div>
+        </details>
+        <div class="h-btns">
+          <button class="h-btn" id="h-export">${ic('usage',14,2)} Exporteer CSV</button>
+          <button class="h-btn ghost" id="h-reset">${ic('wrench',14,2)} Capture nulstellen</button>
+          <button class="h-btn warn" id="h-dip">${ic('bolt',14,2)} Dip simuleren (demo)</button>
+        </div>
+        <div class="h-thr">${ic('info',12,2)} De service leest dezelfde GDS-variabelen ook live uit via gRPC/REST/OPC UA (zie Diagnose &amp; service). Een drempeloverschrijding verschijnt automatisch als alarm.</div>
+      </div>
+    </div>
+  </div>`;
+}
+function tickHealth(){
+  if(state.live&&state.live.enabled)return;        // in live-modus komt de data van de PLC-service
+  const H=ensureHealth();const sy=state.sys;
+  const dip=Math.random()<0.012;                       // zeldzame dip
+  H.ul=+(24.05+(Math.random()*0.18-0.09)).toFixed(2);
+  H.up=+(23.98+(Math.random()*0.20-0.10)).toFixed(2);
+  if(dip){const rail=Math.random()<0.6?'ul':'up';const v=+(18.4+Math.random()*2.4).toFixed(2);H[rail]=v;
+    if(v<V_WARN)H.dips.push({t:Date.now(),rail:rail==='ul'?'U_L':'U_P',v});if(H.dips.length>40)H.dips.shift();}
+  H.ulMin=Math.min(H.ulMin,H.ul);H.upMin=Math.min(H.upMin,H.up);
+  H.ulHist.push(H.ul);if(H.ulHist.length>HHIST)H.ulHist.shift();
+  H.upHist.push(H.up);if(H.upHist.length>HHIST)H.upHist.shift();
+  H.tHist.push(+sy.temp.toFixed(1));if(H.tHist.length>HHIST)H.tHist.shift();
+  H.tMin=Math.min(H.tMin,+sy.temp.toFixed(1));H.tMax=Math.max(H.tMax,+sy.temp.toFixed(1));
+  H.cpuHist.push(Math.round(sy.cpu));if(H.cpuHist.length>HHIST)H.cpuHist.shift();
+  H.fanOn=sy.temp>=46;H.fanRpm=H.fanOn?Math.round(3600+(sy.temp-46)*120+(Math.random()*120-60)):0;
+  if(H.log.on)H.log.rows+=H.log.vars.length;             // records groeien
+  H.sdWrites+=2;
+}
+function paintHealth(){
+  if(state.screen!=='hardware')return;const H=ensureHealth();const sy=state.sys;
+  const set=(id,txt)=>{const e=document.getElementById(id);if(e)e.textContent=txt;};
+  const html=(id,h)=>{const e=document.getElementById(id);if(e)e.innerHTML=h;};
+  set('hv-ul',fix(H.ul,2)+' V');set('hv-up',fix(H.up,2)+' V');
+  set('hv-ulmin',fix(H.ulMin,1)+' V');set('hv-upmin',fix(H.upMin,1)+' V');
+  html('hv-ulspark',spark(H.ulHist,{color:'var(--acc)',min:18,max:26,thr:V_ALARM}));
+  html('hv-upspark',spark(H.upHist,{color:'var(--acc-700)',min:18,max:26,thr:V_ALARM}));
+  const ulb=document.getElementById('hv-ulbar');if(ulb){ulb.style.width=Math.max(0,Math.min(100,(H.ul-18)/8*100)).toFixed(1)+'%';ulb.className=H.ul<V_ALARM?'alarm':H.ul<V_WARN?'warn':'ok';}
+  const upb=document.getElementById('hv-upbar');if(upb){upb.style.width=Math.max(0,Math.min(100,(H.up-18)/8*100)).toFixed(1)+'%';upb.className=H.up<V_ALARM?'alarm':H.up<V_WARN?'warn':'ok';}
+  html('hv-dips',dipRows());
+  const pc=pwrCond(),pe=document.getElementById('hv-pwr');if(pe){pe.textContent=condTxt(pc);pe.className='h-state '+condTone(pc);}
+  set('ht-val',fix(sy.temp,1)+' °C');set('ht-min',fix(H.tMin,1));set('ht-max',fix(H.tMax,1));
+  html('ht-spark',spark(H.tHist,{color:'var(--warn)',min:30,max:sy.tempMax,thr:sy.tempWarn}));
+  const tb=document.getElementById('ht-bar');if(tb){tb.style.width=Math.min(100,Math.round(sy.temp/sy.tempMax*100))+'%';tb.className=tempCond()==='ok'?'ok':'warn';}
+  const trA=H.tHist[H.tHist.length-1]-H.tHist[Math.max(0,H.tHist.length-8)];set('ht-trend',trA>0.4?'▲ stijgend':trA<-0.4?'▼ dalend':'▬ stabiel');
+  const ts=document.getElementById('ht-state');if(ts){ts.textContent=condTxt(tempCond());ts.className='h-state '+condTone(tempCond());}
+  const fe=document.getElementById('hv-fan');if(fe)fe.innerHTML=(H.fanOn?ledHTML('ok','on'):ledHTML('info','off'))+' '+(H.fanOn?fix(H.fanRpm,0)+' rpm':'uit (koel)');
+  set('hl-rows',fix(H.log.rows,0));set('hl-since',durStr(Date.now()-H.log.sinceReset));
+  set('hs-writes',fix(H.sdWrites,0));
+  paintHealthSummary();
+}
+function updateHealth(){if(state.screen!=='hardware')return;tickHealth();paintHealth();}
+function exportHealthCsv(){
+  const H=ensureHealth();const n=Math.max(H.ulHist.length,H.upHist.length,H.tHist.length,H.cpuHist.length);
+  const now=Date.now(),step=H.log.intervalMs;
+  let csv='tijd;U_L (V);U_P (V);boardtemp (°C);CPU-belasting (%)\n';
+  for(let i=0;i<n;i++){const t=new Date(now-(n-1-i)*step).toISOString();
+    const ul=H.ulHist[i],up=H.upHist[i],tp=H.tHist[i],cp=H.cpuHist[i];
+    csv+=t+';'+(ul!=null?ul.toFixed(2):'')+';'+(up!=null?up.toFixed(2):'')+';'+(tp!=null?tp.toFixed(1):'')+';'+(cp!=null?cp:'')+'\n';}
+  try{const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download='plcnext_health_'+new Date().toISOString().slice(0,10)+'.csv';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(url),3000);
+    toast('CSV-export gestart · '+n+' records (DataLogger)','check');
+  }catch(e){toast('Export niet mogelijk in deze weergave','warn');}
+}
+function resetHealthCapture(){const H=ensureHealth();H.ul=24.05;H.up=23.98;H.ulMin=H.ul;H.upMin=H.up;H.tMin=+state.sys.temp.toFixed(1);H.tMax=+state.sys.temp.toFixed(1);H.dips=[];H.resetAt=Date.now();paintHealth();updateBell();renderNav();toast('Dip-/min-capture genulstelld','check');}
+function simulateDip(){const H=ensureHealth();const v=18.6;const rail=Math.random()<0.5?'ul':'up';const rn=rail==='ul'?'U_L':'U_P';
+  H[rail]=v;H.dips.push({t:Date.now(),rail:rn,v});if(H.dips.length>40)H.dips.shift();
+  if(rail==='ul'){H.ulMin=Math.min(H.ulMin,v);H.ulHist.push(v);if(H.ulHist.length>HHIST)H.ulHist.shift();}
+  else{H.upMin=Math.min(H.upMin,v);H.upHist.push(v);if(H.upHist.length>HHIST)H.upHist.shift();}
+  paintHealth();updateBell();renderNav();
+  toast('Dip gesimuleerd: '+fix(v,1)+' V op '+rn+' — zie conditie, log én alarmen','warn');}
+/* ============================================================
+   LIVE DATABRON — leest een JSON-snapshot + events van de service in
+   (instelbare endpoint-URL) in plaats van de simulatie.
+   Contract: zie data-interface-dashboard-plcnext.md (snapshot 2a, events 2b).
+   ============================================================ */
+function liveActiveAlarms(){return (state.liveAlarms||[]).filter(a=>!a.cleared);}
+function lvNum(x){return (x&&typeof x==='object'&&'v' in x)?x.v:(typeof x==='number'?x:undefined);}
+function applyLiveSnapshot(j){
+  const H=ensureHealth(),sy=state.sys;j=j||{};
+  if(j.controller){if(j.controller.mode)sy.mode=j.controller.mode;if(j.controller.fw)sy.fw=j.controller.fw;state.live.model=j.controller.model||null;}
+  const hh=j.health||{};
+  const ul=lvNum(hh.U_L),up=lvNum(hh.U_P),tb=lvNum(hh.T_BOARD),cpu=lvNum(hh.CPU),fan=lvNum(hh.FAN),sdf=lvNum(hh.SD_FREE),sdw=lvNum(hh.SD_WEAR),iub=lvNum(hh.I_UBus);
+  const ulm=lvNum(hh.U_L_min),upm=lvNum(hh.U_P_min);
+  if(ul!=null){H.ul=+ul.toFixed(2);H.ulMin=ulm!=null?+ulm.toFixed(2):Math.min(H.ulMin,H.ul);H.ulHist.push(H.ul);if(H.ulHist.length>HHIST)H.ulHist.shift();}
+  if(up!=null){H.up=+up.toFixed(2);H.upMin=upm!=null?+upm.toFixed(2):Math.min(H.upMin,H.up);H.upHist.push(H.up);if(H.upHist.length>HHIST)H.upHist.shift();}
+  if(tb!=null){sy.temp=tb;H.tHist.push(+tb.toFixed(1));if(H.tHist.length>HHIST)H.tHist.shift();H.tMin=Math.min(H.tMin,+tb.toFixed(1));H.tMax=Math.max(H.tMax,+tb.toFixed(1));}
+  if(cpu!=null){sy.cpu=cpu;H.cpuHist.push(Math.round(cpu));if(H.cpuHist.length>HHIST)H.cpuHist.shift();}
+  if(fan!=null){H.fanRpm=fan;H.fanOn=fan>0;}
+  if(sdf!=null)sy.sd=Math.max(0,Math.min(100,100-sdf));
+  if(sdw!=null)H.sdWear=sdw;
+  state.live.axio=j.axio||null;state.live.profinet=j.profinet||null;
+  if(Array.isArray(j.modules)&&state.hw&&state.hw.diag){const dg={};
+    j.modules.forEach(m=>{(m.diag||[]).forEach(d=>{if(d&&d.code&&String(d.code)!=='0000'){dg[m.slot+'.'+(d.ch==null?'M':d.ch)]=String(d.code);}});});
+    state.hw.diag=dg;}
+  if(H.log)H.log.rows=(H.log.rows||0)+(H.log.vars?H.log.vars.length:6);
+}
+function applyLiveEvents(arr){
+  state.live.ack=state.live.ack||{};
+  if(!Array.isArray(arr)){state.liveAlarms=[];return;}
+  state.liveAlarms=arr.map(e=>{const id='live-'+(e.id||((e.code||'')+'-'+(e.ts||'')));
+    const isHex=/^[0-9A-Fa-f]{4}$/.test(e.code||'');
+    return {id,sev:(e.sev||'alarm'),code:(e.code||'')+(isHex?'hex':''),
+      time:e.ts?Date.parse(e.ts):Date.now(),ack:!!e.ackTs||!!state.live.ack[id],
+      ti:e.text||IO_CODES[e.code]||'Melding',loc:[e.source,e.loc].filter(Boolean).join(' · '),
+      cause:e.cause||(IO_CODES[e.code]?('Gemeld door de PLC (code '+e.code+').'):''),check:e.check||'',
+      live:true,cleared:!!e.clearedTs};});
+}
+async function liveTick(){
+  const L=state.live;if(!L.enabled||L.inflight)return;L.inflight=true;
+  const base=(L.url||'').replace(/\/+$/,'');
+  try{
+    const r=await fetch(base+'/snapshot',{cache:'no-store'});
+    if(!r.ok)throw new Error('HTTP '+r.status+' op /snapshot');
+    applyLiveSnapshot(await r.json());
+    try{const ev=await fetch(base+'/events',{cache:'no-store'});if(ev.ok)applyLiveEvents(await ev.json());}catch(e){/* events optioneel */}
+    L.status='verbonden';L.lastOk=Date.now();L.lastErr=null;
+  }catch(e){L.status='fout';L.lastErr=(e&&e.message)||'verbinding mislukt';}
+  finally{L.inflight=false;if(state.screen==='hardware'){paintHealth();paintLiveStatus();}updateBell();renderNav();}
+}
+function paintLiveStatus(){
+  const el=document.getElementById('live-status');if(!el)return;const L=state.live;
+  const map={offline:['info','Niet gekoppeld — simulatie actief'],verbonden:['ok','Verbonden met PLC-service'],fout:['alarm','Verbindingsfout']};
+  const m=map[L.status]||map.offline;
+  el.innerHTML=ledHTML(m[0],'on')+' <b>'+m[1]+'</b>'+
+    (L.status==='verbonden'&&L.lastOk?(' <span class="muted-2">· laatste update '+clockStr(L.lastOk)+'</span>'):'')+
+    (L.status==='fout'?(' <span class="muted-2">· '+(L.lastErr||'')+'</span>'):'');
+}
+function setLiveMode(on){
+  const u=document.getElementById('live-url');if(u&&u.value)state.live.url=u.value.trim();
+  state.live.enabled=!!on;state.live.status='offline';state.live.lastErr=null;
+  if(state.screen==='hardware')render();
+  if(on)liveTick();
+  toast(on?'Live databron ingeschakeld':'Terug naar simulatie',on?'network':'play');
+}
+function buildDatabronCard(){
+  const L=state.live;
+  return `<div class="card sys-card" id="databron" style="margin-top:20px">
+    <div class="sys-head"><span style="display:flex;color:var(--ink-2)">${ic('network',17,2)}</span><h3>Databron — simulatie of live PLC</h3><span class="muted-2" style="margin-left:auto;font-family:var(--mono);font-size:12px">systeem- &amp; diagnosegegevens</span></div>
+    <div class="db-body">
+      <div class="db-modes">
+        <button class="db-mode ${!L.enabled?'on':''}" data-live="0">${ic('play',15,2)} Simulatie</button>
+        <button class="db-mode ${L.enabled?'on':''}" data-live="1">${ic('network',15,2)} Live (PLC)</button>
+      </div>
+      <label class="db-url"><span>Endpoint-URL van de service</span>
+        <input id="live-url" type="text" value="${(L.url||'').replace(/"/g,'&quot;')}" placeholder="http://&lt;plc-ip&gt;:8080" autocomplete="off" spellcheck="false"></label>
+      <div class="db-row"><div class="db-status" id="live-status"></div>
+        <button class="h-btn" id="live-connect">${ic('check',14,2)} ${L.enabled?'Opnieuw verbinden':'Verbinden'}</button></div>
+      <div class="h-thr">${ic('info',12,2)} Verwacht <code>GET {url}/snapshot</code> (live waarden) en <code>GET {url}/events</code> (storingen), JSON volgens het interface-document. Zonder bereikbare service blijft de twin in simulatie.</div>
+    </div>
+  </div>`;
+}
+/* ============================================================
+   ACTIEVE STORINGEN — actie-eerst (wat / waar / wat-nu, techniek uitklapbaar)
+   + service-rapport (printbaar → PDF, of download als HTML).
+   ============================================================ */
+const LATCH_CODES=['0A01','0A75','0A77','6301','6310','6300'];
+function recoverText(raw,a){
+  if(a&&a.health)return 'Verdwijnt zodra de conditie weer normaal is (eventueel na “Capture nulstellen”).';
+  if(a&&!a.hw&&!a.live)return 'Verdwijnt na bevestigen en herstel van de oorzaak.';
+  if(LATCH_CODES.indexOf(raw)>=0||/^0C1/.test(raw))return 'Blijft staan tot herstel/herstart of herconfiguratie.';
+  if(/^0B|^0C/.test(raw))return 'Herstelt automatisch zodra de busfout is opgelost.';
+  return 'Herstelt doorgaans automatisch zodra de oorzaak is weggenomen.';
+}
+function faultCat(raw,a){
+  if(a&&a.health)return 'Conditiemonitoring';
+  if(a&&!a.hw&&!a.live)return 'Procesalarm';
+  return 'Axioline-diagnose · '+codeStatus(raw);
+}
+function faultGo(a){return a.hw?('hw:'+a.slot+'.'+(a.ch==null?'M':a.ch)):a.health?'health':'alarmen';}
+function buildFaultCard(a){
+  const raw=(a.code||'').replace(/hex$/i,'');const tone=condTone(a.sev);
+  const sevTxt=a.sev==='alarm'?'Storing':a.sev==='warn'?'Waarschuwing':'Info';
+  const goLabel=a.hw?'Naar rack':a.health?'Naar conditie':'Naar meldingen';
+  const nowTxt=a.check||'Controleer de aangegeven locatie en bevestig na herstel.';
+  const catName=IO_CODES[raw];
+  return `<div class="flt-card tone-${tone}">
+    <div class="flt-top">
+      <span class="flt-sev ${tone}">${sevTxt}</span>
+      <b class="flt-what">${a.ti}</b>
+      ${a.loc?`<span class="flt-where">${ic('chip',13,2)} ${a.loc}</span>`:''}
+      <button class="btn sm flt-go" data-fgo="${faultGo(a)}">${goLabel} ${ic('chev',14,2)}</button>
+    </div>
+    <div class="flt-now">${ic('wrench',15,2)}<span><b>Wat nu:</b> ${nowTxt}</span></div>
+    <details class="flt-tech"><summary>Technische details</summary>
+      <dl class="dg-grid">
+        <dt>Code</dt><dd class="mono">${a.code||'—'}${catName?(' · '+catName):''}</dd>
+        <dt>Categorie</dt><dd>${faultCat(raw,a)}</dd>
+        <dt>Herstel</dt><dd>${recoverText(raw,a)}</dd>
+        <dt>Actief sinds</dt><dd>${a.time?(clockStr(a.time)+' · '+dateStr(a.time)):'—'}</dd>
+        ${a.cause?`<dt>Oorzaak</dt><dd>${a.cause}</dd>`:''}
+      </dl>
+    </details>
+  </div>`;
+}
+function buildActiveFaultsInner(){
+  const acts=activeAlarms().filter(a=>a.sev!=='info').sort((a,b)=>sevRank(a.sev)-sevRank(b.sev)||a.time-b.time);
+  const body=acts.length?acts.map(buildFaultCard).join('')
+    :`<div class="flt-empty">${ic('check',18,2.2)} <span>Geen actieve storingen — alle systemen normaal.</span></div>`;
+  return `<div class="flt-h"><span style="display:flex;color:var(--ink-2)">${ic('alarm',17,2)}</span><h3>Actieve storingen <span class="muted-2" style="font-weight:500">· ${acts.length}</span></h3>
+      <button class="h-btn ghost flt-report" data-freport="1">${ic('usage',14,2)} Service-rapport</button></div>
+    <div class="flt-list">${body}</div>`;
+}
+function buildActiveFaults(){return `<div class="card flt-wrap" id="hw-faults">${buildActiveFaultsInner()}</div>`;}
+let _faultSig=null;
+function paintActiveFaults(){const host=document.getElementById('hw-faults');if(!host)return;
+  const acts=activeAlarms().filter(a=>a.sev!=='info');
+  const sig=acts.map(a=>a.id+a.sev+(a.ack?1:0)).join('|');
+  if(sig===_faultSig)return;_faultSig=sig;host.innerHTML=buildActiveFaultsInner();}
+function serviceReport(){
+  const sy=state.sys;const H=ensureHealth();const c=hwCtrl();const now=new Date();
+  const acts=activeAlarms().filter(a=>a.sev!=='info').sort((a,b)=>sevRank(a.sev)-sevRank(b.sev)||a.time-b.time);
+  const overall=acts.some(a=>a.sev==='alarm')?'STORING':acts.some(a=>a.sev==='warn')?'AANDACHT':'IN ORDE';
+  const overTone=acts.some(a=>a.sev==='alarm')?'alarm':acts.some(a=>a.sev==='warn')?'warn':'ok';
+  const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const free=100-sy.sd;
+  const conds=[
+    ['Voeding U_L / U_P', fix(H.ul,2)+' / '+fix(H.up,2)+' V (laagste '+fix(Math.min(H.ulMin,H.upMin),1)+' V)', pwrCond()],
+    ['Boardtemperatuur', fix(sy.temp,1)+' °C (max '+fix(H.tMax,1)+' °C)', tempCond()],
+    ['SD-kaart', free+'% vrij · slijtage '+H.sdWear+'%', sdCond()],
+    ['Axioline-bus', busCond()==='ok'?'normaal':'diagnose actief', busCond()]
+  ];
+  const condRows=conds.map(r=>`<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td><td class="c c-${r[2]}">${condTxt(r[2]).toUpperCase()}</td></tr>`).join('');
+  const faultRows=acts.length?acts.map(a=>`<tr><td class="c c-${condTone(a.sev)}">${a.sev==='alarm'?'STORING':'WAARSCH.'}</td><td class="mono">${esc(a.code||'')}</td><td>${esc(a.loc||'')}</td><td>${esc(a.ti)}</td><td>${esc(a.check||'')}</td></tr>`).join('')
+    :'<tr><td colspan="5" class="empty">Geen actieve storingen.</td></tr>';
+  const dips=(H.dips||[]).slice(-8).reverse();
+  const dipRows=dips.length?dips.map(d=>`<tr><td class="mono">${esc(fix(d.v,1))} V</td><td>${esc(d.rail)}</td><td>${clockStr(d.t)} · ${dateStr(d.t)}</td></tr>`).join('')
+    :'<tr><td colspan="3" class="empty">Geen dips geregistreerd sinds nulstellen.</td></tr>';
+  const css="*{box-sizing:border-box}body{font:13px/1.5 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#1a1d21;margin:32px;max-width:780px}"
+    +"h1{font-size:21px;margin:0 0 2px}h2{font-size:14px;margin:24px 0 8px;border-bottom:2px solid #e6e8ec;padding-bottom:5px}"
+    +".meta{color:#5b6470;font-size:12px;margin-bottom:14px}.badge{display:inline-block;padding:4px 12px;border-radius:99px;font-weight:700;font-size:12px;letter-spacing:.02em}"
+    +".b-ok{background:#e6f4ea;color:#1e7e34}.b-warn{background:#fcf3df;color:#9a6b00}.b-alarm{background:#fbe6e6;color:#b71c1c}"
+    +"table{width:100%;border-collapse:collapse;margin:0}th,td{text-align:left;padding:7px 9px;border-bottom:1px solid #eceef1;vertical-align:top;font-size:12px}"
+    +"th{font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;color:#6b7280;background:#f6f7f9}.mono{font-family:ui-monospace,Menlo,Consolas,monospace}"
+    +".c{font-weight:700}.c-ok{color:#1e7e34}.c-warn{color:#9a6b00}.c-alarm{color:#b71c1c}.empty{color:#8a93a0}"
+    +".ft{margin-top:26px;color:#8a93a0;font-size:11px;border-top:1px solid #eceef1;padding-top:8px}@media print{body{margin:14mm}}";
+  const html='<!doctype html><html lang="nl"><head><meta charset="utf-8"><title>Service-rapport '+esc(c.name)+'</title><style>'+css+'</style></head><body>'
+    +'<h1>Service-rapport</h1>'
+    +'<div class="meta">'+esc(c.name)+' · firmware '+esc(sy.fw)+' · modus '+esc(sy.mode)+(state.live&&state.live.enabled?' · live PLC':' · simulatie')+'<br>Opgesteld: '+now.toLocaleString('nl-NL')+'</div>'
+    +'<p>Algemene toestand: <span class="badge b-'+overTone+'">'+overall+'</span></p>'
+    +'<h2>Conditie</h2><table><thead><tr><th>Subsysteem</th><th>Meting</th><th>Status</th></tr></thead><tbody>'+condRows+'</tbody></table>'
+    +'<h2>Actieve storingen ('+acts.length+')</h2><table><thead><tr><th>Ernst</th><th>Code</th><th>Locatie</th><th>Omschrijving</th><th>Wat nu</th></tr></thead><tbody>'+faultRows+'</tbody></table>'
+    +'<h2>Laatste voedingsdips</h2><table><thead><tr><th>Laagste</th><th>Rail</th><th>Tijdstip</th></tr></thead><tbody>'+dipRows+'</tbody></table>'
+    +'<p class="ft">Gegenereerd door het PLCnext digital-twin dashboard.</p>'
+    +'<scr'+'ipt>window.onload=function(){setTimeout(function(){try{window.print();}catch(e){}},300);};<\/scr'+'ipt></body></html>';
+  try{const w=window.open('','_blank');if(w&&w.document){w.document.open();w.document.write(html);w.document.close();toast('Service-rapport geopend — print of bewaar als PDF','check');return;}}catch(e){}
+  try{const blob=new Blob([html],{type:'text/html;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='service-rapport_'+now.toISOString().slice(0,10)+'.html';document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(url),3000);toast('Service-rapport gedownload — open en print als PDF','check');}catch(e){toast('Rapport niet mogelijk in deze weergave','warn');}
+}
 function buildBudgetPanel(){
   const b=systemBudget();const c=hwCtrl();
   const bar=(val,max,sev)=>{const pct=Math.min(100,Math.round(val/Math.max(max,1)*100));return `<div class="bar"><span class="${sev}" style="width:${pct}%"></span></div>`;};
@@ -3282,7 +4115,7 @@ function buildDiagPanel(){
     return `<div class="dcat-grp"><div class="dg-sub">${g.grp} <span class="muted-2" style="font-weight:500">· ${g.rows.length}</span></div>${g.note?`<div class="muted-2" style="font-size:11.5px;margin:0 0 6px">${g.note}</div>`:''}${rows}</div>`;
   }).join('');
   return `<div class="card sys-card" id="diag-panel" style="margin-top:20px">
-    <div class="sys-head"><span style="display:flex;color:var(--ink-2)">${ic('alarm',17,2)}</span><h3>Diagnose &amp; service — uitlezen van de hele lijn</h3><span class="muted-2" style="margin-left:auto;font-family:var(--mono);font-size:12px">Axioline-busmaster · PROFINET</span></div>
+    <div class="sys-head"><span style="display:flex;color:var(--ink-2)">${ic('alarm',17,2)}</span><h3>Diagnose &amp; naslag</h3><span class="muted-2" style="margin-left:auto;font-family:var(--mono);font-size:12px">Axioline-busmaster · PROFINET</span></div>
     <div class="diag-cols">
       <div class="diag-col">
         <div class="dg-sub">Diagnosestatusregister (live)</div>
@@ -3291,13 +4124,17 @@ function buildDiagPanel(){
         ${paramHtml}
       </div>
       <div class="diag-col">
-        <div class="dg-sub">GDS-uitleespaden voor de service</div>
-        <div class="hw-hint" style="margin:0 0 10px">${ic('info',14,2)} <span>De Linux-service leest deze variabelen via RSC IDataAccessService (gRPC, lokaal zonder credentials) of REST/OPC UA — zonder PLCnext Engineer.</span></div>
-        ${gdsHtml}
+        <div class="dg-sub">PROFINET-stations (live)</div>
+        <div class="diag-pn" style="padding:0">${pnHtml}</div>
       </div>
     </div>
-    <div class="dg-sub" style="margin:16px 16px 8px">PROFINET-stations</div>
-    <div class="diag-pn">${pnHtml}</div>
+    <div class="dg-sub" style="margin:18px 16px 4px">Naslag</div>
+    <details class="diag-det"><summary>${ic('search',14,2)} Volledige foutcatalogus — zoek een code <span class="muted-2" style="font-weight:500">· alle ${Object.keys(IO_CODES).length}</span></summary>
+      <div class="pick-search" style="margin:10px 0"><span style="display:flex">${ic('search',16,2)}</span><input id="diag-q" placeholder="Zoek op code (bv. 0BF2) of omschrijving (bv. draadbreuk)…" autocomplete="off" spellcheck="false"></div>
+      <div id="diag-cat">${catHtml}</div></details>
+    <details class="diag-det"><summary>GDS-uitleespaden voor de service</summary>
+      <div class="hw-hint" style="margin:8px 0 10px">${ic('info',14,2)} <span>De Linux-service leest deze variabelen via RSC IDataAccessService (gRPC, lokaal zonder credentials) of REST/OPC UA — zonder PLCnext Engineer.</span></div>
+      ${gdsHtml}</details>
     <details class="diag-det"><summary>PROFINET-diagnosebitveld (legenda) — bitsgewijs gecodeerd</summary><div class="diag-bits" style="margin-top:8px">${pnLegend}</div></details>
     <details class="diag-det"><summary>Foutafhandeling — controller vs. module</summary>
       <div class="muted-2" style="font-size:12.5px;line-height:1.6;margin-top:8px">
@@ -3307,46 +4144,136 @@ function buildDiagPanel(){
         <b>Herstel:</b> PF/PW/BUS herstellen automatisch zodra de oorzaak weg is; CTRL, 0A75 (EEPROM), 0A77 en configuratiemismatch blijven staan tot herstart/herconfiguratie.
       </div>
     </details>
-    <div class="dg-sub" style="margin:16px 16px 8px">Volledige foutcatalogus <span class="muted-2" style="font-weight:500">· alle ${Object.keys(IO_CODES).length} codes</span></div>
-    <div class="pick-search" style="margin:6px 16px 10px"><span style="display:flex">${ic('search',16,2)}</span><input id="diag-q" placeholder="Zoek op code (bv. 0BF2) of omschrijving (bv. draadbreuk)…" autocomplete="off" spellcheck="false"></div>
-    <div id="diag-cat">${catHtml}</div>
   </div>`;
 }
 function updateSys(){
   if(state.screen!=='hardware')return;const sy=state.sys;
-  sy.cpu=Math.max(9,Math.min(46,sy.cpu+(Math.random()*4-2)));
-  sy.temp=Math.max(39,Math.min(54,sy.temp+(Math.random()*0.6-0.3)));
+  if(!(state.live&&state.live.enabled)){
+    sy.cpu=Math.max(9,Math.min(46,sy.cpu+(Math.random()*4-2)));
+    sy.temp=Math.max(39,Math.min(54,sy.temp+(Math.random()*0.6-0.3)));
+  }
   const up=document.getElementById('sys-up');if(up)up.textContent=uptimeStr();
   const tm=document.getElementById('sys-time');if(tm)tm.textContent=clockStr(Date.now())+' · NTP '+(sy.ntp?'gesync.':'—');
   const tp=document.getElementById('sys-temp');if(tp)tp.textContent=fix(sy.temp,1)+' °C';
   const tb=document.getElementById('sys-temp-bar');if(tb){tb.style.width=Math.min(100,Math.round(sy.temp/sy.tempMax*100))+'%';tb.className=sy.temp>=sy.tempWarn?'warn':'ok';}
   const cp=document.getElementById('sys-cpu');if(cp)cp.textContent=Math.round(sy.cpu)+'%';
   const cb=document.getElementById('sys-cpu-bar');if(cb)cb.style.width=Math.round(sy.cpu)+'%';
+  updateHealth();
 }
-function viewHardware(){
-  return `<div class="page-head"><div class="titles"><h1>Hardware — diagnose-tweeling</h1><p>Live spiegel van de PLCnext-besturing en Smart Elements · status-LED's, kanaal-diagnose en Axioline-foutcodes</p></div>
-    <div class="seg" id="hw-mode"><button data-m="live" aria-pressed="${hwMode==='live'?'true':'false'}">Live</button><button data-m="edit" aria-pressed="${hwMode==='edit'?'true':'false'}">Samenstellen</button></div></div>
-    ${hwMode==='edit'?buildConfigBar():''}
-    <div id="hw-rack-host">${buildRack()}</div>
-    <div class="hw-bar" id="hw-bar"></div>
-    <div class="hw-legend">
+/* ============================================================
+   TRIAGE-BALK + SUB-TABS (Status / Configuratie / Diagnose / Databron)
+   Geeft de monteur in één oogopslag de toestand van de hele lijn.
+   ============================================================ */
+function busCond(){const s=deriveAxioStatus().set;if(s.F_CTRL||s.F_BUS)return 'alarm';if(s.F_PF||s.F_BD||s.F_SYNC)return 'warn';return 'ok';}
+function sevRank(s){return s==='alarm'?0:s==='warn'?1:2;}
+function buildTriage(){
+  const acts=activeAlarms();
+  const nA=acts.filter(a=>a.sev==='alarm').length,nW=acts.filter(a=>a.sev==='warn').length;
+  const top=acts.slice().sort((a,b)=>sevRank(a.sev)-sevRank(b.sev)||a.time-b.time)[0];
+  let tone,label,icon;
+  if(nA){tone='alarm';label='Storing';icon='alarm';}
+  else if(nW){tone='warn';label='Aandacht';icon='warn';}
+  else{tone='ok';label='Alles in orde';icon='check';}
+  const cnt=[];if(nA)cnt.push(nA+' storing'+(nA>1?'en':''));if(nW)cnt.push(nW+' waarschuwing'+(nW>1?'en':''));
+  const sub=(tone==='ok')?('Alle systemen normaal · '+hwCtrl().name):(cnt.join(' · ')+(top?(' — hoogste: '+top.ti):''));
+  const live=state.live&&state.live.enabled;
+  const srcTone=live?(state.live.status==='fout'?'alarm':'ok'):'info';
+  const srcTxt=live?(state.live.status==='verbonden'?'Live · PLC':state.live.status==='fout'?'Live · fout':'Live'):'Simulatie';
+  const src=`<span class="tg-src ${srcTone}">${ic('network',13,2)} ${srcTxt}</span>`;
+  return `<div class="triage tone-${tone}">
+    <div class="tg-main"><span class="tg-ic">${ic(icon,22,2.2)}</span>
+      <div class="tg-txt"><span class="tg-status">${label}</span><span class="tg-sub">${sub}</span></div></div>
+    <div class="tg-right">${src}${top?`<button class="btn sm" id="tg-jump">${ic('alarm',15,2)} Naar meldingen</button>`:''}</div>
+  </div>`;
+}
+function paintTriage(){const h=document.getElementById('hw-triage');if(h)h.innerHTML=buildTriage();
+  const tb=document.querySelector('#hw-tabs button[data-h="status"]');if(tb){const n=activeAlarms().length;
+    let bd=tb.querySelector('.tb-badge');
+    if(n){if(!bd){bd=document.createElement('span');bd.className='tb-badge';tb.appendChild(bd);}bd.textContent=n;bd.className='tb-badge '+(activeAlarms().some(a=>a.sev==='alarm')?'alarm':'warn');}
+    else if(bd){bd.remove();}}
+}
+function buildHwTabs(){
+  const acts=activeAlarms();const n=acts.length;const live=state.live&&state.live.enabled;
+  const badge=n?` <span class="tb-badge ${acts.some(a=>a.sev==='alarm')?'alarm':'warn'}">${n}</span>`:'';
+  const dot=` <span class="tb-dot ${live?'ok':'info'}"></span>`;
+  const T=(id,label,extra)=>`<button data-h="${id}" aria-selected="${hwTab===id?'true':'false'}">${label}${extra||''}</button>`;
+  return `<div class="page-actions"><div class="tabs hw-tabs" id="hw-tabs">${T('status','Status',badge)}${T('config','Configuratie')}${T('diag','Diagnose &amp; naslag')}${T('databron','Databron',dot)}</div></div>`;
+}
+function hwLegend(){return `<div class="hw-legend">
       <span>${ledHTML('ok','on')} OK / bus actief</span>
       <span>${ledHTML('amber','on')} kanaal actief</span>
       <span>${ledHTML('alarm','on')} I/O-fout</span>
       <span>${ledHTML('alarm','blink')} knippert — zie toelichting</span>
       <span>${ledHTML('ok','off')} uit / geen functie</span>
-    </div>
+    </div>`;}
+function hwStatusSection(){
+  const hwFault=activeFaults().length>0;   // open de rack-twin automatisch als er een module-/kanaalstoring is
+  return `${buildActiveFaults()}
+    ${buildHealthSummary()}
+    <details class="hw-disc" id="hw-disc-rack"${hwFault?' open':''}>
+      <summary><span>${ic('chip',16,2)}</span>Rack &amp; I/O<span class="hw-disc-hint">de digital twin — klik een kanaal voor diagnose</span></summary>
+      <div class="hw-disc-body">
+        <div id="hw-rack-host">${buildRack()}</div>
+        <div class="hw-bar" id="hw-bar"></div>
+        ${hwLegend()}
+        <div id="hw-fb">${buildFieldbus()}</div>
+      </div>
+    </details>
+    <details class="hw-disc" id="hw-disc-cond">
+      <summary><span>${ic('gauge',16,2)}</span>Conditie &amp; trends<span class="hw-disc-hint">voeding, temperatuur, SD-slijtage, DataLogger</span></summary>
+      <div class="hw-disc-body">${buildHealthPanel()}</div>
+    </details>
+    <details class="hw-disc" id="hw-disc-sys">
+      <summary><span>${ic('cpu',16,2)}</span>Systeemdetails<span class="hw-disc-hint">firmware, bedrijfstijd, netwerk, CPU/geheugen</span></summary>
+      <div class="hw-disc-body">${buildSysPanel()}</div>
+    </details>`;
+}
+function hwConfigSection(){
+  return `${buildConfigBar()}
+    <div id="hw-rack-host">${buildRack()}</div>
+    <div class="hw-bar" id="hw-bar"></div>
+    ${hwLegend()}
     <div id="hw-fb">${buildFieldbus()}</div>
-    ${buildSysPanel()}
     ${buildBudgetPanel()}
-    ${buildDiagPanel()}
     <div class="card" style="margin-top:20px;overflow:hidden"><div style="padding:13px 16px;border-bottom:1px solid var(--c-line);display:flex;align-items:center;gap:8px"><span style="display:flex;color:var(--ink-2)">${ic('io',17,2)}</span><h3 style="font-size:14px">Aangesloten signalen <span class="muted-2" style="font-weight:500">· per Smart Element · ${SIGNALS.length} I/O</span></h3></div>
       <div style="overflow:auto">${buildHwList()}</div></div>`;
+}
+function hwSection(){
+  if(hwTab==='config')return hwConfigSection();
+  if(hwTab==='diag')return buildDiagPanel();
+  if(hwTab==='databron')return buildDatabronCard();
+  return hwStatusSection();
+}
+function viewHardware(){
+  hwMode=(hwTab==='config')?'edit':'live';   // sub-tab bepaalt de modus
+  return `<div class="page-head"><div class="titles"><h1>Hardware — diagnose-tweeling</h1><p>Live spiegel van de PLCnext-besturing en Smart Elements · status, conditie en Axioline-diagnose</p></div></div>
+    <div id="hw-triage">${buildTriage()}</div>
+    ${buildHwTabs()}
+    <div id="hw-section">${hwSection()}</div>`;
 }
 function mountHardware(){hwSel=null;wireHwRack();setHwBar();
   const dq=$('#diag-q');if(dq)dq.oninput=()=>{const v=(dq.value||'').trim().toLowerCase();
     $$('#diag-cat .dcat-row').forEach(r=>{r.style.display=(!v||(r.dataset.s||'').indexOf(v)>=0)?'':'none';});
     $$('#diag-cat .dcat-grp').forEach(g=>{const any=Array.from(g.querySelectorAll('.dcat-row')).some(r=>r.style.display!=='none');g.style.display=any?'':'none';});};
+  const ex=$('#h-export');if(ex)ex.onclick=exportHealthCsv;
+  const rs=$('#h-reset');if(rs)rs.onclick=resetHealthCapture;
+  const dp=$('#h-dip');if(dp)dp.onclick=simulateDip;
+  $$('#databron [data-live]').forEach(b=>b.onclick=()=>setLiveMode(b.dataset.live==='1'));
+  const lc=$('#live-connect');if(lc)lc.onclick=()=>setLiveMode(true);
+  paintLiveStatus();
+  $$('#hw-tabs button').forEach(b=>b.onclick=()=>{hwTab=b.dataset.h;clearSel();render();});
+  const th=$('#hw-triage');if(th)th.onclick=e=>{if(e.target.closest('#tg-jump'))go('alarmen');};
+  const hf=$('#hw-faults');if(hf)hf.onclick=e=>{
+    if(e.target.closest('[data-freport]')){serviceReport();return;}
+    const g=e.target.closest('[data-fgo]');if(g){const v=g.dataset.fgo;
+      if(v==='health'){openDisc('hw-disc-cond');}
+      else if(v==='alarmen'){go('alarmen');}
+      else if(v.indexOf('hw:')===0){const p=v.slice(3).split('.');const slot=+p[0];const ch=p[1]==='M'?null:+p[1];clearSel();const rd=document.getElementById('hw-disc-rack');if(rd)rd.open=true;if(ch==null)selectElem(slot);else selectCh(slot,ch);const rk=$('#hw-rack-host');if(rk)rk.scrollIntoView({behavior:'smooth',block:'center'});}
+      return;}
+  };
+  const hs=$('#hw-hsum');if(hs)hs.onclick=e=>{const c=e.target.closest('[data-hsum]');if(!c)return;openDisc(c.dataset.hsum==='bus'?'hw-disc-rack':'hw-disc-cond');};
+  _faultSig=null;
+  paintTriage();paintActiveFaults();
 }
 function wireHwRack(){
   const host=$('#hw-rack-host');
@@ -3378,7 +4305,6 @@ function wireHwRack(){
       return;}
     const pk=e.target.closest('[data-pick="fb"]');if(pk){openFieldbusPicker();return;}
   };
-  $$('#hw-mode button').forEach(b=>b.onclick=()=>{hwMode=b.dataset.m;render();});
   $$('.hw-sel-type').forEach(sel=>sel.onchange=()=>changeSlotType(+sel.dataset.slot,sel.value));
   const list=$('#hw-list');if(list)list.onclick=e=>{const tr=e.target.closest('tr[data-uid]');if(!tr)return;const s=sigByUid(tr.dataset.uid);if(!s)return;const p=state.hw.map[uidOf(s)];if(p)selectCh(p.slot,p.ch);};
 }
@@ -3796,8 +4722,9 @@ function go(screen){
 function render(){
   const [v,m]=VIEWS[state.screen]||VIEWS.overzicht;
   const main=$('#main');
-  main.innerHTML=v();
+  main.innerHTML=subnav()+v();
   if(m)m();
+  const sn=$('#subnav');if(sn)sn.addEventListener('click',e=>{const b=e.target.closest('[data-sub]');if(b)go(b.dataset.sub);});
   main.classList.remove('reveal');void main.offsetWidth;main.classList.add('reveal');
 }
 
@@ -3884,6 +4811,7 @@ function tick(){
   // light runtime creep
   if(state.fcsRun)state.runtime.FCS1+=0.01;if(state.openValves.has('vp02'))state.runtime.VP02+=0.01;if(state.openValves.has('vp03'))state.runtime.VP03+=0.01;
   updateBell();
+  if(state.live&&state.live.enabled)liveTick();
   refreshOverzicht();refreshSequentie();updateIO();updateHardware();updateHandAuto();updateKal();updateOnd();updateFaceplate();updateLog();
 }
 
@@ -3893,7 +4821,12 @@ function wire(){
     if(SVC_SCREENS.includes(state.screen)&&state.role==='klant')go('overzicht');else render();
     toast('Rol: '+({klant:'Klant',service:'Service',oem:'OEM'}[state.role]),state.role==='klant'?'user':'wrench');});
   $('#rail').addEventListener('click',e=>{const b=e.target.closest('.nav-item');if(!b)return;if(b.dataset.locked){toast('Servicetoegang vereist — wissel naar de rol Service','lock');return;}go(b.dataset.screen);});
-  $('#burger').onclick=()=>document.body.classList.toggle('nav-open');
+  $('#burger').onclick=()=>{
+    if(window.matchMedia&&window.matchMedia('(max-width:720px)').matches){document.body.classList.toggle('nav-open');return;}
+    state.railCollapsed=!state.railCollapsed;
+    document.body.classList.toggle('rail-collapsed',state.railCollapsed);
+    const b=$('#burger');if(b)b.setAttribute('aria-label',state.railCollapsed?'Zijbalk uitklappen':'Zijbalk inklappen');
+  };
   $('#scrim').onclick=()=>document.body.classList.remove('nav-open');
   $('#bell').onclick=()=>{if(state.role==='klant'){toast('Alarmdetails via de rol Service','lock');go('overzicht');}else go('alarmen');};
   $('#modal-x').onclick=closeModal;
@@ -3901,12 +4834,19 @@ function wire(){
   document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();document.body.classList.remove('nav-open');}});
 }
 function init(){
+  // initieel thema volgt de OS-voorkeur; de toggle overschrijft daarna
+  state.theme=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';
+  document.documentElement.setAttribute('data-theme',state.theme);
+  COL=makeCOL();
   seedAlarms();
   initWear();
   loadDraft(state.schemas[0]?state.schemas[0].id:null);
   seedLog();
   state.seq=buildSequence(state.rcp);state.seqIdx=2;state.stepT=0; // start midden in een batch zodat het meteen leeft
   renderRoles();renderNav();wire();
+  const tt=$('#theme-toggle');
+  if(tt){tt.onclick=toggleTheme;tt.innerHTML=ic(state.theme==='dark'?'sun':'moon',20,2);tt.title=state.theme==='dark'?'Schakel naar licht thema':'Schakel naar donker thema';}
+  if(window.matchMedia){try{window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',e=>{if(!state.themeUserSet)applyTheme(e.matches?'dark':'light');});}catch(_){ }}
   applyStepEffects();syncRaw();updateClock();updateBell();
   state.flowHist=Array.from({length:30},()=>Math.max(0,Math.round(state.flow+(Math.random()*6-3))));
   render();
